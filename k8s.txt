@@ -1,0 +1,1 @@
+docker buildx build --platform linux/arm64 -t registry.gitlab.com/danielpinto8zz6/bikeshare/travel-event-process-service --push -f TravelEventProcessService/Dockerfile .

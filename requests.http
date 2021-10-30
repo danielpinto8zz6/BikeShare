@@ -1,0 +1,50 @@
+@authToken = {{auth.response.body.$.token}}
+
+# @name auth
+POST http://localhost:6060/api/auth HTTP/1.1
+Content-Type: application/json
+
+{
+    "login": "admin",
+    "password": "admin"
+}
+
+###
+
+GET http://localhost:8099/api/Products
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET http://localhost:5040/api/Users
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET http://localhost:5040/api/Users/95994d2b-186a-473b-b543-a5392a110171
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+POST  http://localhost:5040/api/Users
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "username": "danielpinto",
+    "password": "pinto"
+}
+
+###
+
+POST  http://localhost:5060/TravelEvent
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "Longitude": 25,
+    "Latitude": 12.1
+}
