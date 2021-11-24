@@ -1,10 +1,9 @@
 using System;
-using Common;
 using LSG.GenericCrud.Models;
 
-namespace RentalService.Models.Dto
+namespace Common.Models.Dtos
 {
-    public class RentalDto : IEntity<Guid>, IBaseEntity
+    public class RentalDto : IBaseEntity
     {
         public Guid Id { get; set; }
 
@@ -12,14 +11,14 @@ namespace RentalService.Models.Dto
 
         public Guid UserId { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
-        public DateTime DeletedDate { get; set; }
+        public DateTime? DeletedDate { get; set; }
     }
 }

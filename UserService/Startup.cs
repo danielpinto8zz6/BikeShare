@@ -1,30 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using Common;
+using Common.DataFillers;
+using Common.Models.Dtos;
 using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Dto.Helpers;
 using LSG.GenericCrud.Dto.Services;
 using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Models;
 using LSG.GenericCrud.Repositories;
 using LSG.GenericCrud.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Steeltoe.Discovery.Client;
 using UserService.Data;
-using UserService.DataFillers;
-using UserService.Models;
-using UserService.Models.Dtos;
 using UserService.Models.Entities;
 
 namespace UserService
@@ -49,21 +40,22 @@ namespace UserService
             });
 
             services
-                .AddScoped<ICrudService<Guid, ApplicationUserDto>,
-                    CrudServiceBase<Guid, ApplicationUserDto, ApplicationUser>>();
+                .AddScoped<ICrudService<string, ApplicationUserDto>,
+                    CrudServiceBase<string, ApplicationUserDto, ApplicationUser>>();
 
-            services.AddTransient<IEntityDataFiller, PasswordDataFiller>();
+            services.AddTransient<IEntityDataFiller, DateDataFiller>();
 
             services.AddTransient<IDbContext, ApplicationDbContext>();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("Server=192.168.1.200;port=5432;Database=user;User Id=bikeshare;Password=bikeshare;"));
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
 
             // inject needed service and repository layers
             services.AddCrud();
 
-            var automapperConfiguration = new AutoMapper.MapperConfiguration(conf =>
+            var automapperConfiguration = new MapperConfiguration(conf =>
             {
-                conf.CreateMap<ApplicationUserDto, ApplicationUser>();
+                conf.CreateMap<ApplicationUserDto, ApplicationUser>().ForMember(item => item.Id,
+                    expression => expression.MapFrom(src => src.Username));
                 conf.CreateMap<ApplicationUser, ApplicationUserDto>();
             });
 
@@ -87,7 +79,7 @@ namespace UserService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-    
+
             app.InitializeDatabase<ApplicationDbContext>();
         }
     }

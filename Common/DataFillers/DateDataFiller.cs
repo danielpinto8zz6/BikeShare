@@ -12,18 +12,20 @@ namespace UserService.DataFillers
         public bool IsEntitySupported(EntityEntry entry)
         {
             var result = entry.Entity is ApplicationUser &&
-                   entry.State is EntityState.Added or EntityState.Modified;
+                         entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted;
 
             return result;
         }
 
-        public async Task<object> FillAsync(EntityEntry entry)
+        public Task<object> FillAsync(EntityEntry entry)
         {
-            if (entry.State == EntityState.Added) ((ApplicationUser) entry.Entity).CreatedDate = DateTime.Now;
-            ((ApplicationUser) entry.Entity).ModifiedDate = DateTime.Now;
-            ((ApplicationUser) entry.Entity).Password = $"{((ApplicationUser) entry.Entity).Password}1234";
+            if (entry.State == EntityState.Added) ((ApplicationUser) entry.Entity).CreatedDate = DateTime.UtcNow;
 
-            return (ApplicationUser) entry.Entity;
+            if (entry.State == EntityState.Deleted) ((ApplicationUser) entry.Entity).DeletedDate = DateTime.UtcNow;
+            
+            ((ApplicationUser) entry.Entity).ModifiedDate = DateTime.Now;
+
+            return Task.FromResult(entry.Entity);
         }
     }
 }

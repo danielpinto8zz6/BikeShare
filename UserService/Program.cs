@@ -21,8 +21,8 @@ namespace UserService
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
-                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("hosting.json", true)
+                .AddJsonFile("appsettings.json", true)
                 .AddCommandLine(args)
                 .Build();
 
