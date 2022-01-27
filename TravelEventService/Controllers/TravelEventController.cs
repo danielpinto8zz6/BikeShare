@@ -28,7 +28,7 @@ namespace TravelEventService.Controllers
         {
             if (travelEventDto != null)
             {
-                await _producer.ProduceAsync(travelEventDto, QueueConstants.TravelEventQueue);
+                await _producer.ProduceAsync(travelEventDto);
                 
                 return Ok(travelEventDto);
             }

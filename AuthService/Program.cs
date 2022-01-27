@@ -16,8 +16,8 @@ namespace AuthService
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
-                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("hosting.json", true, false)
+                .AddJsonFile("appsettings.json", true, false)
                 .AddCommandLine(args)
                 .Build();
 

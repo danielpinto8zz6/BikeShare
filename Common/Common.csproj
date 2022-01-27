@@ -1,20 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit" Version="7.2.3" />
-        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.3" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Models\Entities" />
+        <PackageReference Include="MassTransit.MongoDb" Version="7.2.4"/>
+        <PackageReference Include="MassTransit" Version="7.2.4"/>
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.2.4"/>
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.4"/>
+        <PackageReference Include="MassTransit.Kafka" Version="7.2.3"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11"/>
+        <PackageReference Include="LSG.GenericCrud" Version="5.1.0"/>
+        <PackageReference Include="LSG.GenericCrud.Dto" Version="5.1.0"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.13.2"/>
+        <PackageReference Include="Obvs.Kafka" Version="6.0.10"/>
+        <PackageReference Include="Obvs.Serialization.Json" Version="6.0.10"/>
     </ItemGroup>
 
 </Project>

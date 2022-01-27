@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AuthService.Dtos;
+﻿using System.Threading.Tasks;
+using AuthService.Models.Dtos;
+using AuthService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,29 +11,22 @@ namespace AuthService.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Services.AuthService _authService;
+        private readonly IAuthService _authService;
 
-        public AuthController(Services.AuthService authService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Post([FromBody] AuthRequestDto user)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthRequestDto authRequestDto)
         {
-            var token = _authService.Authenticate(user.Login, user.Password);
-
-            if (token == null)
+            var authResponseDto = await _authService.AuthenticateAsync(authRequestDto);
+            if (authResponseDto == null)
                 return BadRequest(new {message = "Username of password incorrect"});
 
-            return Ok(new {Token = token});
-        }
-
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok(_authService.AgentFromLogin(HttpContext.User.Identity?.Name));
+            return Ok(authResponseDto);
         }
     }
 }

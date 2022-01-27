@@ -1,59 +1,40 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using AuthService.Dtos;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
+using AuthService.Helpers;
+using AuthService.Models.Dtos;
 
 namespace AuthService.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
-        private readonly IInsuranceAgents _agents;
+        private readonly IUserService _userService;
 
-        private readonly AppSettings _appSettings;
+        private readonly IPasswordService _passwordService;
 
-        public AuthService(IInsuranceAgents agents, IOptions<AppSettings> appSettings)
+        private readonly IJwtService _jwtService;
+
+        public AuthService(IUserService userService, IPasswordService passwordService, IJwtService jwtService)
         {
-            _agents = agents;
-            _appSettings = appSettings.Value;
+            _userService = userService;
+            _passwordService = passwordService;
+            _jwtService = jwtService;
         }
 
-        public string Authenticate(string login, string pwd)
+        public async Task<AuthResponseDto> AuthenticateAsync(AuthRequestDto authRequestDto)
         {
-            var agent = _agents.FindByLogin(login);
+            var user = await _userService.GetByUsernameAsync(authRequestDto.Username);
+            if (user == null)
+                return default;
 
-            if (agent == null)
-                return null;
+            if (!_passwordService.Matches(authRequestDto.Password, user.PasswordHash))
+                return default;
 
-            if (!agent.PasswordMatches(pwd))
-                return null;
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var token = _jwtService.GenerateToken(user);
+
+            return new AuthResponseDto
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new("sub", agent.Login),
-                    new(ClaimTypes.Name, agent.Login),
-                    new(ClaimTypes.Role, "SALESMAN"),
-                    new(ClaimTypes.Role, "USER"),
-                    new("avatar", agent.Avatar),
-                    new("userType", "SALESMAN"),
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                Token = token
             };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
-        public InsuranceAgentDto AgentFromLogin(string login)
-        {
-            return _agents.FindByLogin(login);
         }
     }
 }

@@ -1,7 +1,12 @@
 using System;
+using AutoMapper;
 using Common.Constants;
 using Common.Models;
-using GreenPipes;
+using Common.Models.Dtos;
+using Common.Models.Entities;
+using Common.Repositories;
+using LSG.GenericCrud.Repositories;
+using LSG.GenericCrud.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using Steeltoe.Discovery.Client;
 using TravelEventProcessService.Consumers;
 
 namespace TravelEventProcessService
@@ -25,37 +32,57 @@ namespace TravelEventProcessService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDiscoveryClient(Configuration);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "TravelEventProcessService", Version = "v1"});
             });
-            
-            services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMqConfiguration"));
 
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<TravelEventConsumer>();
-                
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    var rabbitMqConfiguration = Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+                    var rabbitMqConfiguration =
+                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
 
                     cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
                     {
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-                    cfg.ReceiveEndpoint(QueueConstants.TravelEventQueue, ep =>
-                    {
-                        ep.PrefetchCount = 16;
-                        ep.UseMessageRetry(r => r.Interval(2, 100));
-                        ep.ConfigureConsumer<TravelEventConsumer>(provider);
-                    });
-                }));
+
+                    cfg.ReceiveEndpoint(QueueConstants.TravelEventQueue,
+                        e => { e.ConfigureConsumer<TravelEventConsumer>(context); });
+
+                    cfg.ConfigureEndpoints(context);
+                });
             });
 
             services.AddMassTransitHostedService();
+
+            var automapperConfiguration = new MapperConfiguration(conf =>
+            {
+                conf.CreateMap<TravelEventDto, TravelEvent>();
+                conf.CreateMap<TravelEvent, TravelEventDto>();
+            });
+
+            services.AddSingleton(automapperConfiguration.CreateMapper());
+
+            services.AddScoped<IMongoClient, MongoClient>(_ =>
+                new MongoClient(Configuration.GetConnectionString("MongoDb")));
+
+            services.AddScoped<ICrudRepository, MongoDbRepository>(provider =>
+            {
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
+
+                return new MongoDbRepository(mongoClient, "travel-event");
+            });
+
+            services
+                .AddScoped<ICrudService<Guid, TravelEventDto>, CrudServiceBase<Guid, TravelEventDto>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

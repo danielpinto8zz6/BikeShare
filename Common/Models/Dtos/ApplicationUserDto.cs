@@ -1,20 +1,14 @@
 using System;
-using Common;
+using LSG.GenericCrud.Models;
 
-namespace UserService.Models.Dtos
+namespace Common.Models.Dtos
 {
-    public class ApplicationUserDto : IBaseEntity
+    public class ApplicationUserDto : IEntity<string>
     {
-        public Guid Id { get; set; }
-    
+        public string Id { get; set; }
+
         public string Username { get; set; }
-        
-        public string Password { get; set; }
-        
-        public DateTime CreatedDate { get; set; }
-        
-        public DateTime? ModifiedDate { get; set; }
-        
-        public DateTime? DeletedDate { get; set; }
+
+        public string PasswordHash { get; set; }
     }
 }

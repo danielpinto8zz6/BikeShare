@@ -12,10 +12,18 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.3" />
-        <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.0" />
+        <PackageReference Include="Refit" Version="6.1.15" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="6.1.15" />
+        <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.1" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
 </Project>

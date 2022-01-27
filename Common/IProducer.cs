@@ -4,6 +4,6 @@ namespace Common
 {
     public interface IProducer<T>
     {
-        Task ProduceAsync(T message, string queue);
+        Task ProduceAsync(T message);
     }
 }
