@@ -1,17 +1,16 @@
 using System;
 using System.Threading.Tasks;
-using UserService.Models.Entities;
 using LSG.GenericCrud.DataFillers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace UserService.DataFillers
+namespace Common.DataFillers
 {
-    public class PasswordDataFiller : IEntityDataFiller
+    public class DateDataFiller : IEntityDataFiller
     {
         public bool IsEntitySupported(EntityEntry entry)
         {
-            var result = entry.Entity is ApplicationUser &&
+            var result = entry.Entity is IDateEntity &&
                          entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted;
 
             return result;
@@ -19,11 +18,11 @@ namespace UserService.DataFillers
 
         public Task<object> FillAsync(EntityEntry entry)
         {
-            if (entry.State == EntityState.Added) ((ApplicationUser) entry.Entity).CreatedDate = DateTime.UtcNow;
+            if (entry.State == EntityState.Added) ((IDateEntity) entry.Entity).CreatedDate = DateTime.UtcNow;
 
-            if (entry.State == EntityState.Deleted) ((ApplicationUser) entry.Entity).DeletedDate = DateTime.UtcNow;
-            
-            ((ApplicationUser) entry.Entity).ModifiedDate = DateTime.Now;
+            if (entry.State == EntityState.Deleted) ((IDateEntity) entry.Entity).DeletedDate = DateTime.UtcNow;
+
+            ((IDateEntity) entry.Entity).ModifiedDate = DateTime.UtcNow;
 
             return Task.FromResult(entry.Entity);
         }

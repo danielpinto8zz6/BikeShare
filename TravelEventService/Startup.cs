@@ -37,20 +37,19 @@ namespace TravelEventService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "TravelEventService", Version = "v1"});
             });
 
-            services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMqConfiguration"));
-
             services.AddMassTransit(x =>
             {
-                x.AddBus(_ => Bus.Factory.CreateUsingRabbitMq(config =>
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    var rabbitMqConfiguration = Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
-                    
-                    config.Host(new Uri(rabbitMqConfiguration.Host), h =>
+                    var rabbitMqConfiguration =
+                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+
+                    cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
                     {
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-                }));
+                });
             });
 
             services.AddMassTransitHostedService();

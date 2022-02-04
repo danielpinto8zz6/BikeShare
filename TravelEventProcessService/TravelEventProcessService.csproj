@@ -7,15 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit" Version="7.2.3" />
-        <PackageReference Include="MassTransit.AspNetCore" Version="7.2.3" />
-        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.3" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.3" />
+        <PackageReference Include="Steeltoe.Management.EndpointBase" Version="3.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common\Common.csproj" />
+        <ProjectReference Include="..\Common\Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="publish\web.config" />
+      <_ContentIncludedByDefault Remove="publish\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="publish\appsettings.json" />
+      <_ContentIncludedByDefault Remove="publish\TravelEventProcessService.deps.json" />
+      <_ContentIncludedByDefault Remove="publish\TravelEventProcessService.runtimeconfig.json" />
     </ItemGroup>
 
 </Project>

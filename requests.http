@@ -1,3 +1,23 @@
+POST http://localhost:5040/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "danielpinto",
+    "passwordHash": "danielpinto"
+}
+
+###
+
+POST http://localhost:6060/api/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "danielpinto",
+    "password": "danielpinto"
+}
+
+###
+
 @authToken = {{auth.response.body.$.token}}
 
 # @name auth
@@ -5,13 +25,13 @@ POST http://localhost:6060/api/auth HTTP/1.1
 Content-Type: application/json
 
 {
-    "login": "admin",
-    "password": "admin"
+    "username": "danielpinto",
+    "password": "danielpinto"
 }
 
 ###
 
-GET http://localhost:8099/api/Products
+GET http://localhost:8099/api/Users
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -29,13 +49,13 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-POST  http://localhost:5040/api/Users
+POST  http://localhost:8099/api/Users
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
     "username": "danielpinto",
-    "password": "pinto"
+    "password": "danielpinto"
 }
 
 ###
@@ -45,6 +65,51 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "Longitude": 25,
+    "Longitude": 27,
     "Latitude": 12.1
+}
+
+###
+
+POST http://localhost:5050/api/Bikes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "brand": "renault",
+  "model": "clio",
+  "stats": {
+    "chargeLevel": 100,
+    "serviceMinutes": 10
+  },
+  "coordinates": {
+    "latitude": 41.2371735,     
+    "longitude": -8.1393132
+  }
+}
+
+
+###
+
+GET http://localhost:5050/api/Bikes/nearby?coordinates.latitude=41.2371735&coordinates.longitude=-8.142685&radius=100&onlyAvailable=false HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET  http://localhost:5050/api/Bikes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### Create Rental 
+
+POST http://localhost:5060/api/rentals
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "id": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
+  "bikeId": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
+  "bikeKey": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
+  "username": "danielpinto"
 }

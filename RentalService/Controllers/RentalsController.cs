@@ -1,8 +1,8 @@
 ﻿using System;
+using Common.Models.Dtos;
 using LSG.GenericCrud.Controllers;
-using LSG.GenericCrud.Services;
 using Microsoft.AspNetCore.Mvc;
-using RentalService.Models.Dto;
+using RentalService.Services;
 
 namespace RentalService.Controllers
 {
@@ -10,7 +10,7 @@ namespace RentalService.Controllers
     [Route("api/[controller]")]
     public class RentalsController : CrudControllerBase<Guid, RentalDto>
     {
-        public RentalsController(ICrudService<Guid, RentalDto> service) : base(service)
+        public RentalsController(IRentalService service) : base(service)
         {
         }
     }

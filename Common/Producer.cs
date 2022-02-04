@@ -1,30 +1,20 @@
-using System;
 using System.Threading.Tasks;
-using Common.Models;
 using MassTransit;
-using Microsoft.Extensions.Options;
 
 namespace Common
 {
     public class Producer<T> : IProducer<T>
     {
-        private readonly IBus _bus;
-
-        private readonly RabbitMqConfiguration _rabbitMqConfiguration;
-
-        public Producer(IBus bus, IOptions<RabbitMqConfiguration> rabbitMqConfiguration)
+        private readonly IPublishEndpoint _publishEndpoint;
+        
+        public Producer(IPublishEndpoint publishEndpoint)
         {
-            _bus = bus;
-            _rabbitMqConfiguration = rabbitMqConfiguration.Value;
+            _publishEndpoint = publishEndpoint;
         }
 
-        public async Task ProduceAsync(T value, string queue)
+        public Task ProduceAsync(T value)
         {
-            var uri = new Uri($"{_rabbitMqConfiguration.Host}/{queue}");
-            
-            var endPoint = await _bus.GetSendEndpoint(uri);
-
-            await endPoint.Send(value);
+            return _publishEndpoint.Publish(value);
         }
     }
 }

@@ -1,10 +1,12 @@
 using System;
+using AutoMapper;
 using Common;
-using LSG.GenericCrud.Models;
+using Common.Enums;
+using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace BikeService.Models.Entities
 {
-    public class Bike : IEntity<Guid>, IBaseEntity
+    public class Bike : IBaseEntity
     {
         public Guid Id { get; set; }
 
@@ -12,10 +14,18 @@ namespace BikeService.Models.Entities
 
         public string Model { get; set; }
 
+        // db.Bike.createIndex( { Coordinates : "2dsphere" } )
+        public GeoJson2DGeographicCoordinates Coordinates { get; set; }
+        
+        public BikeStatus Status { get; set; }
+
+        [IgnoreMap]
         public DateTime CreatedDate { get; set; }
 
-        public DateTime ModifiedDate { get; set; }
+        [IgnoreMap]
+        public DateTime? ModifiedDate { get; set; }
 
-        public DateTime DeletedDate { get; set; }
+        [IgnoreMap]
+        public DateTime? DeletedDate { get; set; }
     }
 }

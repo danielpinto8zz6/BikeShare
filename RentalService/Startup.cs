@@ -1,9 +1,15 @@
 using System;
 using AutoMapper;
-using LSG.GenericCrud.Dto.Services;
+using Common;
+using Common.DataFillers;
+using Common.Events;
+using Common.Models;
+using Common.Models.Dtos;
+using LSG.GenericCrud.DataFillers;
 using LSG.GenericCrud.Helpers;
 using LSG.GenericCrud.Repositories;
 using LSG.GenericCrud.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +18,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RentalService.Data;
-using RentalService.Models.Dto;
 using RentalService.Models.Entities;
+using RentalService.Services;
 
 namespace RentalService
 {
@@ -35,11 +41,12 @@ namespace RentalService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "RentalService", Version = "v1"});
             });
 
-            services.AddScoped<ICrudService<Guid, RentalDto>, CrudServiceBase<Guid, RentalDto, Rental>>();
+            services.AddScoped<ICrudService<Guid, Rental>, CrudServiceBase<Guid, Rental>>();
+            services.AddScoped<IRentalService, Services.RentalService>();
 
             services.AddTransient<IDbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(opt =>
-                opt.UseInMemoryDatabase("RentalService"));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
 
             // inject needed service and repository layers
             services.AddCrud();
@@ -51,6 +58,27 @@ namespace RentalService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
+
+            services.AddTransient<IEntityDataFiller, DateDataFiller>();
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitMqConfiguration =
+                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+
+                    cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
+                    {
+                        h.Username(rabbitMqConfiguration.Username);
+                        h.Password(rabbitMqConfiguration.Password);
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            services.AddScoped<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,6 +98,8 @@ namespace RentalService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            app.InitializeDatabase<ApplicationDbContext>();
         }
     }
 }

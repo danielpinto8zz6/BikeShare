@@ -1,0 +1,5 @@
+kubectl create secret docker-registry gitlab-auth \
+--docker-server=https://registry.gitlab.com \
+--docker-username=danielpinto8zz6 \
+--docker-password=wrxK98*p5UwVta \
+--docker-email=danielpinto8zz6@gmail.com

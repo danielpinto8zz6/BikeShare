@@ -29,11 +29,11 @@ namespace AgentPortalApiGateway
                 {
                     config
                         .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
-                        .AddJsonFile("appsettings.json", true, true)
+                        .AddJsonFile("appsettings.json", true, false)
                         .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true,
-                            true)
+                            false)
                         .AddJsonFile("ocelot.json", false, false)
-                        .AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
+                        .AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, false)
                         .AddEnvironmentVariables();
                 })
                 .ConfigureServices(services =>
