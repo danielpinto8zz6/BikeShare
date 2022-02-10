@@ -4,7 +4,7 @@ using Common.Models.Dtos;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Obvs.Logging;
+using NotificationService.Services;
 
 namespace NotificationService.Consumers;
 
@@ -12,15 +12,20 @@ public class NotificationConsumer : IConsumer<NotificationDto>
 {
     private readonly ILogger<NotificationConsumer> _logger;
 
-    public NotificationConsumer(ILogger<NotificationConsumer> logger)
+    private readonly INotificationService _notificationService;
+
+    public NotificationConsumer(
+        ILogger<NotificationConsumer> logger,
+        INotificationService notificationService)
     {
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     public Task Consume(ConsumeContext<NotificationDto> context)
     {
         _logger.LogInformation(JsonConvert.SerializeObject(context.Message));
-        
-        return Task.CompletedTask;
+
+        return _notificationService.SendNotificationAsync(context.Message);
     }
 }

@@ -56,7 +56,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .Then(c => UpdateSagaState(c.Instance, c.Data.Rental))
             .Then(c => _logger.LogInformation($"Bike reserved to {c.Data.CorrelationId} received"))
             .Then(c => UpdateRental(c.Data.Rental))
-            .ThenAsync(c => SendRentalStartNotificationAsync(c))
+            .ThenAsync(SendRentalStartNotificationAsync)
             .ThenAsync(c => SendCommand<IUnlockBike>("rabbitmq://192.168.1.199/bike-unlock", c));
 
     private async Task SendRentalStartNotificationAsync(BehaviorContext<RentalState, IRentalMessage> context)
@@ -65,8 +65,8 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         {
             Username = context.Data.Rental.Username,
             Type = nameof(RentalDto),
-            Message = "Enjoy your ride",
-            Subject = "Rental started",
+            Body = "Enjoy your ride",
+            Title = "Rental started",
             Reason = "rental-started",
             RentalId = context.Data.Rental.Id
         };

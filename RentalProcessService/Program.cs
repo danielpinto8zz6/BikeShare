@@ -1,8 +1,6 @@
 using Common;
 using Common.Events;
 using Common.Models;
-using Common.Models.Dtos;
-using Common.Services;
 using MassTransit;
 using RentalProcessorService.Saga;
 using RentalProcessorService.Services;

@@ -1,6 +1,5 @@
 apiVersion: apps/v1
 kind: Deployment
-namespace: rabbitmq
 metadata:
   name: rabbitmq-deploy
 spec:
@@ -24,7 +23,6 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-namespace: rabbitmq
 metadata:
   name: rabbitmq-clusterip-srv
 spec:
@@ -43,7 +41,6 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-namespace: rabbitmq
 metadata:
   name: rabbitmq-loadbalancer
 spec:

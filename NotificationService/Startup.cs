@@ -16,6 +16,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NotificationService.Consumers;
+using NotificationService.Gateways;
+using NotificationService.Gateways.Client;
+using NotificationService.Services;
+using Refit;
 
 namespace NotificationService
 {
@@ -36,7 +40,7 @@ namespace NotificationService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "NotificationService", Version = "v1"});
             });
-            
+
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<NotificationConsumer>();
@@ -60,6 +64,16 @@ namespace NotificationService
             });
 
             services.AddMassTransitHostedService();
+
+            var tokenServiceOptions = Configuration.GetSection("TokenService").Get<ServiceOptions>();
+
+            services.AddRefitClient<ITokenClient>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(tokenServiceOptions.BaseUrl));
+            
+            services.AddSingleton<ITokenGateway, TokenGateway>();
+            
+            services.AddSingleton<IMobileMessagingClient, MobileMessagingClient>();
+            services.AddSingleton<INotificationService, Services.NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

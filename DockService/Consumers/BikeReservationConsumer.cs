@@ -24,20 +24,19 @@ namespace DockService.Consumers
 
             var message = context.Message;
 
-            var isBikeDetachedFromDock = false;
+            bool isBikeDetachedFromDock;
 
             try
             {
-                // var dockDto = await _dockService.GetByIdAsync(message.Rental.DockId);
-
-                // isBikeDetachedFromDock = await DetachBikeFromDock(dockDto);
-                isBikeDetachedFromDock = true;
+                var dockDto = await _dockService.GetByIdAsync(message.Rental.DockId);
+                
+                isBikeDetachedFromDock = await DetachBikeFromDock(dockDto);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error updating bike status");
 
-                await SendBikeReservationFailed(context);
+                isBikeDetachedFromDock = false;
             }
 
             if (isBikeDetachedFromDock)

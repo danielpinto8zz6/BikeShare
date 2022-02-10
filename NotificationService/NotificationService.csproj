@@ -6,13 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit" Version="7.2.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Models\Dtos" />
-      <Folder Include="Models\Entities" />
+        <PackageReference Include="FirebaseAdmin" Version="2.2.0" />
+        <PackageReference Include="Refit" Version="6.3.2" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="6.1.15" />
     </ItemGroup>
 
     <ItemGroup>

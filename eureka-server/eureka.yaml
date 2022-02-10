@@ -69,4 +69,4 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 10
       imagePullSecrets: 
-      - name: gitlab-auth
+      - name: registry-credentials

@@ -5,14 +5,18 @@
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/Users/{everything}",
       "ServiceName": "UserService",
-      "UpstreamHttpMethod": [ "Get" ],
-      "FileCacheOptions": { "TtlSeconds": 15 },
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "ApiSecurity",
         "AllowedScopes": []
       },
       "RouteClaimsRequirement": {
-        "userType" : "USER"
+        "userType": "USER"
       }
     },
     {
@@ -20,21 +24,41 @@
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/Users",
       "ServiceName": "UserService",
-      "UpstreamHttpMethod": [ "Get" ],
-      "FileCacheOptions": { "TtlSeconds": 15 },
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "ApiSecurity",
         "AllowedScopes": []
       },
       "RouteClaimsRequirement": {
-        "userType" : "USER"
+        "userType": "USER"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/Users",
+      "ServiceName": "UserService",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
       }
     }
   ],
   "GlobalConfiguration": {
     "RequestIdKey": "OcRequestId",
     "AdministrationPath": "/administration",
-    "UseServiceDiscovery" : true,
-    "ServiceDiscoveryProvider": { "Type": "Eureka", "Host" : "192.168.1.199", "Port" : "8761"}
+    "UseServiceDiscovery": true,
+    "ServiceDiscoveryProvider": {
+      "Type": "Eureka",
+      "Host": "192.168.1.199",
+      "Port": "8761"
+    }
   }
 }

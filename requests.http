@@ -54,8 +54,8 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "username": "danielpinto",
-    "password": "danielpinto"
+    "username": "daniel",
+    "password": "daniel"
 }
 
 ###

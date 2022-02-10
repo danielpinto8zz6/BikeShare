@@ -4,7 +4,7 @@ using LSG.GenericCrud.Models;
 
 namespace Common.Models.Dtos
 {
-    public class BikeDto : IEntity
+    public class BikeDto : IBaseEntity
     {
         public Guid Id { get; set; }
 
@@ -19,5 +19,8 @@ namespace Common.Models.Dtos
         public BikeStatus Status { get; set; }
 
         public CoordinatesDto Coordinates { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public DateTime? DeletedDate { get; set; }
     }
 }

@@ -1,21 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-ENV APP_HOME /opt/app
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
-
-COPY AuthService/*.csproj $APP_HOME/
-RUN cd $APP_HOME && dotnet restore
-
-COPY AuthService/ $APP_HOME/
-RUN cd $APP_HOME && dotnet build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["AuthService/AuthService.csproj", "AuthService/"]
+RUN dotnet restore "AuthService/AuthService.csproj"
+COPY . .
+WORKDIR "/src/AuthService"
+RUN dotnet build "AuthService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-WORKDIR $APP_HOME
-RUN cd $APP_HOME && dotnet publish -c Release -o out
+RUN dotnet publish "AuthService.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-focal AS final
+FROM base AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:6060
-COPY --from=publish /opt/app/out ./
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AuthService.dll"]
