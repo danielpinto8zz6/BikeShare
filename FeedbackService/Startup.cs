@@ -1,8 +1,8 @@
 using System;
 using AutoMapper;
-using Common;
-using Common.DataFillers;
+using Common.Extensions.DataFillers;
 using FeedbackService.Data;
+using FeedbackService.Extensions;
 using FeedbackService.Models.Dtos;
 using FeedbackService.Models.Entities;
 using LSG.GenericCrud.DataFillers;
@@ -66,9 +66,10 @@ namespace FeedbackService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FeedbackService v1"));
             }
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FeedbackService v1"));
 
             app.UseHttpsRedirection();
 

@@ -1,10 +1,9 @@
 using System;
 using AutoMapper;
-using Common.Constants;
 using Common.Models;
+using Common.Models.Constants;
 using Common.Models.Dtos;
-using Common.Models.Entities;
-using Common.Repositories;
+using Common.Services.Repositories;
 using LSG.GenericCrud.Repositories;
 using LSG.GenericCrud.Services;
 using MassTransit;
@@ -17,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
 using TravelEventProcessService.Consumers;
+using TravelEventProcessService.Entities;
 
 namespace TravelEventProcessService
 {
@@ -82,7 +82,7 @@ namespace TravelEventProcessService
             });
 
             services
-                .AddScoped<ICrudService<Guid, TravelEventDto>, CrudServiceBase<Guid, TravelEventDto>>();
+                .AddScoped<ICrudService<Guid, TravelEvent>, CrudServiceBase<Guid, TravelEvent>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,9 +91,10 @@ namespace TravelEventProcessService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TravelEventProcessService v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TravelEventProcessService v1"));
 
             app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
 using Common;
+using Common.Models.Dtos;
 using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace DockService.Models.Entities;

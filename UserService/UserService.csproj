@@ -6,8 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LSG.GenericCrud" Version="5.1.0" />
-        <PackageReference Include="LSG.GenericCrud.Dto" Version="5.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
         <PackageReference Include="Steeltoe.Discovery.ClientBase" Version="3.1.0" />
         <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -15,11 +19,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common\Common.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Models\Dtos" />
+        <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
+        <ProjectReference Include="..\Common.Models\Common.Models.csproj" />
+        <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
     </ItemGroup>
 
 </Project>

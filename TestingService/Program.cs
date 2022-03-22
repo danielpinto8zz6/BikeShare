@@ -1,7 +1,6 @@
-using Common;
-using Common.Events;
 using Common.Models;
 using Common.Models.Dtos;
+using Common.Services;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,9 +40,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

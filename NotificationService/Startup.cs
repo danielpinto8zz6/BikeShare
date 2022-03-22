@@ -20,6 +20,9 @@ using NotificationService.Gateways;
 using NotificationService.Gateways.Client;
 using NotificationService.Services;
 using Refit;
+using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 
 namespace NotificationService
 {
@@ -35,6 +38,8 @@ namespace NotificationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddServiceDiscovery(options => options.UseEureka());
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -67,8 +72,11 @@ namespace NotificationService
 
             var tokenServiceOptions = Configuration.GetSection("TokenService").Get<ServiceOptions>();
 
+            services.AddTransient<DiscoveryHttpMessageHandler>();
+
             services.AddRefitClient<ITokenClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(tokenServiceOptions.BaseUrl));
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(tokenServiceOptions.BaseUrl))
+                .AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
             
             services.AddSingleton<ITokenGateway, TokenGateway>();
             
@@ -82,9 +90,10 @@ namespace NotificationService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NotificationService v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NotificationService v1"));
 
             app.UseHttpsRedirection();
 

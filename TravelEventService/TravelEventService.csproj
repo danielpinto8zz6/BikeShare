@@ -6,11 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.0.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\Common.Models\Common.Models.csproj" />
+      <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
     </ItemGroup>
 
 </Project>

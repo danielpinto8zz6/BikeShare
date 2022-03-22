@@ -1,8 +1,8 @@
 using AutoMapper;
-using Common.DataFillers;
+using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
-using Common.Repositories;
+using Common.Services.Repositories;
 using DockService.Consumers;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
@@ -26,13 +26,9 @@ public static class ServiceExtensions
     public static void SetupServices(this IServiceCollection services,
         ConfigurationManager configuration)
     {
-        services.AddDiscoveryClient(configuration);
-
         services.AddControllers();
         services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"}); });
 
-        services.AddScoped<ICrudService<Guid, DockDto>, CrudServiceBase<Guid, DockDto, Dock>>();
-        services.AddScoped<ICrudService<Guid, Dock>, CrudServiceBase<Guid, Dock>>();
         services.AddScoped<IDockService, Services.DockService>();
         services.AddScoped<IDockRepository, DockRepository>(provider =>
         {
@@ -92,7 +88,5 @@ public static class ServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
-
-        services.AddMassTransitHostedService();
     }
 }

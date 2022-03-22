@@ -17,10 +17,5 @@ namespace AuthService.Services
         {
             return _userGateway.GetByUsernameAsync(username);
         }
-
-        public Task<ApplicationUserDto> CreateAsync(ApplicationUserDto applicationUserDto)
-        {
-            return _userGateway.CreateAsync(applicationUserDto);
-        }
     }
 }

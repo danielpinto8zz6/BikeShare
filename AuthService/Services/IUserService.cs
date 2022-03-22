@@ -6,7 +6,5 @@ namespace AuthService.Services
     public interface IUserService
     {
         Task<ApplicationUserDto> GetByUsernameAsync(string username);
-        
-        Task<ApplicationUserDto> CreateAsync(ApplicationUserDto applicationUserDto);
     }
 }

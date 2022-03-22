@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AuthService.Helpers;
 using AuthService.Models.Dtos;
+using Common.Services;
 
 namespace AuthService.Services
 {

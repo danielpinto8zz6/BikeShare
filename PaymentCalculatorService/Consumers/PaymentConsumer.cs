@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Common;
 using Common.Models.Dtos;
+using Common.Services;
 using MassTransit;
 using Newtonsoft.Json;
 using PaymentCalculatorService.Services;

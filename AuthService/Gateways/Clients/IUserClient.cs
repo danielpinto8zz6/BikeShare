@@ -8,8 +8,5 @@ namespace AuthService.Gateways.Clients
     {
         [Get("/users/{username}")]
         Task<ApplicationUserDto> GetByUsernameAsync(string username);
-
-        [Post("/users")]
-        Task<ApplicationUserDto> CreateAsync([Body] ApplicationUserDto applicationUserDto);
     }
 }

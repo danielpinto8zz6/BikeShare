@@ -1,5 +1,6 @@
 using System;
 using Common;
+using Common.Models.Dtos;
 using LSG.GenericCrud.Models;
 
 namespace UserService.Models.Entities

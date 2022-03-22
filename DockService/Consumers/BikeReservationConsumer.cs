@@ -1,5 +1,7 @@
-using Common.Commands;
-using Common.Events;
+using Common.Models.Commands;
+using Common.Models.Dtos;
+using Common.Models.Enums;
+using Common.Models.Events;
 using DockService.Models.Dtos;
 using DockService.Services;
 using MassTransit;
@@ -30,7 +32,8 @@ namespace DockService.Consumers
             {
                 var dockDto = await _dockService.GetByIdAsync(message.Rental.DockId);
                 
-                isBikeDetachedFromDock = await DetachBikeFromDock(dockDto);
+                //isBikeDetachedFromDock = await DetachBikeFromDock(dockDto);
+                isBikeDetachedFromDock = true;
             }
             catch (Exception e)
             {
@@ -76,6 +79,11 @@ namespace DockService.Consumers
                 context.Message.CorrelationId,
                 context.Message.Rental
             });
+        }
+        
+        private static void UpdateRentalState(RentalDto rentalDto, RentalStatus status)
+        {
+            rentalDto.Status = status;
         }
     }
 }

@@ -1,5 +1,8 @@
+using System.Net.Http;
 using System.Threading.Tasks;
 using NotificationService.Gateways.Client;
+using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 
 namespace NotificationService.Gateways;
 

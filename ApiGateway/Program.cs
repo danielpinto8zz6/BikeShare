@@ -10,6 +10,8 @@ using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Eureka;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 
 namespace AgentPortalApiGateway
 {
@@ -38,6 +40,7 @@ namespace AgentPortalApiGateway
                 })
                 .ConfigureServices(services =>
                 {
+                    services.AddServiceDiscovery(opt => opt.UseEureka());
                     services.AddCors();
                     services.AddAuthentication(x =>
                         {

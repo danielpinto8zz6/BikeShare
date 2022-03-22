@@ -7,7 +7,7 @@ namespace AuthService.Gateways
     public class UserGateway : IUserGateway
     {
         private readonly IUserClient _userClient;
-
+        
         public UserGateway(IUserClient userClient)
         {
             _userClient = userClient;
@@ -16,11 +16,6 @@ namespace AuthService.Gateways
         public Task<ApplicationUserDto> GetByUsernameAsync(string username)
         {
             return _userClient.GetByUsernameAsync(username);
-        }
-
-        public Task<ApplicationUserDto> CreateAsync(ApplicationUserDto applicationUserDto)
-        {
-            return _userClient.CreateAsync(applicationUserDto);
         }
     }
 }

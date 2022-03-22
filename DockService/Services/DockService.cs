@@ -1,21 +1,17 @@
 using AutoMapper;
-using Common.Models.Dtos;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
 using DockService.Repositories;
-using LSG.GenericCrud.Dto.Services;
-using LSG.GenericCrud.Services;
 
 namespace DockService.Services
 {
-    public class DockService : CrudServiceBase<Guid, DockDto, Dock>, IDockService
+    public class DockService : IDockService
     {
         private readonly IDockRepository _repository;
 
         private readonly IMapper _mapper;
 
-        public DockService(ICrudService<Guid, Dock> service, IDockRepository repository, IMapper mapper) : base(service,
-            repository, mapper)
+        public DockService(IDockRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -31,11 +27,44 @@ namespace DockService.Services
             return _mapper.Map<IEnumerable<DockDto>>(result);
         }
 
-        public override async Task<DockDto> UpdateAsync(Guid id, DockDto dto)
+        public async Task<IEnumerable<DockDto>> GetAllAsync()
         {
-            var updatedEntity = await _repository.UpdateAsync(id, _mapper.Map<Dock>(dto));
+            var result = await _repository.GetAllAsync<Guid, Dock>();
 
-            return _mapper.Map<DockDto>(updatedEntity);
+            return _mapper.Map<IEnumerable<DockDto>>(result);
         }
+
+        public async Task<DockDto> GetByIdAsync(Guid id)
+        {
+            var result = await _repository.GetByIdAsync<Guid, Dock>(id);
+
+            return _mapper.Map<DockDto>(result);
+        }
+
+        public async Task<DockDto> CreateAsync(DockDto dockDto)
+        {
+            var result = await _repository.CreateAsync<Guid, Dock>(_mapper.Map<Dock>(dockDto));
+
+            return _mapper.Map<DockDto>(result);
+        }
+
+        public async Task<DockDto> UpdateAsync(Guid id, DockDto dockDto)
+        {
+            var result = await _repository.UpdateAsync(id, _mapper.Map<Dock>(dockDto));
+
+            return _mapper.Map<DockDto>(result);
+        }
+
+        public Task<DockDto> DeleteAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DockDto> CopyAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AutoCommit { get; set; }
     }
 }

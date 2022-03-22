@@ -27,7 +27,9 @@ public class NotificationService : INotificationService
 
     public async Task SendNotificationAsync(NotificationDto notificationDto)
     {
+        _logger.LogInformation($"Getting token for {notificationDto.Username}");
         var token = await _tokenGateway.GetTokenByKeyAsync(notificationDto.Username);
+        _logger.LogInformation($"Token is: {token}");
         if (string.IsNullOrWhiteSpace(token))
         {
             throw new UserTokenNotFoundException(notificationDto.Username);

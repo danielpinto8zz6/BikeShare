@@ -1,0 +1,12 @@
+{
+    "rest-client.environmentVariables": {
+        "$shared": {
+        },
+        "local": {
+            "host": "localhost:8099"
+        },
+        "production": {
+            "host": "192.168.1.199:8099"
+        }
+    }
+}

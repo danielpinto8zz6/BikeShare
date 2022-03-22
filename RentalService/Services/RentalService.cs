@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using Common.Events;
 using Common.Models.Dtos;
+using Common.Models.Events;
 using LSG.GenericCrud.Dto.Services;
 using LSG.GenericCrud.Repositories;
 using LSG.GenericCrud.Services;

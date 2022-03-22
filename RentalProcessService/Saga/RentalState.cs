@@ -1,8 +1,8 @@
-using Automatonymous;
 using Common.Models.Dtos;
-using MassTransit.Saga;
+using Common.Models.Enums;
+using MassTransit;
 
-namespace RentalProcessorService.Saga
+namespace RentalProcessService.Saga
 {
     public class RentalState : SagaStateMachineInstance, ISagaVersion
     {
@@ -14,7 +14,7 @@ namespace RentalProcessorService.Saga
         
         public DateTime Updated { get; set; }
         
-        public string State { get; set; }
+        public int Status { get; set; }
         
         public int Version { get; set; }
     }

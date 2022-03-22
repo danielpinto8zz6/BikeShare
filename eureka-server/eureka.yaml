@@ -47,26 +47,10 @@ spec:
     spec:
       containers:
         - name: eureka
-          image: registry.gitlab.com/danielpinto8zz6/bikeshare/eureka-server:latest
-          imagePullPolicy: Always
+          image: eureka-server:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8761
           env:
             - name: JVM_OPTS
               value: "-Xms1g -Xmx1g"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8761
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8761
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 10
-      imagePullSecrets: 
-      - name: registry-credentials

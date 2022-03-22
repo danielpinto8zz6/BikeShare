@@ -1,4 +1,4 @@
-using Common.Repositories;
+using Common.Services.Repositories;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
 using MongoDB.Driver;

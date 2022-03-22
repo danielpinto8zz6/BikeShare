@@ -1,13 +1,16 @@
-using Common;
-using Common.Events;
 using Common.Models;
+using Common.Models.Events;
+using Common.Services;
 using MassTransit;
-using RentalProcessorService.Saga;
-using RentalProcessorService.Services;
+using RentalProcessService.Saga;
+using RentalProcessService.Services;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddServiceDiscovery(opt => opt.UseEureka());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,7 +38,7 @@ builder.Services.AddMassTransit(x =>
     x.AddSagaStateMachine<RentalStateMachine, RentalState>()
         .MongoDbRepository(r =>
         {
-            r.Connection = "mongodb://adminuser:password123@192.168.1.199:32000";
+            r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
             r.DatabaseName = "sagas";
             r.CollectionName = "sagas";
         });
@@ -43,16 +46,15 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddScoped<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
 
-builder.Services.AddMassTransitHostedService();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

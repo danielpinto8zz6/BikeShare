@@ -1,9 +1,0 @@
-server:
-  port: 8761
-
-eureka:
-  numberRegistrySyncRetries: 1
-  instance:
-    hostname: "localhost"
-  client:
-    registerWithEureka: false

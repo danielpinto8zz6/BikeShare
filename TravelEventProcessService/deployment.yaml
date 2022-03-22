@@ -1,42 +1,37 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: travel-event-process-service
-  labels:
-    app: travel-event-process-service
 spec:
   selector:
-    app: travel-event-process-service
-  type: ClusterIP
+    app:  travel-event-process-service
+  type: LoadBalancer
   ports:
-    - port: 80
-      targetPort: 8700
-
+    - name:  travel-event-process-service-port
+      port: 5060
+      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: travel-event-process-service
-  labels:
-    app: travel-event-process-service
+  name:  travel-event-process-service-deployment
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: travel-event-process-service
+      app:  travel-event-process-service
+      version: v1
+  replicas: 1
   template:
     metadata:
       labels:
-        app: travel-event-process-service
+        app:  travel-event-process-service
+        version: v1
     spec:
       containers:
-        - name: travel-event-process-service
-          image: registry.gitlab.com/danielpinto8zz6/bikeshare/travel-event-process-service:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8700
-          resources:
-            limits:
-              memory: "256Mi"
+      - name:  travel-event-process-service-container
+        image:  travel-event-process-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
       imagePullSecrets: 
-      - name: gitlab-auth
+      - name: registry-credentials

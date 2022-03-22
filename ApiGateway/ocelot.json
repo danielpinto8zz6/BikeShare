@@ -1,10 +1,10 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/Users/{everything}",
+      "DownstreamPathTemplate": "/api/users/{everything}",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/Users/{everything}",
-      "ServiceName": "UserService",
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "ServiceName": "USER-SERVICE",
       "UpstreamHttpMethod": [
         "Get"
       ],
@@ -20,10 +20,10 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Users",
+      "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/Users",
-      "ServiceName": "UserService",
+      "UpstreamPathTemplate": "/api/users",
+      "ServiceName": "USER-SERVICE",
       "UpstreamHttpMethod": [
         "Get"
       ],
@@ -39,15 +39,65 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Users",
+      "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/Users",
-      "ServiceName": "UserService",
+      "UpstreamPathTemplate": "/api/users",
+      "ServiceName": "USER-SERVICE",
       "UpstreamHttpMethod": [
         "Post"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/auth",
+      "ServiceName": "AUTH-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/tokens",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/tokens",
+      "ServiceName": "TOKEN-SERVICE",
+      "UpstreamHttpMethod": [
+        "Put"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/docks/nearby",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/docks/nearby",
+      "ServiceName": "DOCK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
       }
     }
   ],

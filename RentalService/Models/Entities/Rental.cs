@@ -1,18 +1,22 @@
 using System;
-using Common;
-using LSG.GenericCrud.Models;
+using Common.Models.Dtos;
+using Common.Models.Enums;
 
 namespace RentalService.Models.Entities
 {
-    public class Rental : IEntity<Guid>, IBaseEntity
+    public class Rental : IBaseEntity
     {
         public Guid Id { get; set; }
 
+        public Guid DockId { get; set; }
+
         public Guid BikeId { get; set; }
         
-        public Guid BikeKey { get; set; }
+        public string BikeKey { get; set; }
 
-        public Guid UserId { get; set; }
+        public string Username { get; set; }
+        
+        public RentalStatus Status { get; set; }
 
         public DateTime? StartDate { get; set; }
 

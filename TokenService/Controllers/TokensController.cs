@@ -7,7 +7,7 @@ using TokenService.Services;
 namespace TokenService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TokensController : ControllerBase
     {
         private readonly ILogger<TokensController> _logger;

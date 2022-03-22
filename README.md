@@ -11,3 +11,6 @@
 | rental-process-service | 5070 |
 | notification-service | 5080 |
 | token-service | 5090 |
+| dummy-dock-service | 6000 |
+| dock-service | 6010 |
+| bike-validate-service | 6020 |
