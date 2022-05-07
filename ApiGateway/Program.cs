@@ -78,6 +78,7 @@ namespace AgentPortalApiGateway
                         .AllowAnyHeader()
                         .AllowCredentials()
                     );
+                    app.UseMiddleware<RequestResponseLoggingMiddleware>();
                     app.UseOcelot().Wait();
                 })
                 .Build();

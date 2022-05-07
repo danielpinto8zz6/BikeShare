@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Refit;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
@@ -36,15 +37,20 @@ namespace AuthService
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
             var appSettings = appSettingsSection.Get<AppSettings>();
-            
+
             services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"});
+            });
+
             services.AddJwtAuthentication(appSettings);
 
             services.AddSingleton<IAuthService, Services.AuthService>();
             services.AddSingleton<IPasswordService, PasswordService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IJwtService, JwtService>();
-            
+
             services.AddSingleton<IUserGateway, UserGateway>();
 
             var userServiceOptions = Configuration.GetSection("UserServiceOptions").Get<UserServiceOptions>();
@@ -68,9 +74,9 @@ namespace AuthService
             {
                 app.UseHsts();
             }
-            
+
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BikeService v1"));
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using Common.Models.Commands;
+using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
 using Common.Models.Events;
+using Common.Models.Events.Rental;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +27,7 @@ namespace BikeValidateService.Consumers
 
         public async Task Consume(ConsumeContext<IValidateBike> context)
         {
-            _logger.LogInformation($"Validate bike to {context.Message.CorrelationId} was received");
+            _logger.LogInformation($"Validate bike to {context.CorrelationId} was received");
 
             // var isBikeValid = await _bikeValidateService.IsBikeValidAsync(context.Message.Rental);
             var isBikeValid = true;
@@ -37,13 +39,13 @@ namespace BikeValidateService.Consumers
             if (isBikeValid)
                 await context.Publish<IBikeValidated>(new
                 {
-                    context.Message.CorrelationId,
+                    context.CorrelationId,
                     context.Message.Rental
                 });
             else
                 await context.Publish<IBikeValidationFailed>(new
                 {
-                    context.Message.CorrelationId,
+                    context.CorrelationId,
                     context.Message.Rental
                 });
         }

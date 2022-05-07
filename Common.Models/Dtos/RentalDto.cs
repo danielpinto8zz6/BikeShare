@@ -7,7 +7,9 @@ namespace Common.Models.Dtos
     {
         public Guid Id { get; set; }
 
-        public Guid DockId { get; set; }
+        public Guid? OriginDockId { get; set; }
+        
+        public Guid? DestinationDockId { get; set; }
 
         public Guid BikeId { get; set; }
         
@@ -20,5 +22,7 @@ namespace Common.Models.Dtos
         public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
+
+        public Guid? PaymentId { get; set; }
     }
 }

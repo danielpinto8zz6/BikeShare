@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Common.Models.Dtos;
 using Common.Models.Events;
+using Common.Models.Events.Rental;
 using LSG.GenericCrud.Dto.Services;
 using LSG.GenericCrud.Repositories;
 using LSG.GenericCrud.Services;
@@ -41,7 +42,8 @@ public class RentalService : CrudServiceBase<Guid, RentalDto, Rental>, IRentalSe
 
         await _publishEndpoint.Publish<IRentalSubmitted>(new
         {
-            CorrelationId = Guid.NewGuid(), Rental = result
+            CorrelationId = Guid.NewGuid(),
+            Rental = result
         });
 
         return rentalDto;

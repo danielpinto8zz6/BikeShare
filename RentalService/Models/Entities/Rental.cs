@@ -8,8 +8,10 @@ namespace RentalService.Models.Entities
     {
         public Guid Id { get; set; }
 
-        public Guid DockId { get; set; }
-
+        public Guid? OriginDockId { get; set; }
+        
+        public Guid? DestinationDockId { get; set; }
+        
         public Guid BikeId { get; set; }
         
         public string BikeKey { get; set; }
@@ -22,6 +24,8 @@ namespace RentalService.Models.Entities
 
         public DateTime? EndDate { get; set; }
         
+        public Guid? PaymentId { get; set; }
+
         public DateTime CreatedDate { get; set; }
         
         public DateTime? ModifiedDate { get; set; }

@@ -45,8 +45,6 @@ namespace TravelEventService
                 });
             });
 
-            services.AddMassTransitHostedService();
-
             services.AddScoped<IProducer<TravelEventDto>, Producer<TravelEventDto>>();
         }
 

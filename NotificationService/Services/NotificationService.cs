@@ -16,8 +16,8 @@ public class NotificationService : INotificationService
     private readonly ILogger<NotificationService> _logger;
 
     public NotificationService(
-        ITokenGateway tokenGateway, 
-        IMobileMessagingClient mobileMessagingClient, 
+        ITokenGateway tokenGateway,
+        IMobileMessagingClient mobileMessagingClient,
         ILogger<NotificationService> logger)
     {
         _tokenGateway = tokenGateway;
@@ -38,15 +38,19 @@ public class NotificationService : INotificationService
         var message = new Message
         {
             Token = token,
-            Notification = new Notification
-            {
-                Body = notificationDto.Body,
-                Title = notificationDto.Title
-            }
+            Notification = string.IsNullOrWhiteSpace(notificationDto.Title)
+                ? null
+                : new Notification
+                {
+                    Body = notificationDto.Body,
+                    Title = notificationDto.Title,
+                    ImageUrl = notificationDto.ImageUrl
+                },
+            Data = notificationDto.Data
         };
-        
+
         var response = await _mobileMessagingClient.Instance.SendAsync(message).ConfigureAwait(false);
-        
+
         _logger.LogInformation("Successfully sent message: " + response);
     }
 }

@@ -1,4 +1,3 @@
-using Common;
 using Common.Models.Dtos;
 using MongoDB.Driver.GeoJsonObjectModel;
 
@@ -10,7 +9,9 @@ public class Dock : IBaseEntity
     
     public Guid? BikeId { get; set; }
 
-    public GeoJson2DGeographicCoordinates Coordinates { get; set; }
+    public GeoJson2DGeographicCoordinates? Coordinates { get; set; }
+
+    public string? Address { get; set; }
     
     public DateTime CreatedDate { get; set; }
     

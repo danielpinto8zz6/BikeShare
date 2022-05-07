@@ -67,9 +67,7 @@ namespace NotificationService
                     cfg.ConfigureEndpoints(context);
                 });
             });
-
-            services.AddMassTransitHostedService();
-
+            
             var tokenServiceOptions = Configuration.GetSection("TokenService").Get<ServiceOptions>();
 
             services.AddTransient<DiscoveryHttpMessageHandler>();

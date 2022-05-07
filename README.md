@@ -14,3 +14,5 @@
 | dummy-dock-service | 6000 |
 | dock-service | 6010 |
 | bike-validate-service | 6020 |
+| payment-service | 6030 |
+| payment-calculator-service | 6040 |

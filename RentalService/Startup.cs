@@ -4,6 +4,7 @@ using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Models.Events;
+using Common.Models.Events.Rental;
 using Common.Services;
 using LSG.GenericCrud.DataFillers;
 using LSG.GenericCrud.Helpers;
@@ -20,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using RentalService.Data;
 using RentalService.Extensions;
 using RentalService.Models.Entities;
+using RentalService.Saga;
 using RentalService.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
@@ -78,11 +80,21 @@ namespace RentalService
                         h.Password(rabbitMqConfiguration.Password);
                     });
 
+                    cfg.ReceiveEndpoint("rental", e => { e.ConfigureSaga<RentalState>(context); });
+
                     cfg.ConfigureEndpoints(context);
                 });
+                
+                x.AddSagaStateMachine<RentalStateMachine, RentalState>()
+                    .MongoDbRepository(r =>
+                    {
+                        r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
+                        r.DatabaseName = "sagas";
+                        r.CollectionName = "sagas";
+                    });
             });
 
-            services.AddScoped<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
+            services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

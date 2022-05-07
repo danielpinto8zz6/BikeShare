@@ -18,7 +18,7 @@ namespace DockService.Controllers
         }
 
         [HttpGet("nearby")]
-        public virtual async Task<ActionResult<IEnumerable<BikeDto>>> GetNearBy(
+        public virtual async Task<ActionResult<IEnumerable<DockDto>>> GetNearBy(
             [FromQuery] NearByDocksRequestDto nearByBikesRequestDto)
         {
             var result = await _service.GetNearByDocksAsync(nearByBikesRequestDto);

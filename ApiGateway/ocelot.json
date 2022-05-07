@@ -99,6 +99,28 @@
       "RouteClaimsRequirement": {
         "userType": "USER"
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/rentals",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/rentals",
+      "ServiceName": "RENTAL-SERVICE",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
     }
   ],
   "GlobalConfiguration": {

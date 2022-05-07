@@ -1,5 +1,9 @@
 using Common.Models.Commands;
+using Common.Models.Commands.Rental;
+using Common.Models.Dtos;
+using Common.Models.Enums;
 using Common.Models.Events;
+using Common.Models.Events.Rental;
 using DummyDockService.Models.Dtos;
 using LSG.GenericCrud.Exceptions;
 using LSG.GenericCrud.Services;
@@ -14,7 +18,7 @@ public class BikeUnlockConsumer : IConsumer<IUnlockBike>
     private readonly ILogger<BikeUnlockConsumer> _logger;
 
     public BikeUnlockConsumer(
-        ICrudService<Guid, DummyDockDto> service, 
+        ICrudService<Guid, DummyDockDto> service,
         ILogger<BikeUnlockConsumer> logger)
     {
         _service = service;
@@ -24,28 +28,39 @@ public class BikeUnlockConsumer : IConsumer<IUnlockBike>
     public async Task Consume(ConsumeContext<IUnlockBike> context)
     {
         var rentalDto = context.Message.Rental;
-        
-        DummyDockDto dummyDockDto;
 
         try
         {
-            dummyDockDto = await _service.GetByIdAsync(rentalDto.DockId);
-        }
-        catch (EntityNotFoundException ex)
-        {
-            _logger.LogError(ex, "Dock with identifier: {rentalDto.DockId} not found!", rentalDto.DockId);
-            
-            return;
-        }
+            var dummyDockDto = await _service.GetByIdAsync(rentalDto.OriginDockId ?? throw new NullReferenceException());
 
-        dummyDockDto.BikeId = null;
-        
-        await _service.UpdateAsync(dummyDockDto.Id, dummyDockDto);
-        
-        await context.Publish<IBikeUnlocked>(new
+            dummyDockDto.BikeId = null;
+
+            await _service.UpdateAsync(dummyDockDto.Id, dummyDockDto);
+
+            UpdateRentalState(context.Message.Rental, RentalStatus.BikeUnlocked);
+
+            await context.Publish<IBikeUnlocked>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
+        }
+        catch (Exception ex)
         {
-            context.Message.CorrelationId,
-            context.Message.Rental
-        });
+            _logger.LogError(ex, "Dock with identifier: {rentalDto.OriginDockId} not found!", rentalDto.OriginDockId);
+
+            UpdateRentalState(context.Message.Rental, RentalStatus.BikeUnlockFailed);
+
+            await context.Publish<IBikeUnlockFailed>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
+        }
+    }
+
+    private static void UpdateRentalState(RentalDto rentalDto, RentalStatus status)
+    {
+        rentalDto.Status = status;
     }
 }

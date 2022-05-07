@@ -1,8 +1,5 @@
 using System;
 using Common.Models;
-using Common.Models.Constants;
-using Common.Models.Dtos;
-using Common.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PaymentCalculatorService.Consumers;
+using PaymentCalculatorService.Services;
 
 namespace PaymentCalculatorService
 {
@@ -34,7 +32,7 @@ namespace PaymentCalculatorService
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<PaymentConsumer>();
+                x.AddConsumer<PaymentCalculateConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -47,16 +45,14 @@ namespace PaymentCalculatorService
                         h.Password(rabbitMqConfiguration.Password);
                     });
 
-                    cfg.ReceiveEndpoint(QueueConstants.PaymentQueue,
-                        e => { e.ConfigureConsumer<PaymentConsumer>(context); });
+                    cfg.ReceiveEndpoint("payment-calculate",
+                        e => { e.ConfigureConsumer<PaymentCalculateConsumer>(context); });
 
                     cfg.ConfigureEndpoints(context);
                 });
             });
 
-            services.AddMassTransitHostedService();
-
-            services.AddScoped<IProducer<InvoiceDto>, Producer<InvoiceDto>>();
+            services.AddScoped<IPaymentCalculatorService, Services.PaymentCalculatorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

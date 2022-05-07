@@ -7,7 +7,7 @@ namespace PaymentCalculatorService.Services
     {
         public double Calculate(PaymentDto paymentDto)
         {
-            throw new NotImplementedException();
+            return 2;
         }
     }
 }

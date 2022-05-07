@@ -8,13 +8,12 @@ namespace Common.Models.Dtos
 
         public string Title { get; set; }
 
-        public string Reason { get; set; }
-        
-        public string Type { get; set; }
+        public string ImageUrl { get; set; }
+
+        public IReadOnlyDictionary<string, string> Data { get; set; }
     }
 
     public class RentalStartedNotificationDto : NotificationDto
-
     {
         public Guid RentalId { get; set; }
     }

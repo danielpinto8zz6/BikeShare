@@ -12,6 +12,7 @@
         <PackageReference Include="LSG.GenericCrud" Version="5.1.0" />
         <PackageReference Include="LSG.GenericCrud.Dto" Version="5.1.0" />
         <PackageReference Include="MassTransit.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Mongo.CRUD" Version="1.2.0" />
         <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
     </ItemGroup>
 </Project>

@@ -44,7 +44,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-POST http://localhost:5050/api/Bikes
+POST http://{{host}}/api/Bikes
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -76,13 +76,12 @@ Authorization: Bearer {{authToken}}
 
 ### Create Rental 
 
-POST http://localhost:5060/api/rentals
+POST http://localhost:5050/api/rentals
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+UserId: danielpinto1
 
 {
-  "id": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
-  "bikeId": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
-  "bikeKey": "9cbd1e9a-7465-4aa3-a1fc-55daa8b67b1d",
-  "username": "danielpinto"
+  "bikeId": "809b4d1e-23e2-41fb-bc23-069254e32b0f",
+  "username": "danielpinto1"
 }

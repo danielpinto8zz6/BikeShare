@@ -8,7 +8,9 @@ public class DockDto : IBaseEntity
     
     public Guid? BikeId { get; set; }
 
-    public CoordinatesDto Coordinates { get; set; }
+    public CoordinatesDto? Coordinates { get; set; }
+
+    public string? Address { get; set; }
     
     public DateTime CreatedDate { get; set; }
     

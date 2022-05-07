@@ -2,6 +2,8 @@ using AutoMapper;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
 using DockService.Repositories;
+using Nominatim.API.Geocoders;
+using Nominatim.API.Models;
 
 namespace DockService.Services
 {
@@ -11,32 +13,64 @@ namespace DockService.Services
 
         private readonly IMapper _mapper;
 
-        public DockService(IDockRepository repository, IMapper mapper)
+        private readonly ReverseGeocoder _reverseGeocoder;
+
+        public DockService(IDockRepository repository, IMapper mapper, ReverseGeocoder reverseGeocoder)
         {
             _repository = repository;
             _mapper = mapper;
+            _reverseGeocoder = reverseGeocoder;
         }
 
         public async Task<IEnumerable<DockDto>> GetNearByDocksAsync(NearByDocksRequestDto nearByDocksRequestDto)
         {
-            var result = await _repository.GetNearByDocksAsync(nearByDocksRequestDto);
+            var results = await _repository.GetNearByDocksAsync(nearByDocksRequestDto);
 
             if (nearByDocksRequestDto.OnlyAvailable)
-                result = result.Where(item => item.BikeId != null);
+                results = results.Where(item => item.BikeId != null);
 
-            return _mapper.Map<IEnumerable<DockDto>>(result);
+            foreach (var dock in results)
+            {
+                if (dock.Coordinates != null)
+                    dock.Address = await GetAddressFromCoordinatesAsync(
+                        dock.Coordinates.Latitude, dock.Coordinates.Longitude);
+            }
+
+            return _mapper.Map<IEnumerable<DockDto>>(results);
+        }
+
+        public async Task<DockDto> GetByBikeId(Guid bikeId)
+        {
+            var result = await _repository.GetByBikeId(bikeId);
+
+            if (result.Coordinates != null)
+                result.Address = await GetAddressFromCoordinatesAsync(
+                    result.Coordinates.Latitude, result.Coordinates.Longitude);
+
+            return _mapper.Map<DockDto>(result);
         }
 
         public async Task<IEnumerable<DockDto>> GetAllAsync()
         {
-            var result = await _repository.GetAllAsync<Guid, Dock>();
+            var results = await _repository.GetAllAsync<Guid, Dock>();
 
-            return _mapper.Map<IEnumerable<DockDto>>(result);
+            foreach (var dock in results)
+            {
+                if (dock.Coordinates != null)
+                    dock.Address = await GetAddressFromCoordinatesAsync(
+                        dock.Coordinates.Latitude, dock.Coordinates.Longitude);
+            }
+
+            return _mapper.Map<IEnumerable<DockDto>>(results);
         }
 
         public async Task<DockDto> GetByIdAsync(Guid id)
         {
             var result = await _repository.GetByIdAsync<Guid, Dock>(id);
+
+            if (result.Coordinates != null)
+                result.Address = await GetAddressFromCoordinatesAsync(
+                    result.Coordinates.Latitude, result.Coordinates.Longitude);
 
             return _mapper.Map<DockDto>(result);
         }
@@ -55,9 +89,11 @@ namespace DockService.Services
             return _mapper.Map<DockDto>(result);
         }
 
-        public Task<DockDto> DeleteAsync(Guid id)
+        public async Task<DockDto> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await _repository.DeleteAsync<Guid, Dock>(id);
+
+            return _mapper.Map<DockDto>(result);
         }
 
         public Task<DockDto> CopyAsync(Guid id)
@@ -66,5 +102,25 @@ namespace DockService.Services
         }
 
         public bool AutoCommit { get; set; }
+
+        private async Task<string?> GetAddressFromCoordinatesAsync(double latitude, double longitude)
+        {
+            var reverseGeocodeRequest = new ReverseGeocodeRequest
+            {
+                Latitude = latitude,
+                Longitude = longitude
+            };
+
+            try
+            {
+                var reverseGeocode = await _reverseGeocoder.ReverseGeocode(reverseGeocodeRequest);
+
+                return reverseGeocode?.DisplayName;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
     }
 }

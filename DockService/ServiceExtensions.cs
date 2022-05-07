@@ -17,6 +17,7 @@ using MassTransit;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
+using Nominatim.API.Geocoders;
 using Steeltoe.Discovery.Client;
 
 namespace DockService;
@@ -43,19 +44,27 @@ public static class ServiceExtensions
         {
             conf.CreateMap<DockDto, Dock>()
                 .ForMember(item => item.Coordinates, expression => expression.MapFrom(src =>
-                    new GeoJson2DGeographicCoordinates(src.Coordinates.Longitude, src.Coordinates.Latitude)));
+                    src.Coordinates != null
+                        ? new GeoJson2DGeographicCoordinates(src.Coordinates.Longitude,
+                            src.Coordinates.Latitude)
+                        : null));
 
             conf.CreateMap<Dock, DockDto>()
                 .ForMember(item => item.Coordinates, expression => expression.MapFrom(src =>
-                    new CoordinatesDto
-                    {
-                        Latitude = src.Coordinates.Latitude, Longitude = src.Coordinates.Longitude
-                    }));
+                    src.Coordinates != null
+                        ? new CoordinatesDto
+                        {
+                            Latitude = src.Coordinates.Latitude,
+                            Longitude = src.Coordinates.Longitude
+                        }
+                        : null));
         });
 
         services.AddSingleton(automapperConfiguration.CreateMapper());
 
         services.AddTransient<IEntityDataFiller, DateDataFiller>();
+
+        services.AddTransient<ReverseGeocoder>();
 
         services.AddScoped<IMongoClient, MongoClient>(_ =>
             new MongoClient(configuration.GetConnectionString("MongoDb")));
@@ -70,6 +79,7 @@ public static class ServiceExtensions
         services.AddMassTransit(x =>
         {
             x.AddConsumer<BikeReservationConsumer>();
+            x.AddConsumer<BikeAttachConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -84,6 +94,9 @@ public static class ServiceExtensions
 
                 cfg.ReceiveEndpoint("bike-reservation",
                     e => { e.ConfigureConsumer<BikeReservationConsumer>(context); });
+
+                cfg.ReceiveEndpoint("bike-attach",
+                    e => { e.ConfigureConsumer<BikeAttachConsumer>(context); });
 
                 cfg.ConfigureEndpoints(context);
             });

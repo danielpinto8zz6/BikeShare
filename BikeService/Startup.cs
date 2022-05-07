@@ -92,8 +92,6 @@ namespace BikeService
 
             services.AddScoped<IProducer<NotificationDto>, Producer<NotificationDto>>();
             services.AddScoped<IProducer<BikeUnlockDto>, Producer<BikeUnlockDto>>();
-
-            services.AddMassTransitHostedService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

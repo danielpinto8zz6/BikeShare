@@ -40,7 +40,7 @@ namespace RentalService.Data.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("DockId")
+                    b.Property<Guid?>("DestinationDockId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EndDate")
@@ -48,6 +48,12 @@ namespace RentalService.Data.Migrations
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("OriginDockId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");

@@ -61,8 +61,6 @@ namespace TravelEventProcessService
                 });
             });
 
-            services.AddMassTransitHostedService();
-
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
                 conf.CreateMap<TravelEventDto, TravelEvent>();

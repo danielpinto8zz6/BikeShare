@@ -39,13 +39,13 @@ namespace Common.Services.Repositories
             return mongoCollection.Find(filter).FirstOrDefault();
         }
 
-        public async Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
+        public Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
             var filter = Builders<T2>.Filter.Eq("_id", id);
 
-            return await mongoCollection.Find(filter).FirstOrDefaultAsync();
+            return mongoCollection.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<T2> CreateAsync<T1, T2>(T2 entity) where T2 : class, IEntity<T1>, new()

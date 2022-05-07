@@ -1,7 +1,9 @@
 using Common.Models.Commands;
+using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
 using Common.Models.Events;
+using Common.Models.Events.Rental;
 using DockService.Models.Dtos;
 using DockService.Services;
 using MassTransit;
@@ -22,52 +24,42 @@ namespace DockService.Consumers
 
         public async Task Consume(ConsumeContext<IReserveBike> context)
         {
-            _logger.LogInformation($"Reserve bike to {context.Message.CorrelationId} was received");
-
-            var message = context.Message;
-
-            bool isBikeDetachedFromDock;
-
+            _logger.LogInformation($"Reserve bike to {context.CorrelationId} was received");
+            
             try
             {
-                var dockDto = await _dockService.GetByIdAsync(message.Rental.DockId);
+                var dockDto = await _dockService.GetByBikeId(context.Message.Rental.BikeId);
+
+                context.Message.Rental.OriginDockId = dockDto.Id;
                 
-                //isBikeDetachedFromDock = await DetachBikeFromDock(dockDto);
-                isBikeDetachedFromDock = true;
+                await DetachBikeFromDock(dockDto);
+                
+                UpdateRentalState(context.Message.Rental, RentalStatus.BikeReserved);
+
+                await SendBikeReserved(context);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Error updating bike status");
 
-                isBikeDetachedFromDock = false;
-            }
+                UpdateRentalState(context.Message.Rental, RentalStatus.BikeReservationFailed);                
 
-            if (isBikeDetachedFromDock)
-            {
-                await SendBikeReserved(context);
-            }
-            else
-            {
                 await SendBikeReservationFailed(context);
             }
         }
         
-        private async Task<bool> DetachBikeFromDock(DockDto dockDto)
+        private async Task DetachBikeFromDock(DockDto dockDto)
         {
-            if (dockDto.BikeId == null) return false;
-
             dockDto.BikeId = null;
 
             await _dockService.UpdateAsync(dockDto.Id, dockDto);
-
-            return true;
         }
         
         private static async Task SendBikeReservationFailed(ConsumeContext<IReserveBike> context)
         {
             await context.Publish<IBikeReservationFailed>(new
             {
-                context.Message.CorrelationId,
+                context.CorrelationId,
                 context.Message.Rental
             });
         }
@@ -76,7 +68,7 @@ namespace DockService.Consumers
         {
             await context.Publish<IBikeReserved>(new
             {
-                context.Message.CorrelationId,
+                context.CorrelationId,
                 context.Message.Rental
             });
         }

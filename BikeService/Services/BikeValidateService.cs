@@ -22,13 +22,15 @@ namespace BikeService.Services
                 throw new Exception();
             }
 
-            var bike = await _bikeService.GetByIdAsync(rentalDto.DockId);
+            var bike = await _bikeService.GetByIdAsync(rentalDto.BikeId);
             if (bike == null)
             {
-                throw new Exception();
+                return false;
             }
 
-            return !string.IsNullOrWhiteSpace(rentalDto.BikeKey) && rentalDto.BikeKey == bike.Key;
+            //TODO: validation
+            //return !string.IsNullOrWhiteSpace(rentalDto.BikeKey) && rentalDto.BikeKey == bike.Key;
+            return true;
         }
     }
 }

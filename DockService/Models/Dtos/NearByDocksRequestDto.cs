@@ -4,7 +4,7 @@ namespace DockService.Models.Dtos
 {
     public class NearByDocksRequestDto
     {
-        public CoordinatesDto Coordinates { get; set; }
+        public CoordinatesDto? Coordinates { get; set; }
 
         public double Radius { get; set; }
 
