@@ -1,15 +1,18 @@
 import json
+import re
 from pika import PlainCredentials
 from masstransitpython import RabbitMQConfiguration
 from masstransitpython import RabbitMQReceiver, RabbitMQSender
 from json import JSONEncoder
 import dock_manager
 import RPi.GPIO as gpio
+import bike_reader
+from multiprocessing import Process
+import rental_api
 
 
-
-port_one = 11
-port_two = 12
+lamp_one = 37
+lamp_two = 11
 
 RABBITMQ_USERNAME = 'guest'
 RABBITMQ_PASSWORD = 'guest'
@@ -48,43 +51,47 @@ def on_bike_unlock(ch, method, properties, body):
     rental = msg['message']['rental']
     correlation_id = msg['message']['correlationId']
 
+    bike_id = dock_manager.get_dock_by_id(dock_id)['bikeId']
     rental['status'] = 6
-    rental['bikeId'] = dock_manager.get_dock_by_id(dock_id)['bikeId']
+    rental['bikeId'] = bike_id
 
     dock_manager.unlock_dock(dock_id)
 
-    CardRead.write(msg)
+    msg['bikeId'] = bike_id
+
+    #CardRead.write(msg)
+    rental_api.save_rental_data(save_rental_data)
 
     print(' [X] Notifying service of port unlocked')
     send_message(msg, correlation_id, rental, BIKE_UNLOCKED_EXCHANGE)
 
 
-def on_bike_lock(dock_port, bike_id, msg):
-    dock_manager.lock_dock(dock_port, bike_id)
+def on_bike_lock(data):
+    (id, text, port) = data
+    dock_port = port
+    bike_id = id
+    
+    dock = dock_manager.lock_dock(dock_port, bike_id)
+
+    rental_data = rental_api.get_rental_data_by_bike_id(bike_id)
+    rental_data['message']['destinationDockId'] = dock['id']
 
     print(' [X] Notifying service of port locked')
-    send_message(msg, msg['message']['correlationId'], msg['message']['rental'], BIKE_LOCKED_EXCHANGE)
+    send_message(rental_data, rental_data['message']['correlationId'], rental_data['message']['rental'], BIKE_LOCKED_EXCHANGE)
 
 
-# define receiver
-receiver = RabbitMQReceiver(conf, 'bike-unlock')
-receiver.add_on_message_callback(on_bike_unlock)
-receiver.start_consuming()
+def start_receiver():
+    # define receiver
+    receiver = RabbitMQReceiver(conf, 'bike-unlock')
+    receiver.add_on_message_callback(on_bike_unlock)
+    receiver.start_consuming()
 
+receiver = Process(target=start_receiver)
+receiver.start()
 
-print('Card Scanning')
-print('for Cancel Press ctrl+c')
-try:
-    bike_port = 11
-    while True:
-        bike_id, msg = CardRead.read()
-        print(msg)
-        print(bike_id)
-        if id == 465199183884:
-            print(bike_id)
-        if id == 13796710267:
-            print(bike_id)
-        on_bike_lock(bike_port, bike_id, msg)
-
-except KeyboardInterrupt:
-    gpio.cleanup()
+reader = bike_reader.start_readers()
+print('reading')
+for data in reader:
+    (id, text, port) = data
+    print('[' + str(id) + '] ' + text)
+    on_bike_lock(data)

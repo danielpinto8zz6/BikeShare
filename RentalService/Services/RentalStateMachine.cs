@@ -120,7 +120,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeLocked)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
             .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-unlock", c))
+            .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
             .TransitionTo(Locking);
 
     private EventActivityBinder<RentalState, IBikeUnlockFailed> SetBikeUnlockFailedHandler() =>

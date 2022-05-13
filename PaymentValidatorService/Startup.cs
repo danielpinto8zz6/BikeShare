@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PaymentValidatorService.Consumers;
 
 namespace PaymentValidatorService
 {
@@ -30,6 +33,28 @@ namespace PaymentValidatorService
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentValidatorService", Version = "v1"});
+            });
+            
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<PaymentValidateConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitMqConfiguration =
+                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+
+                    cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
+                    {
+                        h.Username(rabbitMqConfiguration.Username);
+                        h.Password(rabbitMqConfiguration.Password);
+                    });
+
+                    cfg.ReceiveEndpoint("payment-validate",
+                        e => { e.ConfigureConsumer<PaymentValidateConsumer>(context); });
+
+                    cfg.ConfigureEndpoints(context);
+                });
             });
         }
 

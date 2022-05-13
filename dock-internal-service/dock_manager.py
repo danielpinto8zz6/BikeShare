@@ -43,3 +43,5 @@ def lock_dock(dock_port, bike_id):
 
     dock['bikeId'] = bike_id
     db.update(dock)
+
+    return dock
