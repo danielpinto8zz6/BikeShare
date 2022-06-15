@@ -1,22 +1,21 @@
-using LSG.GenericCrud.Services;
+using Common.Models.Dtos;
 using MassTransit;
-using MongoDB.Bson.IO;
-using TravelEventService.Entities;
+using TravelEventService.Services;
 
 namespace TravelEventService.Consumers
 {
-    public class TravelEventConsumer : IConsumer<TravelEvent>
+    public class TravelEventConsumer : IConsumer<TravelEventDto>
     {
-        private readonly ICrudService<Guid, TravelEvent> _crudService;
+        private readonly ITravelEventService _travelEventService;
 
-        public TravelEventConsumer(ICrudService<Guid, TravelEvent> crudService)
+        public TravelEventConsumer(ITravelEventService travelEventService)
         {
-            _crudService = crudService;
+            _travelEventService = travelEventService;
         }
 
-        public async Task Consume(ConsumeContext<TravelEvent> context)
+        public async Task Consume(ConsumeContext<TravelEventDto> context)
         {
-            await _crudService.CreateAsync(context.Message);
+            await _travelEventService.CreateAsync(context.Message);
         }
     }
 }

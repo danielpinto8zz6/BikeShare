@@ -6,8 +6,4 @@
         <Nullable>warnings</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="LSG.GenericCrud" Version="5.1.0" />
-    </ItemGroup>
-
 </Project>

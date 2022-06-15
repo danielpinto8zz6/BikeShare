@@ -3,12 +3,11 @@ using Common.Models;
 using Common.Models.Constants;
 using Common.Models.Dtos;
 using Common.Services.Repositories;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
 using MassTransit;
 using MongoDB.Driver;
 using TravelEventService.Consumers;
 using TravelEventService.Entities;
+using TravelEventService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,15 +44,14 @@ builder.Services.AddSingleton(automapperConfiguration.CreateMapper());
 builder.Services.AddScoped<IMongoClient, MongoClient>(_ =>
     new MongoClient(builder.Configuration.GetConnectionString("MongoDb")));
 
-builder.Services.AddScoped<ICrudRepository, MongoDbRepository>(provider =>
+builder.Services.AddScoped<ITravelEventService, TravelEventService.Services.TravelEventService>();
+builder.Services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
 {
     var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-    return new MongoDbRepository(mongoClient, "travel-event");
+    return new MongoDbRepository(mongoClient, "bike");
 });
 
-builder.Services
-    .AddScoped<ICrudService<Guid, TravelEvent>, CrudServiceBase<Guid, TravelEvent>>();
 
 var app = builder.Build();
 

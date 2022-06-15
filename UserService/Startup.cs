@@ -1,25 +1,19 @@
 using System.Text.Json.Serialization;
 using AutoMapper;
-using Common.Extensions.DataFillers;
 using Common.Models.Dtos;
 using Common.Services;
-using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Dto.Services;
-using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
+using Common.Services.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
-using UserService.Data;
-using UserService.Extensions;
 using UserService.Models.Entities;
+using UserService.Services;
 
 namespace UserService
 {
@@ -43,18 +37,16 @@ namespace UserService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "UserService", Version = "v1"});
             });
 
-            services    
-                .AddScoped<ICrudService<string, ApplicationUserDto>,
-                    CrudServiceBase<string, ApplicationUserDto, ApplicationUser>>();
+            services.AddScoped<IMongoClient, MongoClient>(_ =>
+                new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
-            services.AddTransient<IEntityDataFiller, DateDataFiller>();
+            services.AddScoped<IUserService, Services.UserService>();
+            services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+            {
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            services.AddTransient<IDbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
-
-            // inject needed service and repository layers
-            services.AddCrud();
+                return new MongoDbRepository(mongoClient, "user");
+            });
 
             var passwordService = new PasswordService();
             
@@ -67,6 +59,8 @@ namespace UserService
                 conf.CreateMap<ApplicationUser, ApplicationUserDto>()
                     .ForMember(item => item.Password, opt => opt.Ignore());
 
+                conf.CreateMap<CreditCard, CreditCardDto>();
+                conf.CreateMap<CreditCardDto, CreditCard>();
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
@@ -90,8 +84,6 @@ namespace UserService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.InitializeDatabase<ApplicationDbContext>();
         }
     }
 }

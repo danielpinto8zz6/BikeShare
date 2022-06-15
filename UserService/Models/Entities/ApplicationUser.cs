@@ -1,7 +1,6 @@
 using System;
-using Common;
+using System.Collections.Generic;
 using Common.Models.Dtos;
-using LSG.GenericCrud.Models;
 
 namespace UserService.Models.Entities
 {
@@ -14,6 +13,8 @@ namespace UserService.Models.Entities
         public string Name { get; set; }
 
         public string PasswordHash { get; set; }
+
+        public List<CreditCard> CreditCards { get; set; }
         
         public DateTime CreatedDate { get; set; }
         

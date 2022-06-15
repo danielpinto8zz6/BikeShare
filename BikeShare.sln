@@ -28,8 +28,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockService", "DockService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingService", "TestingService\TestingService.csproj", "{61FD0E33-8C5A-4B70-84DE-36F99B4C10D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyDockService", "DummyDockService\DummyDockService.csproj", "{A00B078A-EA01-4498-AC89-D74AB1602054}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Extensions", "Common.Extensions\Common.Extensions.csproj", "{60A73A5B-0DCC-47BB-8DA2-25E8D2DB7D01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Models", "Common.Models\Common.Models.csproj", "{C800951D-BAE9-4879-8573-CDD342923E31}"
@@ -100,10 +98,6 @@ Global
 		{61FD0E33-8C5A-4B70-84DE-36F99B4C10D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61FD0E33-8C5A-4B70-84DE-36F99B4C10D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61FD0E33-8C5A-4B70-84DE-36F99B4C10D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A00B078A-EA01-4498-AC89-D74AB1602054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A00B078A-EA01-4498-AC89-D74AB1602054}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A00B078A-EA01-4498-AC89-D74AB1602054}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A00B078A-EA01-4498-AC89-D74AB1602054}.Release|Any CPU.Build.0 = Release|Any CPU
 		{60A73A5B-0DCC-47BB-8DA2-25E8D2DB7D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{60A73A5B-0DCC-47BB-8DA2-25E8D2DB7D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60A73A5B-0DCC-47BB-8DA2-25E8D2DB7D01}.Release|Any CPU.ActiveCfg = Release|Any CPU

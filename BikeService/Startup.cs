@@ -1,26 +1,20 @@
 using System;
 using AutoMapper;
-using BikeService.Data;
-using BikeService.Extensions;
 using BikeService.Models.Entities;
+using BikeService.Services;
 using BikeValidateService.Consumers;
-using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services;
-using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Dto.Services;
-using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
+using Common.Services.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
 
 namespace BikeService
@@ -45,18 +39,16 @@ namespace BikeService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"});
             });
             
-            services
-                .AddScoped<ICrudService<Guid, BikeDto>,
-                    CrudServiceBase<Guid, BikeDto, Bike>>();
+            services.AddScoped<IMongoClient, MongoClient>(_ =>
+                new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
-            services.AddTransient<IEntityDataFiller, DateDataFiller>();
+            services.AddScoped<IBikeService, Services.BikeService>();
+            services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+            {
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            services.AddTransient<IDbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
-
-            // inject needed service and repository layers
-            services.AddCrud();
+                return new MongoDbRepository(mongoClient, "bike");
+            });
 
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
@@ -112,8 +104,6 @@ namespace BikeService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.InitializeDatabase<ApplicationDbContext>();
         }
     }
 }

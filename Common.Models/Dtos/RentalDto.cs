@@ -1,9 +1,8 @@
 using Common.Models.Enums;
-using LSG.GenericCrud.Models;
 
 namespace Common.Models.Dtos
 {
-    public class RentalDto : IEntity
+    public class RentalDto : IEntity<Guid>
     {
         public Guid Id { get; set; }
 

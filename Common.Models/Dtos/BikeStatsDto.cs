@@ -1,8 +1,6 @@
-using LSG.GenericCrud.Models;
-
 namespace Common.Models.Dtos
 {
-    public class BikeStatsDto : IEntity
+    public class BikeStatsDto : IEntity<Guid>
     {
         public Guid Id { get; set; }
 

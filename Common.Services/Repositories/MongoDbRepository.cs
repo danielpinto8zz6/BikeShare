@@ -1,4 +1,4 @@
-using LSG.GenericCrud.Models;
+using Common.Models.Dtos;
 using MongoDB.Driver;
 
 namespace Common.Services.Repositories
@@ -12,15 +12,6 @@ namespace Common.Services.Repositories
             _mongoDatabase = mongoClient.GetDatabase(databaseName);
         }
 
-        public IQueryable<T2> GetAll<T1, T2>() where T2 : class, IEntity<T1>, new()
-        {
-            var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
-
-            var result = mongoCollection.Find(_ => true).ToList();
-
-            return result.AsQueryable();
-        }
-
         public async Task<IQueryable<T2>> GetAllAsync<T1, T2>() where T2 : class, IEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
@@ -28,15 +19,6 @@ namespace Common.Services.Repositories
             var result = await mongoCollection.Find(_ => true).ToListAsync();
 
             return result.AsQueryable();
-        }
-
-        public T2 GetById<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
-        {
-            var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
-
-            var filter = Builders<T2>.Filter.Eq("_id", id);
-
-            return mongoCollection.Find(filter).FirstOrDefault();
         }
 
         public Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
@@ -57,19 +39,6 @@ namespace Common.Services.Repositories
             return entity;
         }
 
-        public T2 Delete<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
-        {
-            var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
-
-            var filter = Builders<T2>.Filter.Eq("_id", id);
-
-            var result = mongoCollection.Find(filter).FirstOrDefault();
-
-            mongoCollection.DeleteOne(filter);
-
-            return result;
-        }
-
         public async Task<T2> DeleteAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
@@ -81,11 +50,6 @@ namespace Common.Services.Repositories
             await mongoCollection.DeleteOneAsync(filter);
 
             return result;
-        }
-
-        public Task<int> SaveChangesAsync()
-        {
-            return Task.FromResult(1);
         }
 
         public async Task<T2> UpdateAsync<T1, T2>(T1 id, T2 entity) where T2 : class, IEntity<T1>, new()

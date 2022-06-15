@@ -3,9 +3,6 @@ using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services;
-using Common.Services.Repositories;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
 using TravelEventService.Entities;
 
@@ -64,18 +60,6 @@ namespace TravelService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
-
-            services.AddScoped<IMongoClient, MongoClient>(_ =>
-                new MongoClient(Configuration.GetConnectionString("MongoDb")));
-
-            services.AddScoped<ICrudRepository, MongoDbRepository>(provider =>
-            {
-                var mongoClient = provider.GetRequiredService<IMongoClient>();
-
-                return new MongoDbRepository(mongoClient, "travel-event");
-            });
-
-            services.AddScoped<ICrudService<Guid, TravelEvent>, CrudServiceBase<Guid, TravelEvent>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

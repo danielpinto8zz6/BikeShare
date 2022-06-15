@@ -1,8 +1,6 @@
-using LSG.GenericCrud.Models;
-
 namespace Common.Models.Dtos
 {
-    public interface IBaseEntity : IEntity, IDateEntity
+    public interface IBaseEntity : IEntity<Guid>, IDateEntity
     {
     }
 }

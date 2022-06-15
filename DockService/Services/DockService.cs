@@ -96,13 +96,6 @@ namespace DockService.Services
             return _mapper.Map<DockDto>(result);
         }
 
-        public Task<DockDto> CopyAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AutoCommit { get; set; }
-
         private async Task<string?> GetAddressFromCoordinatesAsync(double latitude, double longitude)
         {
             var reverseGeocodeRequest = new ReverseGeocodeRequest

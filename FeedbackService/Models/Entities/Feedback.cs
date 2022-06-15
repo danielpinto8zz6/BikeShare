@@ -1,5 +1,4 @@
 using System;
-using Common;
 using Common.Models.Dtos;
 
 namespace FeedbackService.Models.Entities

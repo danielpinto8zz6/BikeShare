@@ -1,17 +1,63 @@
 ﻿using System;
+using System.Threading.Tasks;
+using BikeService.Services;
+using Common.Extensions.Exceptions;
 using Common.Models.Dtos;
-using LSG.GenericCrud.Controllers;
-using LSG.GenericCrud.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BikeService.Controllers
+namespace BikeService.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BikesController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BikesController : CrudControllerBase<Guid, BikeDto>
+    private readonly IBikeService _service;
+
+    public BikesController(IBikeService service)
     {
-        public BikesController(ICrudService<Guid, BikeDto> service) : base(service)
+        _service = service;
+    }
+
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BikeDto>> GetByIdAsync(Guid id)
+    {
+        try
         {
+            var result = await _service.GetByIdAsync(id);
+            return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<BikeDto>> CreateAsync(
+        [FromBody] BikeDto bikeDto)
+    {
+        var result = await _service.CreateAsync(bikeDto);
+
+        return CreatedAtAction("GetById", new
+        {
+            id = result.Id
+        }, result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] BikeDto bikeDto)
+    {
+        try
+        {
+            await _service.UpdateAsync(id, bikeDto);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound();
         }
     }
 }

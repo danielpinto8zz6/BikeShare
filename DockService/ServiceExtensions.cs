@@ -1,24 +1,16 @@
 using AutoMapper;
-using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services.Repositories;
 using DockService.Consumers;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
-using DockService.Repositories;
 using DockService.Services;
-using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Dto.Services;
-using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
 using MassTransit;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using Nominatim.API.Geocoders;
-using Steeltoe.Discovery.Client;
 
 namespace DockService;
 
@@ -30,15 +22,16 @@ public static class ServiceExtensions
         services.AddControllers();
         services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"}); });
 
+        services.AddScoped<IMongoClient, MongoClient>(_ =>
+            new MongoClient(configuration.GetConnectionString("MongoDb")));
+
         services.AddScoped<IDockService, Services.DockService>();
-        services.AddScoped<IDockRepository, DockRepository>(provider =>
+        services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
         {
             var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            return new DockRepository(mongoClient, "dock");
+            return new MongoDbRepository(mongoClient, "dock");
         });
-
-        services.AddCrud();
 
         var automapperConfiguration = new MapperConfiguration(conf =>
         {
@@ -62,19 +55,7 @@ public static class ServiceExtensions
 
         services.AddSingleton(automapperConfiguration.CreateMapper());
 
-        services.AddTransient<IEntityDataFiller, DateDataFiller>();
-
         services.AddTransient<ReverseGeocoder>();
-
-        services.AddScoped<IMongoClient, MongoClient>(_ =>
-            new MongoClient(configuration.GetConnectionString("MongoDb")));
-
-        services.AddScoped<ICrudRepository, MongoDbRepository>(provider =>
-        {
-            var mongoClient = provider.GetRequiredService<IMongoClient>();
-
-            return new MongoDbRepository(mongoClient, "bike");
-        });
 
         services.AddMassTransit(x =>
         {

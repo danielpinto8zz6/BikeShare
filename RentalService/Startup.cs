@@ -1,25 +1,18 @@
 using System;
 using AutoMapper;
-using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
-using Common.Models.Events;
 using Common.Models.Events.Rental;
 using Common.Services;
-using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
+using Common.Services.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using RentalService.Data;
-using RentalService.Extensions;
+using MongoDB.Driver;
 using RentalService.Models.Entities;
 using RentalService.Saga;
 using RentalService.Services;
@@ -47,15 +40,16 @@ namespace RentalService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "RentalService", Version = "v1"});
             });
 
-            services.AddScoped<ICrudService<Guid, Rental>, CrudServiceBase<Guid, Rental>>();
+            services.AddScoped<IMongoClient, MongoClient>(_ =>
+                new MongoClient(Configuration.GetConnectionString("MongoDb")));
+
             services.AddScoped<IRentalService, Services.RentalService>();
+            services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+            {
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            services.AddTransient<IDbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
-
-            // inject needed service and repository layers
-            services.AddCrud();
+                return new MongoDbRepository(mongoClient, "rental");
+            });
 
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
@@ -64,8 +58,6 @@ namespace RentalService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
-
-            services.AddTransient<IEntityDataFiller, DateDataFiller>();
 
             services.AddMassTransit(x =>
             {
@@ -114,8 +106,6 @@ namespace RentalService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.InitializeDatabase<ApplicationDbContext>();
         }
     }
 }

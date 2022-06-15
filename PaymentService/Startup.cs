@@ -1,24 +1,17 @@
 using System;
 using AutoMapper;
-using Common.Extensions.DataFillers;
 using Common.Models;
 using Common.Models.Dtos;
-using LSG.GenericCrud.DataFillers;
-using LSG.GenericCrud.Dto.Services;
-using LSG.GenericCrud.Helpers;
-using LSG.GenericCrud.Repositories;
-using LSG.GenericCrud.Services;
+using Common.Services.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using PaymentService.Consumers;
-using PaymentService.Data;
-using PaymentService.Extensions;
 using PaymentService.Models.Entities;
 using PaymentService.Saga;
 using PaymentService.Services;
@@ -51,14 +44,16 @@ namespace PaymentService
                 });
             });
             
-            services.AddScoped<ICrudService<Guid, PaymentDto>, CrudServiceBase<Guid, PaymentDto, Payment>>();
+            services.AddScoped<IMongoClient, MongoClient>(_ =>
+                new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
-            services.AddTransient<IDbContext, ApplicationDbContext>();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")));
+            services.AddScoped<IPaymentService, Services.PaymentService>();
+            services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+            {
+                var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            // inject needed service and repository layers
-            services.AddCrud();
+                return new MongoDbRepository(mongoClient, "payment");
+            });
 
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
@@ -67,8 +62,6 @@ namespace PaymentService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
-
-            services.AddTransient<IEntityDataFiller, DateDataFiller>();
 
             services.AddMassTransit(x =>
             {
@@ -119,8 +112,6 @@ namespace PaymentService
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            app.InitializeDatabase<ApplicationDbContext>();
         }
     }
 }
