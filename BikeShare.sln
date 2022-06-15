@@ -10,9 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BikeService", "BikeService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalService", "RentalService\RentalService.csproj", "{BC545F7E-7CFE-4384-9755-154B4042D538}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelEventProcessService", "TravelEventProcessService\TravelEventProcessService.csproj", "{E2951609-FC3D-4CF9-9F51-98E8DF7EA177}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelEventService", "TravelEventService\TravelEventService.csproj", "{948B71C3-989E-4371-B184-D74CEAF64600}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelService", "TravelService\TravelService.csproj", "{E2951609-FC3D-4CF9-9F51-98E8DF7EA177}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeedbackService", "FeedbackService\FeedbackService.csproj", "{82C3ADB4-D529-4356-A373-40D6E8405790}"
 EndProject
@@ -37,6 +35,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Models", "Common.Models\Common.Models.csproj", "{C800951D-BAE9-4879-8573-CDD342923E31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services", "Common.Services\Common.Services.csproj", "{C17A3916-249E-4B45-8368-F99D1868F98D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelEventService", "TravelEventService\TravelEventService.csproj", "{386DEB38-1D72-4458-86BF-C89892B3083D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,10 +68,6 @@ Global
 		{E2951609-FC3D-4CF9-9F51-98E8DF7EA177}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2951609-FC3D-4CF9-9F51-98E8DF7EA177}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2951609-FC3D-4CF9-9F51-98E8DF7EA177}.Release|Any CPU.Build.0 = Release|Any CPU
-		{948B71C3-989E-4371-B184-D74CEAF64600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{948B71C3-989E-4371-B184-D74CEAF64600}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{948B71C3-989E-4371-B184-D74CEAF64600}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{948B71C3-989E-4371-B184-D74CEAF64600}.Release|Any CPU.Build.0 = Release|Any CPU
 		{82C3ADB4-D529-4356-A373-40D6E8405790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82C3ADB4-D529-4356-A373-40D6E8405790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82C3ADB4-D529-4356-A373-40D6E8405790}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -120,5 +116,9 @@ Global
 		{C17A3916-249E-4B45-8368-F99D1868F98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C17A3916-249E-4B45-8368-F99D1868F98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C17A3916-249E-4B45-8368-F99D1868F98D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{386DEB38-1D72-4458-86BF-C89892B3083D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{386DEB38-1D72-4458-86BF-C89892B3083D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{386DEB38-1D72-4458-86BF-C89892B3083D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{386DEB38-1D72-4458-86BF-C89892B3083D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

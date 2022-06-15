@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PaymentService.Consumers;
 using PaymentService.Data;
 using PaymentService.Extensions;
 using PaymentService.Models.Entities;
@@ -71,6 +72,8 @@ namespace PaymentService
 
             services.AddMassTransit(x =>
             {
+                x.AddConsumer<PaymentRequestConsumer>();
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     var rabbitMqConfiguration =
@@ -83,6 +86,7 @@ namespace PaymentService
                     });
 
                     cfg.ReceiveEndpoint("payment", e => { e.ConfigureSaga<PaymentState>(context); });
+                    cfg.ReceiveEndpoint("payment-request", e => { e.ConfigureConsumer<PaymentRequestConsumer>(context); });
 
                     cfg.ConfigureEndpoints(context);
                 });

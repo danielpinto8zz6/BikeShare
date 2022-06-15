@@ -52,6 +52,9 @@ case $1 in
   "dock-service")
     deploy_service "dock-service" "DockService"
     ;;
+  "eureka-server")
+    deploy_service "eureka-server" "eureka-server"
+    ;;
 
   *)
     echo -e "unknown \n"

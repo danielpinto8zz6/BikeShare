@@ -39,6 +39,25 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/users/{username}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/users/{username}",
+      "ServiceName": "USER-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/users",
@@ -106,7 +125,30 @@
       "UpstreamPathTemplate": "/api/rentals",
       "ServiceName": "RENTAL-SERVICE",
       "UpstreamHttpMethod": [
-        "POST"
+        "POST",
+        "GET"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/rentals/history/{username}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/rentals/history/{username}",
+      "ServiceName": "RENTAL-SERVICE",
+      "UpstreamHttpMethod": [
+        "GET"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15

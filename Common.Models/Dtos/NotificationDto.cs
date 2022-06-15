@@ -13,8 +13,13 @@ namespace Common.Models.Dtos
         public IReadOnlyDictionary<string, string> Data { get; set; }
     }
 
-    public class RentalStartedNotificationDto : NotificationDto
+    public class RentalNotificationDto : NotificationDto
     {
         public Guid RentalId { get; set; }
+    }
+    
+    public class PaymentNotificationDto : NotificationDto
+    {
+        public Guid PaymentId { get; set; }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Models.Dtos;
-using Common.Models.Events;
 using Common.Models.Events.Rental;
 using MassTransit;
 using RentalService.Saga;
@@ -17,7 +16,7 @@ public static class NotificationHelper
 
     public static async Task SendBikeReservedNotificationAsync(BehaviorContext<RentalState, IRentalMessage> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike reserved",
@@ -37,7 +36,7 @@ public static class NotificationHelper
 
     public static async Task SendBikeUnlockedNotificationAsync(BehaviorContext<RentalState, IBikeUnlocked> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike unlocked",
@@ -57,7 +56,7 @@ public static class NotificationHelper
     
     public static async Task SendBikeAttachedNotificationAsync(BehaviorContext<RentalState, IBikeAttached> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike attached",
@@ -77,7 +76,7 @@ public static class NotificationHelper
 
     public static async Task SendBikeValidatedNotificationAsync(BehaviorContext<RentalState, IBikeValidated> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike validated",
@@ -98,7 +97,7 @@ public static class NotificationHelper
     public static async Task SendBikeUnlockFailedNotificationAsync(
         BehaviorContext<RentalState, IBikeUnlockFailed> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike unlock failed",
@@ -119,7 +118,7 @@ public static class NotificationHelper
     public static async Task SendBikeLockFailedNotificationAsync(
         BehaviorContext<RentalState, IBikeLockFailed> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike lock failed",
@@ -140,7 +139,7 @@ public static class NotificationHelper
     public static async Task SendBikeValidationFailedNotificationAsync(
         BehaviorContext<RentalState, IBikeValidationFailed> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike validation failed",
@@ -161,7 +160,7 @@ public static class NotificationHelper
     public static async Task SendBikeReservationFailedNotificationAsync(
         BehaviorContext<RentalState, IBikeReservationFailed> context)
     {
-        var notificationDto = new RentalStartedNotificationDto
+        var notificationDto = new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike reservation failed",
@@ -169,48 +168,6 @@ public static class NotificationHelper
             Data = new Dictionary<string, string>
             {
                 {Event, "bike-reservation-failed"},
-                {RentalId, context.Message.Rental.Id.ToString()}
-            },
-            RentalId = context.Message.Rental.Id
-        };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
-    }
-    
-    public static async Task SendPaymentCompletedNotificationAsync(
-        BehaviorContext<RentalState, IPaymentCompleted> context)
-    {
-        var notificationDto = new RentalStartedNotificationDto
-        {
-            Username = context.Message.Rental.Username,
-            Body = "Payment completed",
-            Title = "Payment completed successfully",
-            Data = new Dictionary<string, string>
-            {
-                {Event, "payment-completed"},
-                {RentalId, context.Message.Rental.Id.ToString()}
-            },
-            RentalId = context.Message.Rental.Id
-        };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
-    }
-    
-    public static async Task SendPaymentCompletedNotificationAsync(
-        BehaviorContext<RentalState, IPaymentFailed> context)
-    {
-        var notificationDto = new RentalStartedNotificationDto
-        {
-            Username = context.Message.Rental.Username,
-            Body = "Payment failed, please check your payment details",
-            Title = "Payment failed",
-            Data = new Dictionary<string, string>
-            {
-                {Event, "payment-failed"},
                 {RentalId, context.Message.Rental.Id.ToString()}
             },
             RentalId = context.Message.Rental.Id

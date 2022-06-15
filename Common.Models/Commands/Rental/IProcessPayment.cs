@@ -1,8 +1,8 @@
-using Common.Models.Events.Rental;
+using Common.Models.Events.Payment;
 
 namespace Common.Models.Commands.Rental
 {
-    public interface IProcessPayment : IRentalMessage
+    public interface IProcessPayment : IPaymentMessage
     {
     }
 }

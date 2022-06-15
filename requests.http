@@ -27,7 +27,7 @@ POST http://{{host}}/api/Auth HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "daniel1",
+    "username": "daniel",
     "password": "daniel"
 }
 
@@ -85,3 +85,32 @@ UserId: danielpinto1
   "bikeId": "809b4d1e-23e2-41fb-bc23-069254e32b0f",
   "username": "danielpinto1"
 }
+
+###
+
+GET  http://{{host}}/api/users/daniel
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### 
+
+POST http://{{host}}/api/rentals
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "originDockId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "destinationDockId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "bikeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "bikeKey": "string",
+  "username": "alfredo",
+  "status": 2,
+  "startDate": "2022-05-25T21:08:35.726Z",
+  "endDate": "2022-05-25T21:08:35.726Z"
+}
+
+### 
+
+GET http://{{host}}/api/rentals
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

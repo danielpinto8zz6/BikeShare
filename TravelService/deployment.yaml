@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: travel-event-process-service
+spec:
+  selector:
+    app:  travel-event-process-service
+  type: LoadBalancer
+  ports:
+    - name:  travel-event-process-service-port
+      port: 5060
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  travel-event-process-service-deployment
+spec:
+  selector:
+    matchLabels:
+      app:  travel-event-process-service
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  travel-event-process-service
+        version: v1
+    spec:
+      containers:
+      - name:  travel-event-process-service-container
+        image:  travel-event-process-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+      imagePullSecrets: 
+      - name: registry-credentials

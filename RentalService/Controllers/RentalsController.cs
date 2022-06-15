@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Common.Models.Dtos;
 using LSG.GenericCrud.Controllers;
@@ -31,6 +30,14 @@ namespace RentalService.Controllers
             {
                 id = result.Id
             }, result);
+        }
+        
+        [HttpGet("history/{username}")]
+        public async Task<ActionResult<IEnumerable<RentalDto>>> GetHistoryByUsername([FromRoute] string username)
+        {
+            var rentals = await _rentalService.GetHistoryByUsernameAsync(username);
+            
+            return Ok(rentals);
         }
     }
 }

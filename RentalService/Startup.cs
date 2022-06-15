@@ -95,6 +95,7 @@ namespace RentalService
             });
 
             services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
+            services.AddScoped<IProducer<PaymentRequestDto>, Producer<PaymentRequestDto>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

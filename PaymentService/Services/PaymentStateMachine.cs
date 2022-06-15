@@ -19,7 +19,8 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     private readonly IServiceProvider _serviceProvider;
 
     public PaymentStateMachine(
-        ILogger<PaymentStateMachine> logger, IServiceProvider serviceProvider)
+        ILogger<PaymentStateMachine> logger, 
+        IServiceProvider serviceProvider)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
@@ -49,6 +50,10 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     {
         Event(() => Requested, x => x.CorrelateById(c => c.Message.CorrelationId)
             .SelectId(c => c.Message.CorrelationId));
+        Event(() => Calculated, x => x.CorrelateById(c => c.Message.CorrelationId));
+        Event(() => CalculationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
+        Event(() => Validated, x => x.CorrelateById(c => c.Message.CorrelationId));
+        Event(() => ValidationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
     }
 
     private EventActivityBinder<PaymentState, IPaymentRequested> SetPaymentRequestedHandler() =>
@@ -100,7 +105,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     }
 
     private static async Task SendCommand<TCommand>(string endpoint,
-        BehaviorContext<PaymentState, IPaymentMessage> context) where TCommand : class, IPaymentMessage
+        ConsumeContext<IPaymentMessage> context) where TCommand : class, IPaymentMessage
     {
         var sendEndpoint = await context.GetSendEndpoint(new Uri(endpoint));
 

@@ -7,7 +7,7 @@
 | feedback-service | 5030 |
 | user-service | 5040 |
 | rental-service | 5050 |
-| travel-event-process-service | 5060 |
+| travel-service | 5060 |
 | rental-process-service | 5070 |
 | notification-service | 5080 |
 | token-service | 5090 |
@@ -16,3 +16,4 @@
 | bike-validate-service | 6020 |
 | payment-service | 6030 |
 | payment-calculator-service | 6040 |
+| travel-event-service | 6050 |

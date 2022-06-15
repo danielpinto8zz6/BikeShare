@@ -13,8 +13,6 @@ namespace Common.Models.Enums
         BikeLocked,
         BikeLockFailed,
         BikeAttached,
-        BikeAttachFailed,
-        PaymentCompleted,
-        PaymentFailed
+        BikeAttachFailed
     }
 }

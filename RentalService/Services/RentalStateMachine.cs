@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Common.Models.Commands;
 using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
-using Common.Models.Events;
 using Common.Models.Events.Rental;
+using Common.Services;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -59,11 +58,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             SetBikeAttachFailedHandler()
         );
 
-        During(ProcessingPayment,
-            SetPaymentCompletedHandler(),
-            SetPaymentFailedHandler()
-        );
-
         SetCompletedWhenFinalized();
     }
 
@@ -76,13 +70,11 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         Event(() => BikeUnlocked, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeLocked, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeAttached, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => PaymentCompleted, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeValidationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeReservationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeUnlockFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeLockFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeAttachFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => PaymentFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
     }
 
     private EventActivityBinder<RentalState, IRentalSubmitted> SetRentalSummitedHandler() =>
@@ -90,7 +82,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
             .Then(c => _logger.LogInformation($"Rental submitted to {c.CorrelationId} received"))
             .ThenAsync(c => SendCommand<IUnlockBike>("rabbitmq://192.168.1.199/bike-unlock", c))
-            .ThenAsync(c => SendCommand<IValidateBike>("rabbitmq://192.168.1.199/bike-validate", c))
+            .ThenAsync(c => SendPaymentRequest(c.Message.Rental))
             .TransitionTo(Unlocking);
 
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
@@ -134,23 +126,9 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeAttached)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
             .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<IProcessPayment>("rabbitmq://192.168.1.199/payment-process", c))
+            .ThenAsync(c => SendPaymentRequest(c.Message.Rental))
             .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
-            .TransitionTo(ProcessingPayment);
-
-    private EventActivityBinder<RentalState, IPaymentCompleted> SetPaymentCompletedHandler() =>
-        When(PaymentCompleted)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.PaymentCompleted))
-            .Then(c => _logger.LogInformation($"Payment completed to {c.CorrelationId} received"))
-            .ThenAsync(NotificationHelper.SendPaymentCompletedNotificationAsync)
             .TransitionTo(Completed);
-
-    private EventActivityBinder<RentalState, IPaymentFailed> SetPaymentFailedHandler() =>
-        When(PaymentFailed)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.PaymentFailed))
-            .Then(c => _logger.LogInformation($"Payment failed to {c.CorrelationId} received"))
-            .ThenAsync(NotificationHelper.SendPaymentCompletedNotificationAsync)
-            .TransitionTo(Failed);
 
     private EventActivityBinder<RentalState, IBikeLockFailed> SetBikeLockFailedHandler() =>
         When(BikeLockFailed)
@@ -178,7 +156,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttachFailed))
             .Then(c => _logger.LogInformation($"Bike attach failed to {c.CorrelationId} received"))
             .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
-            .ThenAsync(c => SendCommand<IProcessPayment>("rabbitmq://192.168.1.199/payment-process", c))
             .TransitionTo(Failed);
 
     private async Task UpdateSagaState(RentalState state, RentalDto rental, RentalStatus rentalStatus)
@@ -187,7 +164,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
         if (rentalStatus == RentalStatus.BikeUnlocked)
             rental.StartDate = currentDate;
-        else if (rentalStatus == RentalStatus.BikeLocked) 
+        else if (rentalStatus == RentalStatus.BikeLocked)
             rental.EndDate = currentDate;
 
         rental.Status = rentalStatus;
@@ -203,7 +180,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     }
 
     private static async Task SendCommand<TCommand>(string endpoint,
-        BehaviorContext<RentalState, IRentalMessage> context) where TCommand : class, IRentalMessage
+        ConsumeContext<IRentalMessage> context) where TCommand : class, IRentalMessage
     {
         var sendEndpoint = await context.GetSendEndpoint(new Uri(endpoint));
 
@@ -214,6 +191,27 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         });
     }
 
+    private async Task SendPaymentRequest(RentalDto rentalDto)
+    {
+        using var scope = _serviceProvider.CreateScope();
+
+        if (rentalDto.StartDate == null || rentalDto.EndDate == null)
+        {
+            //TODO: handle this
+            throw new Exception();
+        }
+
+        var paymentRequest = new PaymentRequestDto
+        {
+            Username = rentalDto.Username,
+            StartDate = rentalDto.StartDate.Value,
+            EndDate = rentalDto.EndDate.Value
+        };
+
+        var paymentProcessProducer = scope.ServiceProvider.GetService<IProducer<PaymentRequestDto>>();
+        if (paymentProcessProducer != null) await paymentProcessProducer.ProduceAsync(paymentRequest);
+    }
+
     public State Validating { get; private set; }
 
     public State Reserving { get; private set; }
@@ -221,8 +219,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     public State Unlocking { get; private set; }
 
     public State Locking { get; private set; }
-
-    public State ProcessingPayment { get; private set; }
 
     public State Completed { get; private set; }
 
@@ -242,8 +238,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
     public Event<IBikeAttached> BikeAttached { get; private set; }
 
-    public Event<IPaymentCompleted> PaymentCompleted { get; private set; }
-
     public Event<IBikeValidationFailed> BikeValidationFailed { get; private set; }
 
     public Event<IBikeReservationFailed> BikeReservationFailed { get; private set; }
@@ -253,6 +247,4 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     public Event<IBikeLockFailed> BikeLockFailed { get; private set; }
 
     public Event<IBikeAttachFailed> BikeAttachFailed { get; private set; }
-
-    public Event<IPaymentFailed> PaymentFailed { get; private set; }
 }

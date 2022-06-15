@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Common.Models.Dtos;
-using Common.Models.Events;
 using Common.Models.Events.Rental;
 using LSG.GenericCrud.Dto.Services;
 using LSG.GenericCrud.Repositories;
@@ -47,5 +48,12 @@ public class RentalService : CrudServiceBase<Guid, RentalDto, Rental>, IRentalSe
         });
 
         return rentalDto;
+    }
+
+    public async Task<IEnumerable<RentalDto>> GetHistoryByUsernameAsync(string username)
+    {
+        var entities = await _service.GetAllAsync();
+        var rentals = _mapper.Map<IEnumerable<RentalDto>>(entities.Where(i => i.Username == username));
+        return rentals;
     }
 }
