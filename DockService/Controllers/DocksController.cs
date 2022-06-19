@@ -48,7 +48,7 @@ namespace DockService.Controllers
             }
         }
         
-        [HttpGet("bike/{id}")]
+        [HttpGet("bike/{bikeId}")]
         public async Task<ActionResult<DockDto>> GetByBikeIdAsync(Guid bikeId)
         {
             try

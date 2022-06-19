@@ -8,14 +8,12 @@ namespace RentalService.Models.Entities
     {
         public Guid Id { get; set; }
 
-        public Guid? OriginDockId { get; set; }
+        public Guid OriginDockId { get; set; }
         
         public Guid? DestinationDockId { get; set; }
         
         public Guid BikeId { get; set; }
         
-        public string BikeKey { get; set; }
-
         public string Username { get; set; }
         
         public RentalStatus Status { get; set; }

@@ -12,8 +12,6 @@ namespace Common.Models.Dtos
 
         public Guid BikeId { get; set; }
         
-        public string BikeKey { get; set; }
-
         public string Username { get; set; }
 
         public RentalStatus Status { get; set; }
