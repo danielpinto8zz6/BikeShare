@@ -47,6 +47,20 @@ namespace DockService.Controllers
                 return NotFound();
             }
         }
+        
+        [HttpGet("bike/{id}")]
+        public async Task<ActionResult<DockDto>> GetByBikeIdAsync(Guid bikeId)
+        {
+            try
+            {
+                var result = await _service.GetByBikeId(bikeId);
+                return Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound();
+            }
+        }
 
         [HttpPost]
         public async Task<ActionResult<DockDto>> CreateAsync(
