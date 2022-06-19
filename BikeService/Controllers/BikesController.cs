@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BikeService.Services;
 using Common.Extensions.Exceptions;
@@ -18,7 +19,14 @@ public class BikesController : ControllerBase
         _service = service;
     }
 
+    [HttpGet]
+    public virtual async Task<ActionResult<IEnumerable<BikeDto>>> GetAllAsync()
+    {
+        var result = await _service.GetAllAsync();
 
+        return Ok(result);
+    }
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<BikeDto>> GetByIdAsync(Guid id)
     {

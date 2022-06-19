@@ -2,7 +2,7 @@ using Common.Models.Enums;
 
 namespace Common.Models.Dtos
 {
-    public class PaymentDto : IBaseEntity
+    public class PaymentDto : IEntity<Guid>
     {
         public Guid Id { get; set; }
 
@@ -17,9 +17,5 @@ namespace Common.Models.Dtos
         public DateTime EndDate { get; set; }
 
         public Guid RentalId { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        public DateTime? DeletedDate { get; set; }
     }
 }

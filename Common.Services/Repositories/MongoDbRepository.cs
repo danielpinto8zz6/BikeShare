@@ -12,7 +12,7 @@ namespace Common.Services.Repositories
             _mongoDatabase = mongoClient.GetDatabase(databaseName);
         }
 
-        public async Task<IQueryable<T2>> GetAllAsync<T1, T2>() where T2 : class, IEntity<T1>, new()
+        public async Task<IQueryable<T2>> GetAllAsync<T1, T2>() where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
@@ -21,7 +21,7 @@ namespace Common.Services.Repositories
             return result.AsQueryable();
         }
 
-        public Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
+        public Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
@@ -30,16 +30,18 @@ namespace Common.Services.Repositories
             return mongoCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<T2> CreateAsync<T1, T2>(T2 entity) where T2 : class, IEntity<T1>, new()
+        public async Task<T2> CreateAsync<T1, T2>(T2 entity) where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
+            entity.CreatedDate = DateTime.UtcNow;
+            
             await mongoCollection.InsertOneAsync(entity);
 
             return entity;
         }
 
-        public async Task<T2> DeleteAsync<T1, T2>(T1 id) where T2 : class, IEntity<T1>, new()
+        public async Task<T2> DeleteAsync<T1, T2>(T1 id) where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
@@ -52,10 +54,12 @@ namespace Common.Services.Repositories
             return result;
         }
 
-        public async Task<T2> UpdateAsync<T1, T2>(T1 id, T2 entity) where T2 : class, IEntity<T1>, new()
+        public async Task<T2> UpdateAsync<T1, T2>(T1 id, T2 entity) where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
+            entity.ModifiedDate = DateTime.UtcNow;
+            
             var filter = Builders<T2>.Filter.Eq(s => s.Id, id);
             await mongoCollection.ReplaceOneAsync(filter, entity);
 

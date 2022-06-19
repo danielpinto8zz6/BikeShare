@@ -26,6 +26,14 @@ namespace DockService.Controllers
             return Ok(result);
         }
         
+        [HttpGet]
+        public virtual async Task<ActionResult<IEnumerable<DockDto>>> GetAllAsync()
+        {
+            var result = await _service.GetAllAsync();
+
+            return Ok(result);
+        }
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<DockDto>> GetByIdAsync(Guid id)
         {

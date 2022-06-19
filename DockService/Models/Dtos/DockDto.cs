@@ -2,7 +2,7 @@ using Common.Models.Dtos;
 
 namespace DockService.Models.Dtos;
 
-public class DockDto : IBaseEntity
+public class DockDto : IEntity<Guid>
 {
     public Guid Id { get; set; }
     
@@ -11,10 +11,4 @@ public class DockDto : IBaseEntity
     public CoordinatesDto? Coordinates { get; set; }
 
     public string? Address { get; set; }
-    
-    public DateTime CreatedDate { get; set; }
-    
-    public DateTime? ModifiedDate { get; set; }
-    
-    public DateTime? DeletedDate { get; set; }  
 }

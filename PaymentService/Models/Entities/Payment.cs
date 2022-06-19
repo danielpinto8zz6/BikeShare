@@ -4,7 +4,7 @@ using Common.Models.Enums;
 
 namespace PaymentService.Models.Entities;
 
-public class Payment : IBaseEntity
+public class Payment : IBaseEntity<Guid>
 {
     public Guid Id { get; set; }
     

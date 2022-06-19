@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using BikeService.Models.Entities;
@@ -51,5 +52,12 @@ public class BikeService : IBikeService
         var result = await _repository.UpdateAsync(id, bike);
 
         return _mapper.Map<BikeDto>(result);
+    }
+
+    public async Task<IEnumerable<BikeDto>> GetAllAsync()
+    {
+        var results = await _repository.GetAllAsync<Guid, Bike>();
+
+        return _mapper.Map<IEnumerable<BikeDto>>(results);
     }
 }

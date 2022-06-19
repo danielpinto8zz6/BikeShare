@@ -2,7 +2,7 @@ using Common.Models.Dtos;
 
 namespace TravelEventService.Entities
 {
-    public class TravelEvent : IBaseEntity
+    public class TravelEvent : IBaseEntity<Guid>
     {
         public Guid Id { get; set; }
         

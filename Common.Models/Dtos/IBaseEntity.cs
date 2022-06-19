@@ -1,6 +1,6 @@
 namespace Common.Models.Dtos
 {
-    public interface IBaseEntity : IEntity<Guid>, IDateEntity
+    public interface IBaseEntity<T> : IEntity<T>, IDateEntity
     {
     }
 }

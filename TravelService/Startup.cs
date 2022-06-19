@@ -1,5 +1,4 @@
 using System;
-using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Steeltoe.Discovery.Client;
-using TravelEventService.Entities;
 
 namespace TravelService
 {
@@ -52,14 +50,6 @@ namespace TravelService
             });
 
             services.AddScoped<IProducer<TravelEventDto>, Producer<TravelEventDto>>();
-
-            var automapperConfiguration = new MapperConfiguration(conf =>
-            {
-                conf.CreateMap<TravelEventDto, TravelEvent>();
-                conf.CreateMap<TravelEvent, TravelEventDto>();
-            });
-
-            services.AddSingleton(automapperConfiguration.CreateMapper());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

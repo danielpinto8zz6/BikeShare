@@ -4,7 +4,7 @@ using Common.Models.Dtos;
 
 namespace UserService.Models.Entities
 {
-    public class ApplicationUser : IEntity<string>, IDateEntity
+    public class ApplicationUser : IBaseEntity<string>
     {
         public string Id { get; set; }
         

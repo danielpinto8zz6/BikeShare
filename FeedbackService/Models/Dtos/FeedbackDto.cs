@@ -3,7 +3,7 @@ using Common.Models.Dtos;
 
 namespace FeedbackService.Models.Dtos
 {
-    public class FeedbackDto : IBaseEntity
+    public class FeedbackDto : IEntity<Guid>
     {
         public Guid Id { get; set; }
 
@@ -14,11 +14,5 @@ namespace FeedbackService.Models.Dtos
         public int Rating { get; set; }
 
         public Guid UserId { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-
-        public DateTime? ModifiedDate { get; set; }
-
-        public DateTime? DeletedDate { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace DockService.Models.Entities;
 
-public class Dock : IBaseEntity
+public class Dock : IBaseEntity<Guid>
 {
     public Guid Id { get; set; }
     

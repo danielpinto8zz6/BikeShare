@@ -5,17 +5,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["TravelEventProcessService/TravelEventProcessService.csproj", "TravelEventProcessService/"]
-COPY ["Common/Common.csproj", "Common/"]
-RUN dotnet restore "TravelEventProcessService/TravelEventProcessService.csproj"
+COPY ["TravelService/TravelService.csproj", "TravelService/"]
+RUN dotnet restore "TravelService/TravelService.csproj"
 COPY . .
-WORKDIR "/src/TravelEventProcessService"
-RUN dotnet build "TravelEventProcessService.csproj" -c Release -o /app/build
+WORKDIR "/src/TravelService"
+RUN dotnet build "TravelService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TravelEventProcessService.csproj" -c Release -o /app/publish
+RUN dotnet publish "TravelService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TravelEventProcessService.dll"]
+ENTRYPOINT ["dotnet", "TravelService.dll"]

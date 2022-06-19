@@ -46,16 +46,32 @@ case $1 in
   "token-service")
     deploy_service "token-service" "TokenService"
     ;;
-  "dummy-dock-service")
-    deploy_service "dummy-dock-service" "DummyDockService"
-    ;;
   "dock-service")
     deploy_service "dock-service" "DockService"
     ;;
   "eureka-server")
     deploy_service "eureka-server" "eureka-server"
     ;;
-
+  "travel-event-service")
+    deploy_service "travel-event-service" "TravelEventService"
+    ;;
+  "travel-service")
+    deploy_service "travel-service" "TravelService"
+    ;;
+  "all")
+    deploy_service "api-gateway" "ApiGateway"
+    deploy_service "auth-service" "AuthService"
+    deploy_service "bike-service" "BikeService"
+    deploy_service "feedback-service" "FeedbackService"
+    deploy_service "user-service" "UserService"
+    deploy_service "rental-service" "RentalService"
+    deploy_service "travel-event-service" "TravelEventService"
+    deploy_service "travel-service" "TravelService"
+    deploy_service "rental-process-service" "RentalProcessService"
+    deploy_service "notification-service" "NotificationService"
+    deploy_service "token-service" "TokenService"
+    deploy_service "dock-service" "DockService"
+    ;;
   *)
     echo -e "unknown \n"
     ;;

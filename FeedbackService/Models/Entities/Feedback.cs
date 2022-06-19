@@ -3,7 +3,7 @@ using Common.Models.Dtos;
 
 namespace FeedbackService.Models.Entities
 {
-    public class Feedback : IBaseEntity
+    public class Feedback : IBaseEntity<Guid>
     {
         public Guid Id { get; set; }
 

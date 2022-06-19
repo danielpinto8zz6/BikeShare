@@ -4,7 +4,7 @@ using Common.Models.Enums;
 
 namespace RentalService.Models.Entities
 {
-    public class Rental : IBaseEntity
+    public class Rental : IBaseEntity<Guid>
     {
         public Guid Id { get; set; }
 

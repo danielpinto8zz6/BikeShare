@@ -5,6 +5,7 @@ using Common.Services.Repositories;
 using DockService.Consumers;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
+using DockService.Repositories;
 using DockService.Services;
 using MassTransit;
 using Microsoft.OpenApi.Models;
@@ -26,11 +27,11 @@ public static class ServiceExtensions
             new MongoClient(configuration.GetConnectionString("MongoDb")));
 
         services.AddScoped<IDockService, Services.DockService>();
-        services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+        services.AddScoped<IDockRepository, DockRepository>(provider =>
         {
             var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            return new MongoDbRepository(mongoClient, "dock");
+            return new DockRepository(mongoClient, "dock");
         });
 
         var automapperConfiguration = new MapperConfiguration(conf =>
