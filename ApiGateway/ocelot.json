@@ -120,6 +120,25 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/docks/bike/{bikeId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/docks/bike/{bikeId}",
+      "ServiceName": "DOCK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/rentals",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/rentals",
