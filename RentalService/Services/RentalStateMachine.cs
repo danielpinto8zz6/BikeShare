@@ -82,7 +82,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
             .Then(c => _logger.LogInformation($"Rental submitted to {c.CorrelationId} received"))
             .ThenAsync(c => SendCommand<IValidateBike>("rabbitmq://192.168.1.199/bike-validate", c))
-            .TransitionTo(Unlocking);
+            .TransitionTo(Validating);
 
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
         When(BikeValidated)    
