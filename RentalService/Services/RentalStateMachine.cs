@@ -27,8 +27,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
         InstanceState(x => x.Status);
 
-        State(() => Validating);
-
         ConfigureCorrelationIds();
 
         Initially(SetRentalSummitedHandler());
