@@ -85,7 +85,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .TransitionTo(Unlocking);
 
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
-        When(BikeValidated)
+        When(BikeValidated)    
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeValidated))
             .Then(c => _logger.LogInformation($"Bike validated to {c.CorrelationId} received"))
             .ThenAsync(NotificationHelper.SendBikeValidatedNotificationAsync)
