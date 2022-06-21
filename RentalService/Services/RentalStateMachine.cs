@@ -159,21 +159,21 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     {
         var currentDate = DateTime.UtcNow;
 
-        if (rentalStatus == RentalStatus.BikeUnlocked)
-            rental.StartDate = currentDate;
-        else if (rentalStatus == RentalStatus.BikeLocked)
-            rental.EndDate = currentDate;
-
         rental.Status = rentalStatus;
         state.Created = currentDate;
         state.Updated = currentDate;
         state.Status = (int) rentalStatus;
         state.Rental = rental;
 
+        await UpdateRentalAsync(rental);
+    }
+
+    private Task<RentalDto> UpdateRentalAsync(RentalDto rental)
+    {
         using var scope = _serviceProvider.CreateScope();
         var rentalService = scope.ServiceProvider.GetRequiredService<IRentalService>();
 
-        await rentalService.UpdateAsync(rental.Id, rental);
+        return rentalService.UpdateAsync(rental.Id, rental);     
     }
 
     private static async Task SendCommand<TCommand>(string endpoint,
