@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="LSG.GenericCrud" Version="5.1.0" />
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.16.0" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
     </ItemGroup>

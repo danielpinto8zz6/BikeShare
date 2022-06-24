@@ -139,6 +139,25 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/Payments/rental/{rentalId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/Payments/rental/{rentalId}",
+      "ServiceName": "PAYMENT-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/rentals",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/rentals",

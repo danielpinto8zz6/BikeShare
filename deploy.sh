@@ -2,16 +2,16 @@
 
 deploy_service(){
     echo -e "Building $1 docker image... \n"
-    docker build -t $1 -f $2/Dockerfile .
+    docker build -t "$1" -f "$2"/Dockerfile .
     echo -e "Saving $1 container as tar... \n"
-    docker save --output docker-images/$1.tar $1:latest
+    docker save --output docker-images/"$1".tar "$1":latest
     echo -e "Push $1 container to remote server... \n"
-    scp docker-images/$1.tar root@192.168.1.199:/root/docker
+    scp docker-images/"$1".tar root@192.168.1.199:/root/docker
     echo -e "Importing $1 container into k3s \n"
     ssh root@192.168.1.199 "k3s ctr images import docker/$1.tar"
     echo -e "Reloading $1 in k3s \n"
-    kubectl delete -f $2/deployment.yaml
-    kubectl apply -f $2/deployment.yaml
+    kubectl delete -f "$2"/deployment.yaml
+    kubectl apply -f "$2"/deployment.yaml
     echo -e "$1 deployed. \n"
 }
 
@@ -58,6 +58,9 @@ case $1 in
   "travel-service")
     deploy_service "travel-service" "TravelService"
     ;;
+  "payment-service")
+    deploy_service "payment-service" "PaymentService"
+    ;;
   "all")
     deploy_service "api-gateway" "ApiGateway"
     deploy_service "auth-service" "AuthService"
@@ -71,6 +74,7 @@ case $1 in
     deploy_service "notification-service" "NotificationService"
     deploy_service "token-service" "TokenService"
     deploy_service "dock-service" "DockService"
+    deploy_service "payment-service" "PaymentService"
     ;;
   *)
     echo -e "unknown \n"

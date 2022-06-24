@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Extensions.Exceptions;
 using Common.Models.Dtos;
-using LSG.GenericCrud.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using RentalService.Services;
 

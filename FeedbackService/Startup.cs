@@ -1,10 +1,8 @@
 using AutoMapper;
-using Common.Extensions.DataFillers;
 using Common.Services.Repositories;
 using FeedbackService.Models.Dtos;
 using FeedbackService.Models.Entities;
 using FeedbackService.Services;
-using LSG.GenericCrud.DataFillers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -51,8 +49,6 @@ public class Startup
         });
 
         services.AddSingleton(automapperConfiguration.CreateMapper());
-
-        services.AddTransient<IEntityDataFiller, DateDataFiller>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

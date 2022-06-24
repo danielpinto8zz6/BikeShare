@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Common.Models.Dtos;
 using Common.Services;
 using Microsoft.AspNetCore.Mvc;
+using TravelEventService.Services;
 
 namespace TravelService.Controllers;
 
@@ -11,10 +14,14 @@ public class TravelController : ControllerBase
 {
     private readonly IProducer<TravelEventDto> _producer;
 
+    private readonly ITravelEventService _service;
+
     public TravelController(
-        IProducer<TravelEventDto> producer)
+        IProducer<TravelEventDto> producer, 
+        ITravelEventService service)
     {
         _producer = producer;
+        _service = service;
     }
 
     [HttpPost]
@@ -22,5 +29,12 @@ public class TravelController : ControllerBase
     {
         await _producer.ProduceAsync(travelEvent);
         return Accepted();
+    }
+    
+    [HttpGet("rental/{rentalId}")]
+    public async Task<ActionResult<IEnumerable<TravelEventDto>>> Create(Guid rentalId)
+    {
+        var result = await _service.GetByRentalIdAsync(rentalId);
+        return Ok(result);
     }
 }

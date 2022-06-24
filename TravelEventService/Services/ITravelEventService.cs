@@ -4,5 +4,6 @@ namespace TravelEventService.Services;
 
 public interface ITravelEventService
 {
-    Task CreateAsync(TravelEventDto travelEventDto);
+    Task<TravelEventDto> CreateAsync(TravelEventDto travelEventDto);
+    Task<IEnumerable<TravelEventDto>> GetByRentalIdAsync(Guid rentalId);
 }

@@ -5,17 +5,18 @@ using Common.Extensions.Exceptions;
 using Common.Models.Dtos;
 using Common.Services.Repositories;
 using PaymentService.Models.Entities;
+using PaymentService.Repositories;
 
 namespace PaymentService.Services;
 
 public class PaymentService : IPaymentService
 {
-    private readonly IMongoDbRepository _repository;
+    private readonly IPaymentRepository _repository;
 
     private readonly IMapper _mapper;
 
     public PaymentService(
-        IMongoDbRepository repository, 
+        IPaymentRepository repository, 
         IMapper mapper)
     {
         _repository = repository;
@@ -25,6 +26,15 @@ public class PaymentService : IPaymentService
     public async Task<PaymentDto> GetByIdAsync(Guid id)
     {
         var payment = await _repository.GetByIdAsync<Guid, Payment>(id);
+        if (payment == null)
+            throw new NotFoundException();
+
+        return _mapper.Map<PaymentDto>(payment);
+    }
+
+    public async Task<PaymentDto> GetByRentalIdAsync(Guid rentalId)
+    {
+        var payment = await _repository.GetByRentalIdAsync(rentalId);
         if (payment == null)
             throw new NotFoundException();
 

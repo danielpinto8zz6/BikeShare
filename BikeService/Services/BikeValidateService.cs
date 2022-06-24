@@ -2,15 +2,14 @@ using System;
 using System.Threading.Tasks;
 using BikeValidateService.Services;
 using Common.Models.Dtos;
-using LSG.GenericCrud.Services;
 
 namespace BikeService.Services
 {
     public class BikeValidateService : IBikeValidateService
     {
-        private readonly ICrudService<Guid, BikeDto> _bikeService;
+        private readonly IBikeService _bikeService;
 
-        public BikeValidateService(ICrudService<Guid, BikeDto> bikeService)
+        public BikeValidateService(IBikeService bikeService)
         {
             _bikeService = bikeService;
         }

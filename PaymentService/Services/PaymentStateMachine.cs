@@ -4,7 +4,6 @@ using Common.Models.Commands.Payment;
 using Common.Models.Dtos;
 using Common.Models.Enums;
 using Common.Models.Events.Payment;
-using LSG.GenericCrud.Services;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -99,7 +98,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         state.Payment = payment;
 
         using var scope = _serviceProvider.CreateScope();
-        var paymentService = scope.ServiceProvider.GetRequiredService<ICrudService<Guid, PaymentDto>>();
+        var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
 
         await paymentService.UpdateAsync(payment.Id, payment);
     }

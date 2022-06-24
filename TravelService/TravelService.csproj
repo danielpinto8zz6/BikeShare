@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Common.Models\Common.Models.csproj" />
       <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
+      <ProjectReference Include="..\TravelEventService\TravelEventService.csproj" />
     </ItemGroup>
     
 </Project>

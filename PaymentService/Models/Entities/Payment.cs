@@ -13,10 +13,8 @@ public class Payment : IBaseEntity<Guid>
     public PaymentStatus Status { get; set; }
 
     public double? Value { get; set; }
-
-    public DateTime StartDate { get; set; }
-
-    public DateTime EndDate { get; set; }
+    
+    public double? Duration { get; set; }
 
     public Guid RentalId { get; set; }
     

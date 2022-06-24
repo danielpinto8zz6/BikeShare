@@ -126,3 +126,15 @@ Authorization: Bearer {{authToken}}
     "originDockId": "53ce1a33-2b6a-4a3a-a4d3-95555ab60edf",
     "bikeId": "da9625ca-a099-41d6-92bc-cdc9a473d49b"
 }
+
+###
+
+GET http://192.168.1.199:8099/api/Payments/rental/51269dfe-a81c-4567-956f-3a500878fc82
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET http://192.168.1.199:6030/api/Payments/rental/51269dfe-a81c-4567-956f-3a500878fc82
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

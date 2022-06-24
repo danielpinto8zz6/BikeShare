@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using PaymentService.Consumers;
 using PaymentService.Models.Entities;
+using PaymentService.Repositories;
 using PaymentService.Saga;
 using PaymentService.Services;
 using Steeltoe.Discovery.Client;
@@ -48,11 +49,11 @@ namespace PaymentService
                 new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
             services.AddScoped<IPaymentService, Services.PaymentService>();
-            services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+            services.AddScoped<IPaymentRepository, PaymentRepository>(provider =>
             {
                 var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-                return new MongoDbRepository(mongoClient, "payment");
+                return new PaymentRepository(mongoClient, "payment");
             });
 
             var automapperConfiguration = new MapperConfiguration(conf =>

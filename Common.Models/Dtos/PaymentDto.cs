@@ -9,12 +9,10 @@ namespace Common.Models.Dtos
         public string Username { get; set; }
         
         public PaymentStatus Status { get; set; }
+       
+        public double? Duration { get; set; }
 
         public double? Value { get; set; }
-
-        public DateTime StartDate { get; set; }
-
-        public DateTime EndDate { get; set; }
 
         public Guid RentalId { get; set; }
     }

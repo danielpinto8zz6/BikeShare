@@ -17,3 +17,5 @@
 | payment-service | 6030 |
 | payment-calculator-service | 6040 |
 | travel-event-service | 6050 |
+
+db.dock.createIndex( { geometry : "2dsphere" } )

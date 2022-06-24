@@ -56,7 +56,7 @@ public static class ServiceExtensions
 
         services.AddSingleton(automapperConfiguration.CreateMapper());
 
-        services.AddTransient<ReverseGeocoder>();
+        services.AddScoped<ReverseGeocoder>();
 
         services.AddMassTransit(x =>
         {

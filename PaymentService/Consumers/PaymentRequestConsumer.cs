@@ -3,19 +3,19 @@ using System.Threading.Tasks;
 using Common.Models.Dtos;
 using Common.Models.Enums;
 using Common.Models.Events.Payment;
-using LSG.GenericCrud.Services;
 using MassTransit;
+using PaymentService.Services;
 
 namespace PaymentService.Consumers;
 
 public class PaymentRequestConsumer : IConsumer<PaymentRequestDto>
 {
-    private readonly ICrudService<Guid, PaymentDto> _paymentService;
+    private readonly IPaymentService _paymentService;
 
     private readonly IPublishEndpoint _publishEndpoint;
 
     public PaymentRequestConsumer(
-        ICrudService<Guid, PaymentDto> paymentService,
+        IPaymentService paymentService,
         IPublishEndpoint publishEndpoint)
     {
         _paymentService = paymentService;
@@ -28,9 +28,8 @@ public class PaymentRequestConsumer : IConsumer<PaymentRequestDto>
         var payment = new PaymentDto
         {
             Status = PaymentStatus.Requested,
-            StartDate = paymentRequest.StartDate,
-            EndDate = paymentRequest.EndDate,
-            RentalId = paymentRequest.RentalId
+            RentalId = paymentRequest.RentalId,
+            Duration = (paymentRequest.EndDate - paymentRequest.StartDate).TotalMinutes
         };
 
         var paymentDto = await _paymentService.CreateAsync(payment);
