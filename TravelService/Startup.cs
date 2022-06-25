@@ -3,6 +3,9 @@ using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services;
+using Common.TravelEvent.Entities;
+using Common.TravelEvent.Repositories;
+using Common.TravelEvent.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,9 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
-using TravelEventService.Entities;
-using TravelEventService.Repositories;
-using TravelEventService.Services;
+using Steeltoe.Discovery.Eureka;
 
 namespace TravelService
 {
@@ -30,7 +31,7 @@ namespace TravelService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscoveryClient(Configuration);
+            services.AddServiceDiscovery(opt => opt.UseEureka());
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -59,7 +60,7 @@ namespace TravelService
             services.AddScoped<IMongoClient, MongoClient>(_ =>
                 new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
-            services.AddScoped<ITravelEventService, TravelEventService.Services.TravelEventService>();
+            services.AddScoped<ITravelEventService, TravelEventService>();
             services.AddScoped<ITravelEventRepository, TravelEventRepository>(provider =>
             {
                 var mongoClient = provider.GetRequiredService<IMongoClient>();

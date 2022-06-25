@@ -17,13 +17,13 @@ public class UsersController : ControllerBase
     {
         _service = service;
     }
-
-    [HttpGet("{username}")]
-    public async Task<ActionResult<ApplicationUserDto>> GetByUsername(string username)
+    
+    [HttpGet("me")]
+    public async Task<ActionResult<UserDto>> Get([FromHeader(Name = "UserId")] string userId)
     {
         try
         {
-            var user = await _service.GetByUsernameAsync(username);
+            var user = await _service.GetByUsernameAsync(userId);
             return Ok(user);
         }
         catch (NotFoundException ex)
@@ -33,25 +33,25 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApplicationUserDto>> Create(
-        [FromBody] ApplicationUserDto applicationUserDto)
+    public async Task<ActionResult<UserDto>> Create(
+        [FromBody] UserDto userDto)
     {
-        var user = await _service.CreateAsync(applicationUserDto);
+        var user = await _service.CreateAsync(userDto);
 
-        return CreatedAtAction("GetByUsername", new
+        return CreatedAtAction("Get", new
         {
             username = user.Username
         }, user);
     }
 
-    [HttpPut("{username}")]
+    [HttpPut("me")]
     public async Task<IActionResult> Update(
-        string username,
-        [FromBody] ApplicationUserDto applicationUserDto)
+        [FromHeader(Name = "UserId")] string userId,
+        [FromBody] UserDto userDto)
     {
         try
         {
-            await _service.UpdateAsync(username, applicationUserDto);
+            await _service.UpdateAsync(userId, userDto);
             return NoContent();
         }
         catch (NotFoundException ex)
@@ -60,21 +60,32 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpPost("{username}/credit-card")]
+    [HttpPost("me/credit-cards")]
     public async Task<IActionResult> AddCreditCardAsync(
-        [FromRoute] string username,
+        [FromHeader(Name = "UserId")] string userId,
         [FromBody] CreditCardDto creditCardDto)
     {
-        await _service.AddCreditCardAsync(username, creditCardDto);
+        await _service.AddCreditCardAsync(userId, creditCardDto);
 
         return Ok();
     }
 
-    [HttpGet("{username}/credit-card")]
-    public async Task<ActionResult<IEnumerable<CreditCardDto>>> GetCreditCardsByUsernameAsync(string username)
+    [HttpGet("me/credit-cards")]
+    public async Task<ActionResult<IEnumerable<CreditCardDto>>> GetCreditCardsByUsernameAsync(
+        [FromHeader(Name = "UserId")] string userId)
     {
-        var creditCards = await _service.GetCreditCardsByUsernameAsync(username);
+        var creditCards = await _service.GetCreditCardsByUsernameAsync(userId);
 
         return Ok(creditCards);
+    }
+    
+    [HttpDelete("me/credit-cards/{creditCardNumber}")]
+    public async Task<ActionResult<IEnumerable<CreditCardDto>>> DeleteCreditCardByNumberAsync(
+        [FromHeader(Name = "UserId")] string userId,
+        string creditCardNumber)
+    {
+        await _service.DeleteCreditCardByNumberAsync(userId, creditCardNumber);
+
+        return Ok();
     }
 }

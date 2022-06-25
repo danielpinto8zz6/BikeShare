@@ -1,10 +1,9 @@
 using AutoMapper;
 using Common.Extensions.Exceptions;
 using Common.Models.Dtos;
-using TravelEventService.Entities;
-using TravelEventService.Repositories;
+using Common.TravelEvent.Repositories;
 
-namespace TravelEventService.Services;
+namespace Common.TravelEvent.Services;
 
 public class TravelEventService : ITravelEventService
 {
@@ -22,9 +21,9 @@ public class TravelEventService : ITravelEventService
 
     public async Task<TravelEventDto> CreateAsync(TravelEventDto travelEventDto)
     {
-        var entity = _mapper.Map<TravelEvent>(travelEventDto);
+        var entity = _mapper.Map<Entities.TravelEvent>(travelEventDto);
 
-        var result = await _repository.CreateAsync<Guid, TravelEvent>(entity);
+        var result = await _repository.CreateAsync<Guid, Entities.TravelEvent>(entity);
 
         return _mapper.Map<TravelEventDto>(result);
     }

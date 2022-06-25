@@ -2,14 +2,18 @@ using AutoMapper;
 using Common.Models;
 using Common.Models.Constants;
 using Common.Models.Dtos;
-using Common.Services.Repositories;
+using Common.TravelEvent.Entities;
+using Common.TravelEvent.Repositories;
+using Common.TravelEvent.Services;
 using MassTransit;
 using MongoDB.Driver;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 using TravelEventService.Consumers;
-using TravelEventService.Entities;
-using TravelEventService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddServiceDiscovery(opt => opt.UseEureka());
 
 builder.Services.AddMassTransit(x =>
 {
@@ -44,12 +48,12 @@ builder.Services.AddSingleton(automapperConfiguration.CreateMapper());
 builder.Services.AddScoped<IMongoClient, MongoClient>(_ =>
     new MongoClient(builder.Configuration.GetConnectionString("MongoDb")));
 
-builder.Services.AddScoped<ITravelEventService, TravelEventService.Services.TravelEventService>();
-builder.Services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+builder.Services.AddScoped<ITravelEventService, Common.TravelEvent.Services.TravelEventService>();
+builder.Services.AddScoped<ITravelEventRepository, TravelEventRepository>(provider =>
 {
     var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-    return new MongoDbRepository(mongoClient, "bike");
+    return new TravelEventRepository(mongoClient, "travel-event");
 });
 
 

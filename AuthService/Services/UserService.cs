@@ -13,7 +13,7 @@ namespace AuthService.Services
             _userGateway = userGateway;
         }
 
-        public Task<ApplicationUserDto> GetByUsernameAsync(string username)
+        public Task<UserDto> GetByUsernameAsync(string username)
         {
             return _userGateway.GetByUsernameAsync(username);
         }

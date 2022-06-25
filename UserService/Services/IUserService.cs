@@ -6,9 +6,10 @@ namespace UserService.Services;
 
 public interface IUserService
 {
-    Task<ApplicationUserDto> GetByUsernameAsync(string username);
-    Task<ApplicationUserDto> CreateAsync(ApplicationUserDto applicationUserDto);
-    Task<ApplicationUserDto> UpdateAsync(string username, ApplicationUserDto applicationUserDto);
+    Task<UserDto> GetByUsernameAsync(string username);
+    Task<UserDto> CreateAsync(UserDto userDto);
+    Task<UserDto> UpdateAsync(string username, UserDto userDto);
     Task AddCreditCardAsync(string username, CreditCardDto creditCardDto);
     Task<IEnumerable<CreditCardDto>> GetCreditCardsByUsernameAsync(string username);
+    Task DeleteCreditCardByNumberAsync(string username, string creditCardNumber);
 }

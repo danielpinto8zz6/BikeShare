@@ -7,7 +7,7 @@ namespace RentalService.Services
 {
     public interface IRentalService
     {
-        Task<IEnumerable<RentalDto>> GetHistoryByUsernameAsync(string username);
+        Task<IEnumerable<RentalDto>> GetByUsernameAsync(string username);
         Task<IEnumerable<RentalDto>> GetAllAsync();
         Task<RentalDto> GetByIdAsync(Guid id);
         Task<RentalDto> CreateAsync(RentalDto rentalDto);

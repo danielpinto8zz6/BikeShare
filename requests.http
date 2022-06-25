@@ -33,6 +33,20 @@ Content-Type: application/json
 
 ###
 
+@authToken = {{auth.response.body.$.token}}
+
+# @name auth
+POST http://localhost:5010/api/Auth HTTP/1.1
+Content-Type: application/json
+UserId: daniel
+
+{
+    "username": "daniel",
+    "password": "daniel"
+}
+
+###
+
 POST  http://localhost:5060/TravelEvent
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
@@ -138,3 +152,49 @@ Authorization: Bearer {{authToken}}
 GET http://192.168.1.199:6030/api/Payments/rental/51269dfe-a81c-4567-956f-3a500878fc82
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+###
+
+POST http://{{host}}/api/users/me/credit-cards HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "cardNumber": "123",
+    "cardHolderName": "daniel",
+    "cvvCode": "123",
+    "expiryDate": "12/22"
+}
+
+###
+
+GET http://{{host}}/api/users/me/credit-cards HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET http://{{host}}/api/rentals/history HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+GET http://{{host}}/api/travel/rental/f2fcc7e6-5b9d-45c9-8231-056efbf52777
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+POST http://{{host}}/api/travel HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "coordinates": {
+        "latitude": 41.23837936576801,
+        "longitude": -8.139483094607279
+    },
+    "rentalId": "51269dfe-a81c-4567-956f-3a500878fc82",
+    "username": "daniel"
+}

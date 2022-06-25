@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Models.Dtos;
 using Common.Services;
+using Common.TravelEvent.Services;
 using Microsoft.AspNetCore.Mvc;
-using TravelEventService.Services;
 
 namespace TravelService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TravelController : ControllerBase
 {
     private readonly IProducer<TravelEventDto> _producer;

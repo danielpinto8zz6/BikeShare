@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services", "Common.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelEventService", "TravelEventService\TravelEventService.csproj", "{386DEB38-1D72-4458-86BF-C89892B3083D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.TravelEvent", "Common.TravelEvent\Common.TravelEvent.csproj", "{7DE608DF-24A0-416D-9D43-7575CD7A4143}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +116,9 @@ Global
 		{386DEB38-1D72-4458-86BF-C89892B3083D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{386DEB38-1D72-4458-86BF-C89892B3083D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{386DEB38-1D72-4458-86BF-C89892B3083D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DE608DF-24A0-416D-9D43-7575CD7A4143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DE608DF-24A0-416D-9D43-7575CD7A4143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DE608DF-24A0-416D-9D43-7575CD7A4143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DE608DF-24A0-416D-9D43-7575CD7A4143}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -71,7 +71,7 @@ public class RentalService : IRentalService
         return _mapper.Map<RentalDto>(result);
     }
 
-    public async Task<IEnumerable<RentalDto>> GetHistoryByUsernameAsync(string username)
+    public async Task<IEnumerable<RentalDto>> GetByUsernameAsync(string username)
     {
         var entities = await _repository.GetAllAsync<Guid, Rental>();
         var rentals = _mapper.Map<IEnumerable<RentalDto>>(entities.Where(i => i.Username == username));

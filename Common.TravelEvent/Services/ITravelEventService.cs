@@ -1,6 +1,6 @@
 using Common.Models.Dtos;
 
-namespace TravelEventService.Services;
+namespace Common.TravelEvent.Services;
 
 public interface ITravelEventService
 {

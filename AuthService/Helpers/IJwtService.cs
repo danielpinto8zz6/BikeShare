@@ -4,6 +4,6 @@ namespace AuthService.Helpers
 {
     public interface IJwtService
     {
-        string GenerateToken(ApplicationUserDto user);
+        string GenerateToken(UserDto user);
     }
 }

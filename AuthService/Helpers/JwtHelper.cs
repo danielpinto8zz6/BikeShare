@@ -17,7 +17,7 @@ namespace AuthService.Helpers
             _appSettings = appSettings.Value;
         }
 
-        public string GenerateToken(ApplicationUserDto user)
+        public string GenerateToken(UserDto user)
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();

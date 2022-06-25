@@ -1,9 +1,8 @@
-using System;
 using Common.Models.Dtos;
 
-namespace TravelEventProcessService.Entities
+namespace Common.TravelEvent.Entities
 {
-    public class TravelEvent : IBaseEntity
+    public class TravelEvent : IBaseEntity<Guid>
     {
         public Guid Id { get; set; }
         
@@ -13,12 +12,10 @@ namespace TravelEventProcessService.Entities
         
         public DateTime? DeletedDate { get; set; }
 
-        public double Latitude { get; set; }
-
-        public double Longitude { get; set; }
+        public CoordinatesDto Coordinates { get; set; }
 
         public Guid RentalId { get; set; }
 
-        public Guid UserId { get; set; }
+        public string Username { get; set; }
     }
 }

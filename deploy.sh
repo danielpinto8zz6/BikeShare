@@ -34,9 +34,6 @@ case $1 in
   "rental-service")
     deploy_service "rental-service" "RentalService"
     ;;
-  "travel-event-process-service")
-    deploy_service "travel-event-process-service" "TravelEventProcessService"
-    ;;
   "rental-process-service")
     deploy_service "rental-process-service" "RentalProcessService"
     ;;

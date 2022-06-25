@@ -6,7 +6,7 @@ namespace AuthService.Gateways.Clients
 {
     public interface IUserClient
     {
-        [Get("/users/{username}")]
-        Task<ApplicationUserDto> GetByUsernameAsync(string username);
+        [Get("/users/me")]
+        Task<UserDto> GetByUsernameAsync([Header("UserId")] string username);
     }
 }

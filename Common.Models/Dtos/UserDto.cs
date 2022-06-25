@@ -1,6 +1,6 @@
 namespace Common.Models.Dtos;
 
-public class ApplicationUserDto : IEntity<string>
+public class UserDto : IEntity<string>
 {
     public string Id { get; set; }
 

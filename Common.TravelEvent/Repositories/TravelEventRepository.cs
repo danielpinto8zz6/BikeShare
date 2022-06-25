@@ -1,8 +1,7 @@
 using Common.Services.Repositories;
 using MongoDB.Driver;
-using TravelEventService.Entities;
 
-namespace TravelEventService.Repositories;
+namespace Common.TravelEvent.Repositories;
 
 public class TravelEventRepository : MongoDbRepository, ITravelEventRepository
 {
@@ -13,11 +12,11 @@ public class TravelEventRepository : MongoDbRepository, ITravelEventRepository
         _mongoDatabase = mongoClient.GetDatabase(databaseName);
     }
 
-    public async Task<IEnumerable<TravelEvent>> GetByRentalIdAsync(Guid rentalId)
+    public async Task<IEnumerable<Entities.TravelEvent>> GetByRentalIdAsync(Guid rentalId)
     {
-        var mongoCollection = _mongoDatabase.GetCollection<TravelEvent>(nameof(TravelEvent));
+        var mongoCollection = _mongoDatabase.GetCollection<Entities.TravelEvent>(nameof(Entities.TravelEvent));
 
-        var filter = Builders<TravelEvent>.Filter.Eq(travelEvent => travelEvent.RentalId, rentalId);
+        var filter = Builders<Entities.TravelEvent>.Filter.Eq(travelEvent => travelEvent.RentalId, rentalId);
 
         return await mongoCollection
             .Find(filter)

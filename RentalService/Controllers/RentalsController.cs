@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Extensions.Exceptions;
 using Common.Models.Dtos;
@@ -34,16 +33,19 @@ namespace RentalService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<RentalDto>> GetAllAsync()
+        public async Task<ActionResult<RentalDto>> GetAllAsync([FromHeader(Name = "UserId")] string userId)
         {
-            var rental = await _rentalService.GetAllAsync();
-            return Ok(rental);
+            var rentals = await _rentalService.GetByUsernameAsync(userId);
+            
+            return Ok(rentals);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RentalDto>> Create([FromBody] RentalDto rentalDto)
+        public async Task<ActionResult<RentalDto>> Create(
+            [FromHeader(Name = "UserId")] string userId,
+            [FromBody] RentalDto rentalDto)
         {
-            rentalDto.Username = Request.Headers["UserId"];
+            rentalDto.Username = userId;
 
             var result = await _rentalService.CreateAsync(rentalDto);
 
@@ -55,10 +57,11 @@ namespace RentalService.Controllers
         
         [HttpPut("{id}")]
         public async Task<ActionResult<RentalDto>> UpdateAsync(
+            [FromHeader(Name = "UserId")] string userId,
             [FromRoute]Guid id, 
             [FromBody] RentalDto rentalDto)
         {
-            rentalDto.Username = Request.Headers["UserId"];
+            rentalDto.Username = userId;
             
             try
             {
@@ -70,14 +73,6 @@ namespace RentalService.Controllers
             {
                 return NotFound();
             }
-        }
-
-        [HttpGet("history/{username}")]
-        public async Task<ActionResult<IEnumerable<RentalDto>>> GetHistoryByUsername([FromRoute] string username)
-        {
-            var rentals = await _rentalService.GetHistoryByUsernameAsync(username);
-
-            return Ok(rentals);
         }
     }
 }

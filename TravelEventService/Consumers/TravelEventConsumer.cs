@@ -1,6 +1,6 @@
 using Common.Models.Dtos;
+using Common.TravelEvent.Services;
 using MassTransit;
-using TravelEventService.Services;
 
 namespace TravelEventService.Consumers
 {

@@ -52,11 +52,11 @@ namespace UserService
             
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
-                conf.CreateMap<ApplicationUserDto, ApplicationUser>()
+                conf.CreateMap<UserDto, ApplicationUser>()
                     .ForMember(item => item.Id, expression => expression.MapFrom(src => src.Username))
                     .ForMember(item => item.PasswordHash, expression => expression.MapFrom(src => passwordService.Hash(src.Password)));
 
-                conf.CreateMap<ApplicationUser, ApplicationUserDto>()
+                conf.CreateMap<ApplicationUser, UserDto>()
                     .ForMember(item => item.Password, opt => opt.Ignore());
 
                 conf.CreateMap<CreditCard, CreditCardDto>();

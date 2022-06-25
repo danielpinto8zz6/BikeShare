@@ -4,11 +4,9 @@ public class TravelEventDto : IEntity<Guid>
 {
     public Guid Id { get; set; }
 
-    public double Latitude { get; set; }
-
-    public double Longitude { get; set; }
+    public CoordinatesDto Coordinates { get; set; }
 
     public Guid RentalId { get; set; }
 
-    public Guid UserId { get; set; }
+    public string Username { get; set; }
 }
