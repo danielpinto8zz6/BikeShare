@@ -10,9 +10,9 @@ public class MobileMessagingClient : IMobileMessagingClient
 
     public MobileMessagingClient()
     {
-        var app = FirebaseApp.Create(new AppOptions
+        var app = FirebaseApp.Create(new AppOptions()
         {
-            Credential = GoogleCredential.FromFile("bikeshare-6b7f0-firebase-adminsdk-7ofm0-fd08b8cbba.json")
+            Credential = GoogleCredential.GetApplicationDefault(),
         });
 
         Instance = FirebaseMessaging.GetMessaging(app);

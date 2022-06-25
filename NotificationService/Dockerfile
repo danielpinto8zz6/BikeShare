@@ -17,4 +17,6 @@ RUN dotnet publish "NotificationService.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ["NotificationService/bikeshare-6b7f0-firebase-adminsdk-7ofm0-fd08b8cbba.json", ""]
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/bikeshare-6b7f0-firebase-adminsdk-7ofm0-fd08b8cbba.json                                                                                               
 ENTRYPOINT ["dotnet", "NotificationService.dll"]
