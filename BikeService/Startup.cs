@@ -1,8 +1,8 @@
 using System;
 using AutoMapper;
+using BikeService.Consumers;
 using BikeService.Models.Entities;
 using BikeService.Services;
-using BikeValidateService.Consumers;
 using Common.Models;
 using Common.Models.Dtos;
 using Common.Services;

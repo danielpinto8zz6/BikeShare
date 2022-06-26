@@ -1,53 +1,70 @@
 using System.Threading.Tasks;
-using Common.Models.Commands;
+using BikeService.Services;
+using Common.Extensions.Exceptions;
 using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
-using Common.Models.Events;
 using Common.Models.Events.Rental;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace BikeValidateService.Consumers
+namespace BikeService.Consumers
 {
     public class ValidateBikeConsumer : IConsumer<IValidateBike>
     {
-        // private readonly IBikeValidateService _bikeValidateService;
+        private readonly IBikeService _bikeService;
 
         private readonly ILogger<ValidateBikeConsumer> _logger;
 
         public ValidateBikeConsumer(
-            // IBikeValidateService bikeValidateService,
-            ILogger<ValidateBikeConsumer> logger
-        )
+            ILogger<ValidateBikeConsumer> logger, IBikeService bikeService)
         {
-            // _bikeValidateService = bikeValidateService;
             _logger = logger;
+            _bikeService = bikeService;
         }
 
         public async Task Consume(ConsumeContext<IValidateBike> context)
         {
             _logger.LogInformation($"Validate bike to {context.CorrelationId} was received");
 
-            // var isBikeValid = await _bikeValidateService.IsBikeValidAsync(context.Message.Rental);
-            var isBikeValid = true;
+            bool isBikeValid;
+            try
+            {
+                var bike = await _bikeService.GetByIdAsync(context.Message.Rental.BikeId);
+                isBikeValid = bike != null;
+            }
+            catch (NotFoundException e)
+            {
+                _logger.LogError($"Bike {context.Message.Rental.BikeId} not found in database!");
+
+                isBikeValid = false;
+            }
 
             UpdateRentalState(
                 context.Message.Rental,
                 isBikeValid ? RentalStatus.BikeValidated : RentalStatus.BikeValidationFailed);
 
             if (isBikeValid)
+            {
+                _logger.LogInformation($"Bike validated for {context.CorrelationId}!");
+
                 await context.Publish<IBikeValidated>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental
                 });
+            }
+
             else
+            {
+                _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
+
                 await context.Publish<IBikeValidationFailed>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental
                 });
+            }
         }
 
         private static void UpdateRentalState(RentalDto rentalDto, RentalStatus status)
