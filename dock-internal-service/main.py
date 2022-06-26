@@ -7,9 +7,9 @@ from json import JSONEncoder
 import dock_manager
 import RPi.GPIO as gpio
 import bike_reader
-from multiprocessing import Process
-import rental_api
-
+from multiprocessing import Process, Manager, Lock
+import message_cache
+from datetime import datetime
 
 lamp_one = 37
 lamp_two = 11
@@ -22,6 +22,7 @@ RABBITMQ_VIRTUAL_HOST = '/'
 
 BIKE_UNLOCKED_EXCHANGE = 'Common.Models.Events.Rental:IBikeUnlocked'
 BIKE_LOCKED_EXCHANGE = 'Common.Models.Events.Rental:IBikeLocked'
+
 
 credentials = PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
 conf = RabbitMQConfiguration(credentials,
@@ -45,53 +46,82 @@ def send_message(body, correlation_id, rental, exchange):
 
 
 def on_bike_unlock(ch, method, properties, body):
+    global lock
     msg = json.loads(body.decode())
     dock_id = msg['message']['rental']['originDockId']
-    print(" [X] Received unlock command for dock with id: " + dock_id)
+    print(" [X] Trying to unlock bike on dock: " + dock_id)
     rental = msg['message']['rental']
     correlation_id = msg['message']['correlationId']
 
-    bike_id = dock_manager.get_dock_by_id(dock_id)['bikeId']
+    bike_id = dock_manager.unlock_dock(lock, dock_id)
+
+    print(' [X] Bike: ' + str(bike_id) + ' unlocked')
+
     rental['status'] = 6
-    rental['bikeId'] = bike_id
+    rental['startDate'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    dock_manager.unlock_dock(dock_id)
+    print(' [X] Persisting in cache')
 
-    msg['bikeId'] = bike_id
+    message_cache.persist_message(bike_id, msg)
 
-    #CardRead.write(msg)
-    rental_api.save_rental_data(save_rental_data)
-
-    print(' [X] Notifying service of port unlocked')
+    print(' [X] Notifying service')
+    print('')
     send_message(msg, correlation_id, rental, BIKE_UNLOCKED_EXCHANGE)
 
-
-def on_bike_lock(data):
-    (id, text, port) = data
-    dock_port = port
-    bike_id = id
+def on_bike_lock(data, lock):
+    dock_port = data['port']
+    bike_id = data['data'].strip()
     
-    dock = dock_manager.lock_dock(dock_port, bike_id)
+    print(' [X] Locking bike: ' + bike_id + ' on port ' + str(dock_port))
 
-    rental_data = rental_api.get_rental_data_by_bike_id(bike_id)
-    rental_data['message']['destinationDockId'] = dock['id']
+    dock = dock_manager.lock_dock(lock, dock_port, bike_id)
 
-    print(' [X] Notifying service of port locked')
-    send_message(rental_data, rental_data['message']['correlationId'], rental_data['message']['rental'], BIKE_LOCKED_EXCHANGE)
+    print(' [X] Bike locked, notifying service...')
+
+    msg = message_cache.get_message(dock['bikeId'])
+
+    correlation_id = msg['message']['correlationId']
+    
+    rental = msg['message']['rental']
+    rental['destinationDockId'] = dock['id']
+    rental['endDate'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    print(rental)
+
+    send_message(msg, correlation_id, rental, BIKE_LOCKED_EXCHANGE)
 
 
-def start_receiver():
-    # define receiver
-    receiver = RabbitMQReceiver(conf, 'bike-unlock')
-    receiver.add_on_message_callback(on_bike_unlock)
-    receiver.start_consuming()
+def start_reader(lock):
+    reader = bike_reader.start_readers()
+    print(' [X] Reading...')
+    for data in reader:
+        port = data['port']
+        print(' [X] Bike trying to attach to port: ' + str(port))
+        is_port_open = dock_manager.is_port_open(lock, port)
+        if is_port_open:
+            print(' [X] Port is open, attaching...')
+            on_bike_lock(data, lock)
+            print('')
+        else:
+            print(' [X] Port: ' + str(port) + ' occupied, ignoring')
+            print('')
 
-receiver = Process(target=start_receiver)
-receiver.start()
 
-reader = bike_reader.start_readers()
-print('reading')
-for data in reader:
-    (id, text, port) = data
-    print('[' + str(id) + '] ' + text)
-    on_bike_lock(data)
+if __name__ == '__main__':
+    try:
+        lock = Lock()
+        open_ports = dock_manager.set_docks_state()
+
+        print(" [X] Open ports: ", open_ports)
+
+        reader = Process(target=start_reader, args=(lock, ))
+        reader.start()
+
+
+        # define receiver
+        receiver = RabbitMQReceiver(conf, 'bike-unlock')
+        receiver.add_on_message_callback(on_bike_unlock)
+        receiver.start_consuming()
+    except KeyboardInterrupt:
+        print('Cleaning gpio before exit.')
+        gpio.cleanup()

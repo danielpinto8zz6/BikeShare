@@ -182,7 +182,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
         await sendEndpoint.Send<TCommand>(new
         {
-            context.CorrelationId,
+            context.Message.Rental.Id,
             context.Message.Rental
         });
     }
