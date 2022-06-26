@@ -65,8 +65,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         Event(() => BikeValidated, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeReserved, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeUnlocked, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => BikeLocked, x => x.CorrelateById(c => c.Message.CorrelationId)
-            .SelectId(c => c.Message.CorrelationId));
+        Event(() => BikeLocked, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeAttached, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeValidationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeReservationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
