@@ -123,7 +123,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeAttached)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
             .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-            .ThenAsync(c => SendPaymentRequest(c.Message.Rental))
+            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
             .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
             .TransitionTo(Completed);
 
@@ -188,7 +188,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         });
     }
 
-    private async Task SendPaymentRequest(RentalDto rentalDto)
+    private async Task SendPaymentRequest(ISendEndpointProvider context, RentalDto rentalDto)
     {
         using var scope = _serviceProvider.CreateScope();
 
@@ -205,8 +205,9 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             EndDate = rentalDto.EndDate.Value
         };
 
-        var paymentProcessProducer = scope.ServiceProvider.GetService<IProducer<PaymentRequestDto>>();
-        if (paymentProcessProducer != null) await paymentProcessProducer.ProduceAsync(paymentRequest);
+        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/payment-request"));
+
+        await sendEndpoint.Send(paymentRequest);
     }
 
     public State Validating { get; private set; }

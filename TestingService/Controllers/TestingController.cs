@@ -9,18 +9,28 @@ namespace TestingService.Controllers;
 public class TestingController : ControllerBase
 {
     private readonly IProducer<NotificationDto> _notificationProducer;
-    
 
+    private readonly IProducer<PaymentRequestDto> _paymentProducer;
+    
     public TestingController(
-        IProducer<NotificationDto> notificationProducer)
+        IProducer<NotificationDto> notificationProducer, IProducer<PaymentRequestDto> paymentProducer)
     {
         _notificationProducer = notificationProducer;
+        _paymentProducer = paymentProducer;
     }
 
     [HttpPost("notification")]
     public IActionResult AddNotificationAsync([FromBody] NotificationDto notificationDto)
     {
         _notificationProducer.ProduceAsync(notificationDto);
+
+        return Accepted();
+    }
+    
+    [HttpPost("payment")]
+    public IActionResult AddNotificationAsync([FromBody] PaymentRequestDto paymentRequestDto)
+    {
+        _paymentProducer.ProduceAsync(paymentRequestDto);
 
         return Accepted();
     }
