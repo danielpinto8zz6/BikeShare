@@ -8,7 +8,6 @@
 | user-service | 5040 |
 | rental-service | 5050 |
 | travel-service | 5060 |
-| rental-process-service | 5070 |
 | notification-service | 5080 |
 | token-service | 5090 |
 | dummy-dock-service | 6000 |
