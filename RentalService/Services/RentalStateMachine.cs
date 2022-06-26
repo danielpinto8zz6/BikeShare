@@ -112,21 +112,21 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
             .TransitionTo(Locking);
 
+    private EventActivityBinder<RentalState, IBikeAttached> SetBikeAttachedHandler() =>
+        When(BikeAttached)
+            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
+            .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
+//            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
+//            .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
+            .Finalize();
+
     private EventActivityBinder<RentalState, IBikeUnlockFailed> SetBikeUnlockFailedHandler() =>
         When(BikeUnlockFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlockFailed))
             .Then(c => _logger.LogInformation($"Bike unlock failed to {c.CorrelationId} received"))
             .ThenAsync(NotificationHelper.SendBikeUnlockFailedNotificationAsync)
             .TransitionTo(Failed);
-
-    private EventActivityBinder<RentalState, IBikeAttached> SetBikeAttachedHandler() =>
-        When(BikeAttached)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
-            .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
-            .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
-            .Finalize();
-
+    
     private EventActivityBinder<RentalState, IBikeLockFailed> SetBikeLockFailedHandler() =>
         When(BikeLockFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLockFailed))
