@@ -8,7 +8,7 @@ spec:
   type: LoadBalancer
   ports:
     - name: payment-validator-port
-      port: 6030
+      port: 6020
       targetPort: 80
 ---
 apiVersion: apps/v1

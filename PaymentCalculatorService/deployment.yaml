@@ -8,7 +8,7 @@ spec:
   type: LoadBalancer
   ports:
     - name: payment-calculator-port
-      port: 6030
+      port: 6040
       targetPort: 80
 ---
 apiVersion: apps/v1
