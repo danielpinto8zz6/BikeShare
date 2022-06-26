@@ -16,18 +16,21 @@ namespace Common.Services.Repositories
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
-            var result = await mongoCollection.Find(_ => true).ToListAsync();
+            var cursor = await mongoCollection.FindAsync(_ => true);
+            var results = await cursor.ToListAsync();
 
-            return result.AsQueryable();
+            return results.AsQueryable();
         }
 
-        public Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IBaseEntity<T1>, new()
+        public async Task<T2> GetByIdAsync<T1, T2>(T1 id) where T2 : class, IBaseEntity<T1>, new()
         {
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
             var filter = Builders<T2>.Filter.Eq("_id", id);
 
-            return mongoCollection.Find(filter).FirstOrDefaultAsync();
+            var cursor = await mongoCollection.FindAsync(filter);
+
+            return await cursor.FirstOrDefaultAsync();
         }
 
         public async Task<T2> CreateAsync<T1, T2>(T2 entity) where T2 : class, IBaseEntity<T1>, new()
@@ -35,7 +38,7 @@ namespace Common.Services.Repositories
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
             entity.CreatedDate = DateTime.UtcNow;
-            
+
             await mongoCollection.InsertOneAsync(entity);
 
             return entity;
@@ -47,7 +50,8 @@ namespace Common.Services.Repositories
 
             var filter = Builders<T2>.Filter.Eq("_id", id);
 
-            var result = await mongoCollection.Find(filter).FirstOrDefaultAsync();
+            var cursor = await mongoCollection.FindAsync(filter);
+            var result = await cursor.FirstOrDefaultAsync();
 
             await mongoCollection.DeleteOneAsync(filter);
 
@@ -59,7 +63,7 @@ namespace Common.Services.Repositories
             var mongoCollection = _mongoDatabase.GetCollection<T2>(typeof(T2).Name);
 
             entity.ModifiedDate = DateTime.UtcNow;
-            
+
             var filter = Builders<T2>.Filter.Eq(s => s.Id, id);
             await mongoCollection.ReplaceOneAsync(filter, entity);
 

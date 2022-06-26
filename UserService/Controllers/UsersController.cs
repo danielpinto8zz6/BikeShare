@@ -19,7 +19,6 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("me")]
-    [ResponseCache(NoStore = true, Duration = 0)]
     public async Task<ActionResult<UserDto>> Get([FromHeader(Name = "UserId")] string userId)
     {
         try
@@ -72,7 +71,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me/credit-cards")]
-    [ResponseCache(NoStore = true, Duration = 0)]
     public async Task<ActionResult<IEnumerable<CreditCardDto>>> GetCreditCardsByUsernameAsync(
         [FromHeader(Name = "UserId")] string userId)
     {
