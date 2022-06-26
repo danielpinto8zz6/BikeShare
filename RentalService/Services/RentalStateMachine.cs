@@ -56,9 +56,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             SetBikeAttachFailedHandler()
         );
         
-        During(Completed,
-            Ignore(RentalSubmitted));
-
         SetCompletedWhenFinalized();
     }
 
@@ -128,7 +125,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
             .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
             .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
-            .TransitionTo(Completed);
+            .Finalize();
 
     private EventActivityBinder<RentalState, IBikeLockFailed> SetBikeLockFailedHandler() =>
         When(BikeLockFailed)
@@ -220,9 +217,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     public State Unlocking { get; private set; }
 
     public State Locking { get; private set; }
-
-    public State Completed { get; private set; }
-
+    
     public State InUse { get; private set; }
 
     public State Failed { get; private set; }
