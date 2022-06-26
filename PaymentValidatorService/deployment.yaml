@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-validator-service
+spec:
+  selector:
+    app: payment-validator
+  type: LoadBalancer
+  ports:
+    - name: payment-validator-port
+      port: 6030
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-validator-deployment
+spec:
+  selector:
+    matchLabels:
+      app: payment-validator
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: payment-validator
+        version: v1
+    spec:
+      containers:
+      - name: payment-validator-container
+        image: payment-validator-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80

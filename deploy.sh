@@ -58,6 +58,12 @@ case $1 in
   "payment-service")
     deploy_service "payment-service" "PaymentService"
     ;;
+  "payment-calculator-service")
+    deploy_service "payment-calculator-service" "PaymentCalculatorService"
+    ;;
+  "payment-validator-service")
+    deploy_service "payment-validator-service" "PaymentValidatorService"
+    ;;
   "all")
     deploy_service "api-gateway" "ApiGateway"
     deploy_service "auth-service" "AuthService"
@@ -72,6 +78,8 @@ case $1 in
     deploy_service "token-service" "TokenService"
     deploy_service "dock-service" "DockService"
     deploy_service "payment-service" "PaymentService"
+    deploy_service "payment-calculator-service" "PaymentCalculatorService"
+    deploy_service "payment-validator-service" "PaymentValidatorService"
     ;;
   *)
     echo -e "unknown \n"
