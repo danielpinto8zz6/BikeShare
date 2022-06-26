@@ -8,6 +8,13 @@ namespace DockService.Models.Dtos
 
         public double Radius { get; set; }
 
-        public bool OnlyAvailable { get; set; }
+        public DockStatus FilterStatus { get; set; }
+    }
+
+    public enum DockStatus
+    {
+        All = 0,
+        WithBike,
+        WithoutBike
     }
 }

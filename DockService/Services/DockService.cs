@@ -26,8 +26,15 @@ namespace DockService.Services
         {
             var results = await _repository.GetNearByDocksAsync(nearByDocksRequestDto);
 
-            if (nearByDocksRequestDto.OnlyAvailable)
-                results = results.Where(item => item.BikeId != null);
+            switch (nearByDocksRequestDto.FilterStatus)
+            {
+                case DockStatus.WithBike:
+                    results = results.Where(item => item.BikeId != null);
+                    break;
+                case DockStatus.WithoutBike:
+                    results = results.Where(item => item.BikeId == null);
+                    break;
+            };
 
             foreach (var dock in results)
             {

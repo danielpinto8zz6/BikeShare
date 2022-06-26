@@ -172,13 +172,11 @@ Cache-Control: no-cache
 GET http://{{host}}/api/users/me/credit-cards HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
-Cache-Control: no-cache
 
 ### 
 DELETE http://{{host}}/api/users/me/credit-cards/123 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
-Cache-Control: no-cache
 
 ###
 
