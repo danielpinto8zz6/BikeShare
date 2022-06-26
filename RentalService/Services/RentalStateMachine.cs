@@ -61,12 +61,12 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     private void ConfigureCorrelationIds()
     {
         Event(() => RentalSubmitted, x => x.CorrelateById(c => c.Message.CorrelationId)
-            .SelectId(c => c.Message.Rental.Id));
+            .SelectId(c => c.Message.CorrelationId));
         Event(() => BikeValidated, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeReserved, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeUnlocked, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeLocked, x => x.CorrelateById(c => c.Message.CorrelationId)
-            .SelectId(c => c.Message.Rental.Id));
+            .SelectId(c => c.Message.CorrelationId));
         Event(() => BikeAttached, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeValidationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeReservationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
@@ -183,7 +183,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
         await sendEndpoint.Send<TCommand>(new
         {
-            context.Message.Rental.Id,
+            context.CorrelationId,
             context.Message.Rental
         });
     }
