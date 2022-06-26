@@ -4,7 +4,6 @@ using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
 using Common.Models.Events.Rental;
-using Common.Services;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -116,8 +115,8 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeAttached)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
             .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-//            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
-//            .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
+            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
+            .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
             .Finalize();
 
     private EventActivityBinder<RentalState, IBikeUnlockFailed> SetBikeUnlockFailedHandler() =>

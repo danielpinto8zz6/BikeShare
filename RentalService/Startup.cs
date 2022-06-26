@@ -78,12 +78,13 @@ namespace RentalService
                 });
                 
                 x.AddSagaStateMachine<RentalStateMachine, RentalState>()
-                    .MongoDbRepository(r =>
-                    {
-                        r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
-                        r.DatabaseName = "sagas";
-                        r.CollectionName = "sagas";
-                    });
+                    .InMemoryRepository();
+                    // .MongoDbRepository(r =>
+                    // {
+                    //     r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
+                    //     r.DatabaseName = "sagas";
+                    //     r.CollectionName = "sagas";
+                    // });
             });
 
             services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
