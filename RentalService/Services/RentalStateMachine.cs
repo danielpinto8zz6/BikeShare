@@ -55,6 +55,9 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             SetBikeAttachedHandler(),
             SetBikeAttachFailedHandler()
         );
+        
+        During(Completed,
+            Ignore(RentalSubmitted));
 
         SetCompletedWhenFinalized();
     }
