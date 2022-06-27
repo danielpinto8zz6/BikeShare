@@ -33,5 +33,3 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 80
-      imagePullSecrets: 
-      - name: registry-credentials

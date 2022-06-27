@@ -1,14 +1,6 @@
 #!/bin/bash
 
 deploy_service(){
-    echo -e "Building $1 docker image... \n"
-    docker build -t "$1" -f "$2"/Dockerfile .
-    echo -e "Saving $1 container as tar... \n"
-    docker save --output docker-images/"$1".tar "$1":latest
-    echo -e "Push $1 container to remote server... \n"
-    scp docker-images/"$1".tar root@192.168.1.199:/root/docker
-    echo -e "Importing $1 container into k3s \n"
-    ssh root@192.168.1.199 "k3s ctr images import docker/$1.tar"
     echo -e "Reloading $1 in k3s \n"
     kubectl delete -f "$2"/deployment.yaml
     kubectl apply -f "$2"/deployment.yaml
@@ -62,7 +54,6 @@ case $1 in
     deploy_service "payment-validator-service" "PaymentValidatorService"
     ;;
   "all")
-    deploy_service "eureka-server" "eureka-server"
     deploy_service "api-gateway" "ApiGateway"
     deploy_service "auth-service" "AuthService"
     deploy_service "bike-service" "BikeService"
