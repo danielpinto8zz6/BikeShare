@@ -5,6 +5,8 @@ using Common.Models.Events.Rental;
 using DockService.Models.Dtos;
 using DockService.Services;
 using MassTransit;
+using MongoDB.Bson.IO;
+using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace DockService.Consumers;
 
@@ -23,6 +25,7 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
     public async Task Consume(ConsumeContext<IAttachBike> context)
     {
         _logger.LogInformation($"Attach bike to {context.CorrelationId} was received");
+        _logger.LogInformation(JsonConvert.SerializeObject(context.Message.Rental));
 
         try
         {
@@ -30,12 +33,16 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
                 await _dockService.GetByIdAsync(context.Message.Rental.DestinationDockId ?? throw new NullReferenceException());
 
             await AttachBikeToDock(dockDto, context.Message.Rental.BikeId);
-
-            context.Message.Rental.DestinationDockId = dockDto.Id;
             
             UpdateRentalState(context.Message.Rental, RentalStatus.BikeAttached);
 
-            await SendBikeAttached(context);
+            await context.Publish<IBikeAttached>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
+            
+            _logger.LogInformation("sent bike attached");
         }
         catch (Exception e)
         {
@@ -43,7 +50,11 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
 
             UpdateRentalState(context.Message.Rental, RentalStatus.BikeAttachFailed);
 
-            await SendBikeAttachFailed(context);
+            await context.Publish<IBikeAttachFailed>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
         }
     }
 
@@ -52,24 +63,6 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
         dockDto.BikeId = bikeId;
 
         await _dockService.UpdateAsync(dockDto.Id, dockDto);
-    }
-
-    private static async Task SendBikeAttachFailed(ConsumeContext<IAttachBike> context)
-    {
-        await context.Publish<IBikeAttachFailed>(new
-        {
-            context.CorrelationId,
-            context.Message.Rental
-        });
-    }
-
-    private static async Task SendBikeAttached(ConsumeContext<IAttachBike> context)
-    {
-        await context.Publish<IBikeAttached>(new
-        {
-            context.CorrelationId,
-            context.Message.Rental
-        });
     }
 
     private static void UpdateRentalState(RentalDto rentalDto, RentalStatus status)
