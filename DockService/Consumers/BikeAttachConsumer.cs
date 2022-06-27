@@ -31,6 +31,8 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
 
             await AttachBikeToDock(dockDto, context.Message.Rental.BikeId);
 
+            context.Message.Rental.DestinationDockId = dockDto.Id;
+            
             UpdateRentalState(context.Message.Rental, RentalStatus.BikeAttached);
 
             await SendBikeAttached(context);

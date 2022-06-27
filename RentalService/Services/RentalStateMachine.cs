@@ -151,7 +151,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeAttachFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttachFailed))
             .Then(c => _logger.LogInformation($"Bike attach failed to {c.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
+            //.ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
             .TransitionTo(Failed);
 
     private async Task UpdateSagaState(RentalState state, RentalDto rental, RentalStatus rentalStatus)
