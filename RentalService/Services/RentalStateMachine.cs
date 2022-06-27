@@ -46,13 +46,13 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         );
 
         During(InUse,
-            SetBikeLockedHandler(),
-            SetBikeLockFailedHandler()
-        );
-
-        During(Locking,
             SetBikeAttachedHandler(),
             SetBikeAttachFailedHandler()
+        );
+
+        During(Attaching,
+            SetBikeLockedHandler(),
+            SetBikeLockFailedHandler()
         );
         
         SetCompletedWhenFinalized();
@@ -104,21 +104,21 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(NotificationHelper.SendBikeUnlockedNotificationAsync)
             .TransitionTo(InUse);
 
-    private EventActivityBinder<RentalState, IBikeLocked> SetBikeLockedHandler() =>
-        When(BikeLocked)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
-            .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<IAttachBike>("rabbitmq://192.168.1.199/bike-attach", c))
-            .TransitionTo(Locking);
-
     private EventActivityBinder<RentalState, IBikeAttached> SetBikeAttachedHandler() =>
         When(BikeAttached)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
             .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
+            .ThenAsync(c => SendCommand<ILockBike>("rabbitmq://192.168.1.199/bike-lock", c))
             .ThenAsync(NotificationHelper.SendBikeAttachedNotificationAsync)
-            .Finalize();
+            .TransitionTo(Attaching);
 
+    private EventActivityBinder<RentalState, IBikeLocked> SetBikeLockedHandler() =>
+        When(BikeLocked)
+            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
+            .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"))
+            .ThenAsync(c => SendPaymentRequest(c, c.Message.Rental))
+            .Finalize();
+    
     private EventActivityBinder<RentalState, IBikeUnlockFailed> SetBikeUnlockFailedHandler() =>
         When(BikeUnlockFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlockFailed))
@@ -215,7 +215,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
     public State Unlocking { get; private set; }
 
-    public State Locking { get; private set; }
+    public State Attaching { get; private set; }
     
     public State InUse { get; private set; }
 

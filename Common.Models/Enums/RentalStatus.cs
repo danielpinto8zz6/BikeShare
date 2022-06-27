@@ -2,7 +2,6 @@ namespace Common.Models.Enums
 {
     public enum RentalStatus
     {
-        Unknown = 0,
         Submitted,
         BikeValidated,
         BikeValidationFailed,
@@ -10,9 +9,9 @@ namespace Common.Models.Enums
         BikeReservationFailed,
         BikeUnlocked,
         BikeUnlockFailed,
+        BikeAttached,
+        BikeAttachFailed,
         BikeLocked,
         BikeLockFailed,
-        BikeAttached,
-        BikeAttachFailed
     }
 }

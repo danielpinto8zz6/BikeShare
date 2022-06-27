@@ -2,7 +2,7 @@ using Common.Models.Events.Rental;
 
 namespace Common.Models.Commands.Rental
 {
-    public interface IAttachBike : IRentalMessage
+    public interface ILockBike : IRentalMessage
     {
     }
 }

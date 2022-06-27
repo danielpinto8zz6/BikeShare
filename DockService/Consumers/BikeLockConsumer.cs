@@ -10,21 +10,21 @@ using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace DockService.Consumers;
 
-public class BikeAttachConsumer : IConsumer<IAttachBike>
+public class BikeLockConsumer : IConsumer<ILockBike>
 {
-    private readonly ILogger<IAttachBike> _logger;
+    private readonly ILogger<ILockBike> _logger;
 
     private readonly IDockService _dockService;
 
-    public BikeAttachConsumer(IDockService dockService, ILogger<IAttachBike> logger)
+    public BikeLockConsumer(IDockService dockService, ILogger<ILockBike> logger)
     {
         _dockService = dockService;
         _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<IAttachBike> context)
+    public async Task Consume(ConsumeContext<ILockBike> context)
     {
-        _logger.LogInformation($"Attach bike to {context.CorrelationId} was received");
+        _logger.LogInformation($"Lock bike to {context.CorrelationId} was received");
         _logger.LogInformation(JsonConvert.SerializeObject(context.Message.Rental));
 
         try
@@ -34,9 +34,9 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
 
             await AttachBikeToDock(dockDto, context.Message.Rental.BikeId);
             
-            UpdateRentalState(context.Message.Rental, RentalStatus.BikeAttached);
+            UpdateRentalState(context.Message.Rental, RentalStatus.BikeLocked);
 
-            await context.Publish<IBikeAttached>(new
+            await context.Publish<IBikeLocked>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
@@ -48,9 +48,9 @@ public class BikeAttachConsumer : IConsumer<IAttachBike>
         {
             _logger.LogError(e, "Error updating bike status");
 
-            UpdateRentalState(context.Message.Rental, RentalStatus.BikeAttachFailed);
+            UpdateRentalState(context.Message.Rental, RentalStatus.BikeLockFailed);
 
-            await context.Publish<IBikeAttachFailed>(new
+            await context.Publish<IBikeLockFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
