@@ -42,7 +42,7 @@ namespace DockService.Consumers
             {
                 _logger.LogError(e, "Error updating bike status");
 
-                UpdateRentalState(context.Message.Rental, RentalStatus.BikeReservationFailed);                
+                UpdateRentalState(context.Message.Rental, RentalStatus.RentalFailure);                
 
                 await SendBikeReservationFailed(context);
             }
@@ -57,7 +57,7 @@ namespace DockService.Consumers
         
         private static async Task SendBikeReservationFailed(ConsumeContext<IReserveBike> context)
         {
-            await context.Publish<IBikeReservationFailed>(new
+            await context.Publish<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

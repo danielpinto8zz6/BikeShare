@@ -48,9 +48,9 @@ public class BikeLockConsumer : IConsumer<ILockBike>
         {
             _logger.LogError(e, "Error updating bike status");
 
-            UpdateRentalState(context.Message.Rental, RentalStatus.BikeLockFailed);
+            UpdateRentalState(context.Message.Rental, RentalStatus.RentalFailure);
 
-            await context.Publish<IBikeLockFailed>(new
+            await context.Publish<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

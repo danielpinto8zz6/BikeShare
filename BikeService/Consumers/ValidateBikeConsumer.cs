@@ -42,7 +42,7 @@ namespace BikeService.Consumers
 
             UpdateRentalState(
                 context.Message.Rental,
-                isBikeValid ? RentalStatus.BikeValidated : RentalStatus.BikeValidationFailed);
+                isBikeValid ? RentalStatus.BikeValidated : RentalStatus.RentalFailure);
 
             if (isBikeValid)
             {
@@ -59,7 +59,7 @@ namespace BikeService.Consumers
             {
                 _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
 
-                await context.Publish<IBikeValidationFailed>(new
+                await context.Publish<IRentalFailure>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental
