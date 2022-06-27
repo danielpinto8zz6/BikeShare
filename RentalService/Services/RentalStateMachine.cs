@@ -156,7 +156,8 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         {
             Username = rentalDto.Username,
             StartDate = rentalDto.StartDate.Value,
-            EndDate = rentalDto.EndDate.Value
+            EndDate = rentalDto.EndDate.Value,
+            RentalId = rentalDto.Id
         };
 
         var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/payment-request"));
