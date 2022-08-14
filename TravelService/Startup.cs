@@ -16,6 +16,9 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace TravelService
 {
@@ -75,6 +78,11 @@ namespace TravelService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
+            
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddInfoActuator(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,7 +102,12 @@ namespace TravelService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map<InfoEndpoint>();
+                endpoints.Map<HealthEndpoint>();
+            });
         }
     }
 }

@@ -17,6 +17,9 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace AuthService
 {
@@ -60,6 +63,11 @@ namespace AuthService
             services.AddRefitClient<IUserClient>()
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(userServiceOptions.BaseUrl))
                 .AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
+            
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddInfoActuator(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,7 +90,12 @@ namespace AuthService
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map<InfoEndpoint>();
+                endpoints.Map<HealthEndpoint>();
+            });
         }
     }
 }

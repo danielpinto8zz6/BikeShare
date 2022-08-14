@@ -33,3 +33,34 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: 100m
+---
+
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2
+metadata: 
+  name: bike-service
+spec: 
+  maxReplicas: 3 
+  minReplicas: 1 
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bike-service
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: memory 
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Resource 
+    resource: 
+      name: cpu 
+      target:
+        type: Utilization
+        averageUtilization: 50
+    

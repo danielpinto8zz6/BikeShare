@@ -1,7 +1,6 @@
 using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
-using Common.Services.Repositories;
 using DockService.Consumers;
 using DockService.Models.Dtos;
 using DockService.Models.Entities;
@@ -12,6 +11,9 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using Nominatim.API.Geocoders;
+using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace DockService;
 
@@ -83,5 +85,10 @@ public static class ServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+        
+        services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+        
+        services.AddHealthActuator(configuration);
+        services.AddInfoActuator(configuration);
     }
 }

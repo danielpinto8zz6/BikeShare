@@ -14,6 +14,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PaymentValidatorService.Consumers;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace PaymentValidatorService
 {
@@ -29,6 +34,8 @@ namespace PaymentValidatorService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddServiceDiscovery(opt => opt.UseEureka());
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,6 +63,11 @@ namespace PaymentValidatorService
                     cfg.ConfigureEndpoints(context);
                 });
             });
+            
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddInfoActuator(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +87,12 @@ namespace PaymentValidatorService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map<InfoEndpoint>();
+                endpoints.Map<HealthEndpoint>();
+            });
         }
     }
 }

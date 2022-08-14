@@ -1,6 +1,9 @@
 using DockService;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,11 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.Map<HealthEndpoint>();
+    endpoints.Map<InfoEndpoint>();
+});
 
 app.Run();

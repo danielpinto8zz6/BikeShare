@@ -18,6 +18,9 @@ using RentalService.Saga;
 using RentalService.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace RentalService
 {
@@ -34,6 +37,7 @@ namespace RentalService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddServiceDiscovery(opt => opt.UseEureka());
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -87,6 +91,11 @@ namespace RentalService
             });
 
             services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
+            
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddInfoActuator(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,7 +113,12 @@ namespace RentalService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map<InfoEndpoint>();
+                endpoints.Map<HealthEndpoint>();
+            });
         }
     }
 }

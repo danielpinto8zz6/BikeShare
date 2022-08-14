@@ -16,6 +16,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
+using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Info;
 
 namespace BikeService
 {
@@ -31,7 +37,7 @@ namespace BikeService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscoveryClient(Configuration);
+            services.AddServiceDiscovery(opt => opt.UseEureka());
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -84,6 +90,11 @@ namespace BikeService
 
             services.AddScoped<IProducer<NotificationDto>, Producer<NotificationDto>>();
             services.AddScoped<IProducer<BikeUnlockDto>, Producer<BikeUnlockDto>>();
+            
+            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
+            
+            services.AddHealthActuator(Configuration);
+            services.AddInfoActuator(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,7 +114,12 @@ namespace BikeService
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map<HealthEndpoint>();
+                endpoints.Map<InfoEndpoint>();
+            });
         }
     }
 }
