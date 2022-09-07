@@ -13,6 +13,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+        <PackageReference Include="Polly" Version="7.2.2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Common.Models\Common.Models.csproj" />

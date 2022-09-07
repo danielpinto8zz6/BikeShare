@@ -17,8 +17,11 @@ namespace FeedbackService.Controllers
         
         [HttpPost]
         public async Task<ActionResult<FeedbackDto>> CreateAsync(
+            [FromHeader(Name = "UserId")] string userId,
             [FromBody] FeedbackDto feedbackDto)
         {
+            feedbackDto.Username = userId;
+            
             var result = await _feedbackService.CreateAsync(feedbackDto);
 
             return Created("", result);

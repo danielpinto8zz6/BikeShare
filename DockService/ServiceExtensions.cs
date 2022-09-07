@@ -20,7 +20,7 @@ namespace DockService;
 public static class ServiceExtensions
 {
     public static void SetupServices(this IServiceCollection services,
-        ConfigurationManager configuration)
+        IConfiguration configuration)
     {
         services.AddControllers();
         services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"}); });

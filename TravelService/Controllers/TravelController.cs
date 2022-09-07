@@ -25,9 +25,14 @@ public class TravelController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TravelEventDto>> Create([FromBody] TravelEventDto travelEvent)
+    public async Task<ActionResult<TravelEventDto>> Create(
+        [FromHeader(Name = "UserId")] string userId,
+        [FromBody] TravelEventDto travelEvent)
     {
+        travelEvent.Username = userId;
+        
         await _producer.ProduceAsync(travelEvent);
+        
         return Accepted();
     }
     

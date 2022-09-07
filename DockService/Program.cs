@@ -1,36 +1,14 @@
-using DockService;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Info;
+namespace DockService;
 
-var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.SetupServices(builder.Configuration);
-builder.Services.AddServiceDiscovery(opt => opt.UseEureka());
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+public class Program
 {
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 }
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.Map<HealthEndpoint>();
-    endpoints.Map<InfoEndpoint>();
-});
-
-app.Run();

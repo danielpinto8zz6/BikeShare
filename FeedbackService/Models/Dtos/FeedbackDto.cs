@@ -13,6 +13,6 @@ namespace FeedbackService.Models.Dtos
 
         public int Rating { get; set; }
 
-        public Guid UserId { get; set; }
+        public string Username { get; set; }
     }
 }

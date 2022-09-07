@@ -13,7 +13,7 @@ namespace FeedbackService.Models.Entities
 
         public int Rating { get; set; }
 
-        public Guid UserId { get; set; }
+        public string Username { get; set; }
         
         public DateTime CreatedDate { get; set; }
         

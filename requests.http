@@ -210,3 +210,15 @@ Authorization: Bearer {{authToken}}
 GET http://{{host}}/api/users/me HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+
+
+### Auth (local)
+
+POST http://localhost:5010/api/Auth HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "daniel",
+    "password": "daniel"
+}
