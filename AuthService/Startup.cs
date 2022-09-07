@@ -53,7 +53,9 @@ namespace AuthService
             services.AddSingleton<IPasswordService, PasswordService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IJwtService, JwtService>();
-            
+
+            services.AddSingleton(CircuitBreaker.CreatePolicy());
+
             services.AddSingleton<IUserGateway, UserGateway>();
 
             var userServiceOptions = Configuration.GetSection("UserServiceOptions").Get<UserServiceOptions>();

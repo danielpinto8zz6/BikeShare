@@ -12,10 +12,13 @@ namespace AuthService.Gateways
     public class UserGateway : IUserGateway
     {
         private readonly IUserClient _userClient;
+
+        private readonly AsyncCircuitBreakerPolicy _circuitBreaker;
         
-        public UserGateway(IUserClient userClient)
+        public UserGateway(IUserClient userClient, AsyncCircuitBreakerPolicy circuitBreaker)
         {
             _userClient = userClient;
+            _circuitBreaker = circuitBreaker;
         }
 
         public async Task<UserDto> GetByUsernameAsync(string username)
@@ -23,19 +26,15 @@ namespace AuthService.Gateways
             var retry = Policy.Handle<HttpRequestException>(ex => ex.InnerException?.Message.Any() == true)
                 .RetryAsync(5, async (exception, retryCount) =>
                     {
-                        var lastColour = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Green;
                         await Console.Out.WriteLineAsync("RetryPolicy execution...");
-                        Console.ForegroundColor = lastColour;
                     });
 
-            var circuitBreaker = GetCircuitBreaker();
 
-            var policy = Policy.WrapAsync(retry, circuitBreaker);
+            var policy = Policy.WrapAsync(retry, _circuitBreaker);
 
             try
             {
-                Console.WriteLine($"Circuit State: {circuitBreaker.CircuitState}");
+                Console.WriteLine($"Circuit State: {_circuitBreaker.CircuitState}");
 
                 return await policy.ExecuteAsync(() => _userClient.GetByUsernameAsync(username));
             }
@@ -45,22 +44,6 @@ namespace AuthService.Gateways
             }
 
             return null;
-        }
-        
-        public static AsyncCircuitBreakerPolicy GetCircuitBreaker()
-        {
-            var circuitBreakerPolicy = Policy.Handle<Exception>()
-                .CircuitBreakerAsync(10, TimeSpan.FromMinutes(1),
-                    (ex, t) =>
-                    {
-                        Console.WriteLine("Circuit broken!");
-                    },
-                    () =>
-                    {
-                        Console.WriteLine("Circuit Reset!");
-                    });
-
-            return circuitBreakerPolicy;
         }
     }
 }
