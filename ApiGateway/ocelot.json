@@ -67,7 +67,6 @@
         "UserId": "Claims[id] > value > |"
       }
     },
-    
     {
       "DownstreamPathTemplate": "/api/users",
       "DownstreamScheme": "http",
@@ -232,6 +231,28 @@
       "ServiceName": "TRAVEL-SERVICE",
       "UpstreamHttpMethod": [
         "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/feedbacks",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/feedbacks",
+      "ServiceName": "FEEDBACK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15

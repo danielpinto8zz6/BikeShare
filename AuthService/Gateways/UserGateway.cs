@@ -23,6 +23,7 @@ namespace AuthService.Gateways
 
         public async Task<UserDto> GetByUsernameAsync(string username)
         {
+            //https://renatogroffe.medium.com/tratamento-de-falhas-com-net-polly-implementando-o-padrão-circuit-breaker-8727abcc7414
             var retry = Policy.Handle<HttpRequestException>(ex => ex.InnerException?.Message.Any() == true)
                 .RetryAsync(5, async (exception, retryCount) =>
                     {
