@@ -56,7 +56,7 @@ public class RentalService : IRentalService
             Rental = result
         });
 
-        return rentalDto;
+        return result;
     }
 
     public async Task<RentalDto> UpdateAsync(Guid id, RentalDto rentalDto)

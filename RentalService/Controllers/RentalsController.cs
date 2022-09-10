@@ -41,7 +41,7 @@ namespace RentalService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RentalDto>> Create(
+        public async Task<ActionResult<RentalDto>> CreateAsync(
             [FromHeader(Name = "UserId")] string userId,
             [FromBody] RentalDto rentalDto)
         {
