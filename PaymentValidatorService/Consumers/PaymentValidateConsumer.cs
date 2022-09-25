@@ -39,7 +39,7 @@ namespace PaymentValidatorService.Consumers
 
         private static async Task SendPaymentValidated(ConsumeContext<IValidatePayment> context)
         {
-            await context.Publish<IPaymentValidated>(new
+            await context.RespondAsync<IPaymentValidated>(new
             {
                 context.CorrelationId,
                 context.Message.Payment
@@ -48,7 +48,7 @@ namespace PaymentValidatorService.Consumers
 
         private static async Task SendPaymentValidationFailed(ConsumeContext<IValidatePayment> context)
         {
-            await context.Publish<IPaymentValidationFailed>(new
+            await context.RespondAsync<IPaymentValidationFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment

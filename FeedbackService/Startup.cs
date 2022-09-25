@@ -2,6 +2,7 @@ using AutoMapper;
 using Common.Services.Repositories;
 using FeedbackService.Models.Dtos;
 using FeedbackService.Models.Entities;
+using FeedbackService.Repositories;
 using FeedbackService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,11 +43,11 @@ public class Startup
             new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
         services.AddScoped<IFeedbackService, Services.FeedbackService>();
-        services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
+        services.AddScoped<IFeedbackRepository, FeedbackRepository>(provider =>
         {
             var mongoClient = provider.GetRequiredService<IMongoClient>();
 
-            return new MongoDbRepository(mongoClient, "feedback");
+            return new FeedbackRepository(mongoClient, "feedback");
         });
 
         var automapperConfiguration = new MapperConfiguration(conf =>

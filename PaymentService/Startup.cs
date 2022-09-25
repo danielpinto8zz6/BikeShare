@@ -2,7 +2,6 @@ using System;
 using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
-using Common.Services.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -81,10 +80,7 @@ namespace PaymentService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-
-                    cfg.ReceiveEndpoint("payment", e => { e.ConfigureSaga<PaymentState>(context); });
-                    cfg.ReceiveEndpoint("payment-request", e => { e.ConfigureConsumer<PaymentRequestConsumer>(context); });
-
+                    
                     cfg.ConfigureEndpoints(context);
                 });
 

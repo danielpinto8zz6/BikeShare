@@ -63,20 +63,17 @@ namespace RentalService
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
 
+            var rabbitMqConfiguration = Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+            
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    var rabbitMqConfiguration =
-                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
-
                     cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
                     {
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-
-                    cfg.ReceiveEndpoint("rental", e => { e.ConfigureSaga<RentalState>(context); });
 
                     cfg.ConfigureEndpoints(context);
                 });
@@ -91,6 +88,8 @@ namespace RentalService
             });
 
             services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
+
+            services.AddSingleton(_ => new EndpointResolver(rabbitMqConfiguration.Host));
             
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
             

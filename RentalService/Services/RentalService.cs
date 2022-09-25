@@ -18,17 +18,16 @@ public class RentalService : IRentalService
 
     private readonly IMongoDbRepository _repository;
 
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ISendEndpointProvider _sendEndpointProvider;
 
     public RentalService(
         IMongoDbRepository repository,
-        IMapper mapper,
-        IPublishEndpoint publishEndpoint
-    )
+        IMapper mapper, 
+        ISendEndpointProvider sendEndpointProvider)
     {
         _repository = repository;
         _mapper = mapper;
-        _publishEndpoint = publishEndpoint;
+        _sendEndpointProvider = sendEndpointProvider;
     }
 
     public async Task<RentalDto> GetByIdAsync(Guid id)
@@ -50,7 +49,7 @@ public class RentalService : IRentalService
 
         var result = _mapper.Map<RentalDto>(createdEntity);
 
-        await _publishEndpoint.Publish<IRentalSubmitted>(new
+        await _sendEndpointProvider.Send<IRentalSubmitted>(new
         {
             CorrelationId = Guid.NewGuid(),
             Rental = result

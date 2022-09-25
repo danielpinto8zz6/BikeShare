@@ -48,7 +48,7 @@ namespace BikeService.Consumers
             {
                 _logger.LogInformation($"Bike validated for {context.CorrelationId}!");
 
-                await context.Publish<IBikeValidated>(new
+                await context.RespondAsync<IBikeValidated>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental
@@ -59,7 +59,7 @@ namespace BikeService.Consumers
             {
                 _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
 
-                await context.Publish<IRentalFailure>(new
+                await context.RespondAsync<IRentalFailure>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental

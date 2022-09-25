@@ -64,9 +64,6 @@ namespace NotificationService
                         h.Password(rabbitMqConfiguration.Password);
                     });
 
-                    cfg.ReceiveEndpoint("notification",
-                        e => { e.ConfigureConsumer<NotificationConsumer>(context); });
-
                     cfg.ConfigureEndpoints(context);
                 });
             });

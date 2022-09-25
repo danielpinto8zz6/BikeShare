@@ -49,9 +49,6 @@ namespace PaymentCalculatorService
                         h.Password(rabbitMqConfiguration.Password);
                     });
 
-                    cfg.ReceiveEndpoint("payment-calculate",
-                        e => { e.ConfigureConsumer<PaymentCalculateConsumer>(context); });
-
                     cfg.ConfigureEndpoints(context);
                 });
             });

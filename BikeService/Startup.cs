@@ -81,9 +81,6 @@ namespace BikeService
                         h.Password(rabbitMqConfiguration.Password);
                     });
 
-                    cfg.ReceiveEndpoint("bike-validate",
-                        e => { e.ConfigureConsumer<ValidateBikeConsumer>(context); });
-
                     cfg.ConfigureEndpoints(context);
                 });
             });

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FeedbackService.Models.Dtos;
 using FeedbackService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,14 @@ namespace FeedbackService.Controllers
             var result = await _feedbackService.CreateAsync(feedbackDto);
 
             return Created("", result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<FeedbackDto>> GetByRentalIdAsync(Guid rentalId)
+        {
+            var result = await _feedbackService.GetByRentalIdAsync(rentalId);
+
+            return result;
         }
     }
 }

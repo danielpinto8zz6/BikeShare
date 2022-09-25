@@ -36,7 +36,7 @@ public class BikeLockConsumer : IConsumer<ILockBike>
             
             UpdateRentalState(context.Message.Rental, RentalStatus.BikeLocked);
 
-            await context.Publish<IBikeLocked>(new
+            await context.RespondAsync<IBikeLocked>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
@@ -50,7 +50,7 @@ public class BikeLockConsumer : IConsumer<ILockBike>
 
             UpdateRentalState(context.Message.Rental, RentalStatus.RentalFailure);
 
-            await context.Publish<IRentalFailure>(new
+            await context.RespondAsync<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

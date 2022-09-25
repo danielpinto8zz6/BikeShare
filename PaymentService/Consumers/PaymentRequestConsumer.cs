@@ -11,15 +11,10 @@ namespace PaymentService.Consumers;
 public class PaymentRequestConsumer : IConsumer<PaymentRequestDto>
 {
     private readonly IPaymentService _paymentService;
-
-    private readonly IPublishEndpoint _publishEndpoint;
-
-    public PaymentRequestConsumer(
-        IPaymentService paymentService,
-        IPublishEndpoint publishEndpoint)
+    
+    public PaymentRequestConsumer(IPaymentService paymentService)
     {
         _paymentService = paymentService;
-        _publishEndpoint = publishEndpoint;
     }
 
     public async Task Consume(ConsumeContext<PaymentRequestDto> context)
@@ -34,7 +29,7 @@ public class PaymentRequestConsumer : IConsumer<PaymentRequestDto>
 
         var paymentDto = await _paymentService.CreateAsync(payment);
 
-        await _publishEndpoint.Publish<IPaymentRequested>(new
+        await context.Send<IPaymentRequested>(new
         {
             CorrelationId = Guid.NewGuid(),
             Payment = paymentDto

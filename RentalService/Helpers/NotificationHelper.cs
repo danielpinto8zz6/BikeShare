@@ -14,9 +14,9 @@ public static class NotificationHelper
 
     private const string RentalId = "rentalId";
 
-    public static async Task SendBikeReservedNotificationAsync(BehaviorContext<RentalState, IRentalMessage> context)
+    public static RentalNotificationDto GetBikeReservedNotification(BehaviorContext<RentalState, IRentalMessage> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike reserved",
@@ -28,15 +28,11 @@ public static class NotificationHelper
             },
             RentalId = context.Message.Rental.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
 
-    public static async Task SendBikeUnlockedNotificationAsync(BehaviorContext<RentalState, IBikeUnlocked> context)
+    public static RentalNotificationDto GetBikeUnlockedNotification(BehaviorContext<RentalState, IBikeUnlocked> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike unlocked",
@@ -48,15 +44,11 @@ public static class NotificationHelper
             },
             RentalId = context.Message.Rental.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
     
-    public static async Task SendBikeAttachedNotificationAsync(BehaviorContext<RentalState, IBikeAttached> context)
+    public static RentalNotificationDto GetBikeAttachedNotification(BehaviorContext<RentalState, IBikeAttached> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike attached",
@@ -68,15 +60,11 @@ public static class NotificationHelper
             },
             RentalId = context.Message.Rental.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
 
-    public static async Task SendBikeValidatedNotificationAsync(BehaviorContext<RentalState, IBikeValidated> context)
+    public static NotificationDto GetBikeValidatedNotificationAsync(BehaviorContext<RentalState, IBikeValidated> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
             Body = "Bike validated",
@@ -88,31 +76,22 @@ public static class NotificationHelper
             },
             RentalId = context.Message.Rental.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
 
-    // TODO:
-    public static async Task SendRentalFailureNotificationAsync(
+    public static RentalNotificationDto GetRentalFailureNotification(
         BehaviorContext<RentalState, IRentalFailure> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new RentalNotificationDto
         {
             Username = context.Message.Rental.Username,
-            Body = "Rental failed",
-            Title = "Bike unlock failed",
+            Body = "There was an error processing your rental, please try again later.",
+            Title = "Rental failed",
             Data = new Dictionary<string, string>
             {
-                {Event, "bike-unlock-failed"},
+                {Event, "rental-failed"},
                 {RentalId, context.Message.Rental.Id.ToString()}
             },
             RentalId = context.Message.Rental.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
 }

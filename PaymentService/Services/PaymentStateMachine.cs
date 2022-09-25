@@ -7,6 +7,7 @@ using Common.Models.Events.Payment;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PaymentService.Helpers;
 using PaymentService.Saga;
 
 namespace PaymentService.Services;
@@ -31,17 +32,9 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         ConfigureCorrelationIds();
 
         Initially(SetPaymentRequestedHandler());
-
-        During(Calculating,
-            SetPaymentCalculatedHandler(),
-            SetPaymentCalculationFailedHandler()
-        );
+        During(Calculating, SetPaymentCalculatedHandler(), SetPaymentCalculationFailedHandler());
+        During(Validating, SetPaymentValidatedHandler(), SetPaymentValidationFailedHandler());
         
-        During(Validating,
-            SetPaymentValidatedHandler(),
-            SetPaymentValidationFailedHandler()
-        );
-
         SetCompletedWhenFinalized();
     }
 
@@ -59,14 +52,14 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         When(Requested)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Requested))
             .Then(c => _logger.LogInformation($"Payment requested to {c.Message.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<ICalculatePayment>("rabbitmq://192.168.1.199/payment-calculate", c))
+            .Request(CalculatePayment, BuildCommand<ICalculatePayment>)
             .TransitionTo(Calculating);
 
     private EventActivityBinder<PaymentState, IPaymentCalculated> SetPaymentCalculatedHandler() =>
         When(Calculated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Calculated))
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
-            .ThenAsync(c => SendCommand<IValidatePayment>("rabbitmq://192.168.1.199/payment-validate", c))
+            .Request(ValidatePayment, BuildCommand<IValidatePayment>)
             .TransitionTo(Validating);
 
     private EventActivityBinder<PaymentState, IPaymentCalculationFailed> SetPaymentCalculationFailedHandler() =>
@@ -79,12 +72,14 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         When(Validated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
             .Then(c => _logger.LogInformation($"Payment validated to {c.Message.CorrelationId} received"))
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentSucceedNotification(c)))
             .TransitionTo(Completed);
 
     private EventActivityBinder<PaymentState, IPaymentValidationFailed> SetPaymentValidationFailedHandler() =>
         When(ValidationFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.ValidationFailed))
             .Then(c => _logger.LogInformation($"Payment validation failed to {c.Message.CorrelationId} received"))
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentFailedNotification(c)))
             .TransitionTo(Failed);
     
     private async Task UpdateSagaState(PaymentState state, PaymentDto payment, PaymentStatus paymentStatus)
@@ -103,33 +98,27 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         await paymentService.UpdateAsync(payment.Id, payment);
     }
 
-    private static async Task SendCommand<TCommand>(string endpoint,
-        ConsumeContext<IPaymentMessage> context) where TCommand : class, IPaymentMessage
+    private Task<SendTuple<T>> BuildCommand<T>(BehaviorContext<PaymentState, IPaymentMessage> context) where T : class
     {
-        var sendEndpoint = await context.GetSendEndpoint(new Uri(endpoint));
-
-        await sendEndpoint.Send<TCommand>(new
+        return context.Init<T>(new
         {
-            context.CorrelationId,
-            context.Message.Payment
+            CorrelationId = context.CorrelationId ?? Guid.Empty,
+            Payment = context.Message.Payment
         });
     }
 
     public State Calculating { get; private set; }
-
     public State Validating { get; private set; }
-
     public State Failed { get; private set; }
-    
     public State Completed { get; private set; }
-
+    
     public Event<IPaymentRequested> Requested { get; private set; }
-
     public Event<IPaymentCalculated> Calculated { get; private set; }
-
     public Event<IPaymentCalculationFailed> CalculationFailed { get; private set; }
-
     public Event<IPaymentValidated> Validated { get; private set; }
-
     public Event<IPaymentValidationFailed> ValidationFailed { get; private set; }
+    
+    public Request<PaymentState, ICalculatePayment, IPaymentCalculated> CalculatePayment { get; set; }
+    public Request<PaymentState, IValidatePayment, IPaymentValidated> ValidatePayment { get; set; }
+
 }

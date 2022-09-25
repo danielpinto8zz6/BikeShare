@@ -4,17 +4,18 @@ using AutoMapper;
 using Common.Services.Repositories;
 using FeedbackService.Models.Dtos;
 using FeedbackService.Models.Entities;
+using FeedbackService.Repositories;
 
 namespace FeedbackService.Services;
 
 public class FeedbackService : IFeedbackService
 {
-    private readonly IMongoDbRepository _repository;
+    private readonly IFeedbackRepository _repository;
     
     private readonly IMapper _mapper;
 
     public FeedbackService(
-        IMongoDbRepository repository, 
+        IFeedbackRepository repository, 
         IMapper mapper)
     {
         _repository = repository;
@@ -26,6 +27,14 @@ public class FeedbackService : IFeedbackService
         var entity = _mapper.Map<Feedback>(feedbackDto);
 
         var result = await _repository.CreateAsync<Guid, Feedback>(entity);
+
+        return _mapper.Map<FeedbackDto>(result);
+    }
+    
+    
+    public async Task<FeedbackDto> GetByRentalIdAsync(Guid rentalId)
+    {
+        var result = await _repository.GetByRentalIdAsync(rentalId);
 
         return _mapper.Map<FeedbackDto>(result);
     }

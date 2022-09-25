@@ -46,7 +46,7 @@ namespace PaymentCalculatorService.Consumers
 
         private static async Task SendPaymentCalculationFailed(ConsumeContext<ICalculatePayment> context)
         {
-            await context.Publish<IPaymentCalculationFailed>(new
+            await context.RespondAsync<IPaymentCalculationFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment
@@ -55,7 +55,7 @@ namespace PaymentCalculatorService.Consumers
 
         private static async Task SendPaymentCalculated(ConsumeContext<ICalculatePayment> context)
         {
-            await context.Publish<IPaymentCalculated>(new
+            await context.RespondAsync<IPaymentCalculated>(new
             {
                 context.CorrelationId,
                 context.Message.Payment

@@ -57,7 +57,7 @@ namespace DockService.Consumers
         
         private static async Task SendBikeReservationFailed(ConsumeContext<IReserveBike> context)
         {
-            await context.Publish<IRentalFailure>(new
+            await context.RespondAsync<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
@@ -66,7 +66,7 @@ namespace DockService.Consumers
 
         private static async Task SendBikeReserved(ConsumeContext<IReserveBike> context)
         {
-            await context.Publish<IBikeReserved>(new
+            await context.RespondAsync<IBikeReserved>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

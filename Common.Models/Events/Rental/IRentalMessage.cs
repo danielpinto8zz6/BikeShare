@@ -4,7 +4,7 @@ namespace Common.Models.Events.Rental;
 
 public interface IRentalMessage
 {
-    Guid CorrelationId { get; }
+    Guid CorrelationId { get; set; }
 
-    RentalDto Rental { get; }
+    RentalDto Rental { get; set; }
 }

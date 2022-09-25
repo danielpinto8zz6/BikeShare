@@ -56,10 +56,7 @@ namespace PaymentValidatorService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-
-                    cfg.ReceiveEndpoint("payment-validate",
-                        e => { e.ConfigureConsumer<PaymentValidateConsumer>(context); });
-
+                    
                     cfg.ConfigureEndpoints(context);
                 });
             });

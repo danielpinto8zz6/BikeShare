@@ -75,13 +75,7 @@ public static class ServiceExtensions
                     h.Username(rabbitMqConfiguration.Username);
                     h.Password(rabbitMqConfiguration.Password);
                 });
-
-                cfg.ReceiveEndpoint("bike-reservation",
-                    e => { e.ConfigureConsumer<BikeReservationConsumer>(context); });
-
-                cfg.ReceiveEndpoint("bike-lock",
-                    e => { e.ConfigureConsumer<BikeLockConsumer>(context); });
-
+                
                 cfg.ConfigureEndpoints(context);
             });
         });

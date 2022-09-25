@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Common.Models.Dtos;
 using Common.Models.Events.Payment;
 using MassTransit;
@@ -14,10 +12,10 @@ public static class NotificationHelper
 
     private const string PaymentId = "paymentId";
 
-    public static async Task SendPaymentSucceedNotificationAsync(
-        BehaviorContext<PaymentState, IPaymentValidationFailed> context)
+    public static PaymentNotificationDto GetPaymentSucceedNotification(
+        BehaviorContext<PaymentState, IPaymentMessage> context)
     {
-        var notificationDto = new PaymentNotificationDto
+        return new PaymentNotificationDto
         {
             Username = context.Message.Payment.Username,
             Body = "Payment completed",
@@ -29,30 +27,22 @@ public static class NotificationHelper
             },
             PaymentId = context.Message.Payment.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
     
-    public static async Task SendPaymentFailedNotificationAsync(
-        BehaviorContext<PaymentState, IPaymentValidationFailed> context)
+    public static PaymentNotificationDto GetPaymentFailedNotification(
+        BehaviorContext<PaymentState, IPaymentMessage> context)
     {
-        var notificationDto = new RentalNotificationDto
+        return new PaymentNotificationDto
         {
             Username = context.Message.Payment.Username,
-            Body = $"Payment of {context.Message.Payment.Value}, please check your payment details",
+            Body = $"Payment of {context.Message.Payment.Value} failed, please check your card details",
             Title = "Payment failed",
             Data = new Dictionary<string, string>
             {
                 {Event, "payment-failed"},
                 {PaymentId, context.Message.Payment.Id.ToString()}
             },
-            RentalId = context.Message.Payment.Id
+            PaymentId = context.Message.Payment.Id
         };
-
-        var sendEndpoint = await context.GetSendEndpoint(new Uri("rabbitmq://192.168.1.199/notification"));
-
-        await sendEndpoint.Send<NotificationDto>(notificationDto);
     }
 }

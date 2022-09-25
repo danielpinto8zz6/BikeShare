@@ -252,7 +252,7 @@
       "UpstreamPathTemplate": "/api/feedbacks",
       "ServiceName": "FEEDBACK-SERVICE",
       "UpstreamHttpMethod": [
-        "Post"
+        "Post", "Get"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15

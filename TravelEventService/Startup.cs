@@ -47,9 +47,6 @@ public class Startup
                     h.Password(rabbitMqConfiguration.Password);
                 });
 
-                cfg.ReceiveEndpoint(QueueConstants.TravelEventQueue,
-                    e => { e.ConfigureConsumer<TravelEventConsumer>(context); });
-
                 cfg.ConfigureEndpoints(context);
             });
         });
