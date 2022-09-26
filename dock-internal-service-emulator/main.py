@@ -69,6 +69,6 @@ if __name__ == '__main__':
     open_ports = dock_manager.set_docks_state()
 
     # define receiver
-    receiver = RabbitMQReceiver(conf, 'bike-unlock')
+    receiver = RabbitMQReceiver(conf, 'IUnlockBike')
     receiver.add_on_message_callback(on_bike_unlock)
     receiver.start_consuming()

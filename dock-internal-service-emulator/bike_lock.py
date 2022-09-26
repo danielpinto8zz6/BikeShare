@@ -20,7 +20,7 @@ BIKE_ATTACHED_EXCHANGE = 'Common.Models.Events.Rental:IBikeAttached'
 
 credentials = PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
 conf = RabbitMQConfiguration(credentials,
-                             queue='PythonServiceQueue',
+                             queue='IBikeUnlocked',
                              host=RABBITMQ_HOST,
                              port=RABBITMQ_PORT,
                              virtual_host=RABBITMQ_VIRTUAL_HOST)

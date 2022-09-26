@@ -1,21 +1,22 @@
-using System;
+using AutoMapper;
 using Common.Models;
-using Common.Models.Commands.Payment;
+using Common.Models.Commands.Rental;
+using Common.Models.Dtos;
+using Common.Services.Repositories;
+using DockInternalServiceEmulator.Consumers;
+using DockInternalServiceEmulator.Services;
+using dotnet_etcd;
+using dotnet_etcd.interfaces;
 using MassTransit;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using PaymentCalculatorService.Consumers;
-using PaymentCalculatorService.Services;
+using MongoDB.Driver;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace PaymentCalculatorService
+namespace DockInternalServiceEmulator
 {
     public class Startup
     {
@@ -29,15 +30,19 @@ namespace PaymentCalculatorService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddServiceDiscovery(opt => opt.UseEureka());
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentCalculatorService", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"});
             });
+            
+            services.AddSingleton<IEtcdClient, EtcdClient>(_ => new EtcdClient(Configuration.GetConnectionString("Etcd")));
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<PaymentCalculateConsumer>();
+                x.AddConsumer<UnlockBikeConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -49,15 +54,15 @@ namespace PaymentCalculatorService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-
+                    
                     cfg.ConfigureEndpoints(context);
                     
-                    cfg.ReceiveEndpoint(nameof(ICalculatePayment),
-                        e => { e.ConfigureConsumer<PaymentCalculateConsumer>(context); });
+                    cfg.ReceiveEndpoint(nameof(IUnlockBike),
+                        e => { e.ConfigureConsumer<UnlockBikeConsumer>(context); });
                 });
             });
 
-            services.AddScoped<IPaymentCalculatorService, Services.PaymentCalculatorService>();
+            services.AddScoped<IDockInternalService, DockInternalService>();
             
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
             
@@ -74,7 +79,7 @@ namespace PaymentCalculatorService
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PaymentCalculatorService v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BikeService v1"));
 
             app.UseHttpsRedirection();
 
@@ -85,8 +90,8 @@ namespace PaymentCalculatorService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.Map<InfoEndpoint>();
                 endpoints.Map<HealthEndpoint>();
+                endpoints.Map<InfoEndpoint>();
             });
         }
     }

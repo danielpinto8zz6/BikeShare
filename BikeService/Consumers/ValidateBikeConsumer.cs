@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using BikeService.Services;
 using Common.Extensions.Exceptions;
@@ -33,7 +34,7 @@ namespace BikeService.Consumers
                 var bike = await _bikeService.GetByIdAsync(context.Message.Rental.BikeId);
                 isBikeValid = bike != null;
             }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
                 _logger.LogError($"Bike {context.Message.Rental.BikeId} not found in database!");
 
@@ -48,7 +49,8 @@ namespace BikeService.Consumers
             {
                 _logger.LogInformation($"Bike validated for {context.CorrelationId}!");
 
-                await context.RespondAsync<IBikeValidated>(new
+                var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IBikeValidated)}"));
+                await endpoint.Send<IBikeValidated>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental
@@ -59,7 +61,8 @@ namespace BikeService.Consumers
             {
                 _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
 
-                await context.RespondAsync<IRentalFailure>(new
+                var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
+                await endpoint.Send<IRentalFailure>(new
                 {
                     context.CorrelationId,
                     context.Message.Rental

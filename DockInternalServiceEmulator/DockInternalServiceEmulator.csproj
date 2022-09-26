@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common.Models\Common.Models.csproj" />
+      <ProjectReference Include="..\Common.Services\Common.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
+        <PackageReference Include="dotnet-etcd" Version="5.1.0" />
+        <PackageReference Include="MassTransit" Version="8.0.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.0" />
+        <PackageReference Include="Steeltoe.Discovery.ClientBase" Version="3.1.0" />
+        <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.0" />
+        <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.2.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+</Project>

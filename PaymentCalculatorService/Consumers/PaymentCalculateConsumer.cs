@@ -46,7 +46,8 @@ namespace PaymentCalculatorService.Consumers
 
         private static async Task SendPaymentCalculationFailed(ConsumeContext<ICalculatePayment> context)
         {
-            await context.RespondAsync<IPaymentCalculationFailed>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentCalculationFailed)}"));
+            await endpoint.Send<IPaymentCalculationFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment
@@ -55,7 +56,8 @@ namespace PaymentCalculatorService.Consumers
 
         private static async Task SendPaymentCalculated(ConsumeContext<ICalculatePayment> context)
         {
-            await context.RespondAsync<IPaymentCalculated>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentCalculated)}"));
+            await endpoint.Send<IPaymentCalculated>(new
             {
                 context.CorrelationId,
                 context.Message.Payment

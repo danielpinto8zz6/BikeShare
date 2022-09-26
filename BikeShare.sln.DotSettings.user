@@ -3,11 +3,14 @@
 	
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/DotNetCliExePath/@EntryValue">/usr/local/share/dotnet/dotnet</s:String>
 	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MsbuildVersion/@EntryValue">1114112</s:Int64>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2f5056c6_002De081_002D412f_002Da613_002D19bdc46987ad/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f76a4d0a_002Df172_002D47d3_002Dbea7_002Dc1170b930338/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="BikeReservationConsumerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.BikeReservationConsumerTests&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02::net6.0::RentalService.Tests.RentalStateMachineTests.Test1&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02::net6.0::RentalService.Tests.RentalStateMachineTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	
 	
 	

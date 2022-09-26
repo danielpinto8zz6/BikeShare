@@ -2,6 +2,7 @@ using System;
 using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
+using Common.Models.Events.Payment;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
-using PaymentService.Consumers;
 using PaymentService.Models.Entities;
 using PaymentService.Repositories;
 using PaymentService.Saga;
@@ -46,7 +46,7 @@ namespace PaymentService
                     Version = "v1"
                 });
             });
-            
+
             services.AddScoped<IMongoClient, MongoClient>(_ =>
                 new MongoClient(Configuration.GetConnectionString("MongoDb")));
 
@@ -68,8 +68,6 @@ namespace PaymentService
 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<PaymentRequestConsumer>();
-
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     var rabbitMqConfiguration =
@@ -80,7 +78,13 @@ namespace PaymentService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-                    
+
+                    cfg.ReceiveEndpoint(nameof(IPaymentRequested), e => { e.ConfigureSaga<PaymentState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IPaymentCalculated), e => { e.ConfigureSaga<PaymentState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IPaymentValidated), e => { e.ConfigureSaga<PaymentState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IPaymentValidationFailed),
+                        e => { e.ConfigureSaga<PaymentState>(context); });
+
                     cfg.ConfigureEndpoints(context);
                 });
 
@@ -92,9 +96,9 @@ namespace PaymentService
                         r.CollectionName = "sagas";
                     });
             });
-            
+
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
-            
+
             services.AddHealthActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }

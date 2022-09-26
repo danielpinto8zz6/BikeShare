@@ -8,3 +8,9 @@ public interface IRentalMessage
 
     RentalDto Rental { get; set; }
 }
+
+public class RentalMessage : IRentalMessage
+{
+    public Guid CorrelationId { get; set; }
+    public RentalDto Rental { get; set; }
+}

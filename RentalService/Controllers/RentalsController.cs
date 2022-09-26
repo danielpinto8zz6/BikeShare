@@ -26,7 +26,7 @@ namespace RentalService.Controllers
                 var rental = await _rentalService.GetByIdAsync(id);
                 return Ok(rental);
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -69,7 +69,7 @@ namespace RentalService.Controllers
 
                 return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }

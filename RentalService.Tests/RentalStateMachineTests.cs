@@ -20,30 +20,31 @@ public class RentalStateMachineTests
     private ITestHarness _testHarness;
 
     private Mock<IRentalService> _rentalServiceMock;
-
-    private EndpointResolver _endpointResolverMock;
-
+    
     [SetUp]
     public async Task Setup()
     {
         _rentalServiceMock = new Mock<IRentalService>();
         _rentalServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<RentalDto>()))
             .ReturnsAsync(new RentalDto());
-        _endpointResolverMock = new EndpointResolver("");
 
         _provider = new ServiceCollection()
             .AddMassTransitTestHarness(x =>
             {
-                x.AddSagaStateMachine<RentalStateMachine, RentalState>()
-                    .InMemoryRepository();
-                
-                x.UsingInMemory((context, cfg) =>
+                x.UsingRabbitMq((context, cfg) =>
                 {
+                    cfg.Host(new Uri("rabbitmq://192.168.1.199"), h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
                     cfg.ConfigureEndpoints(context);
                 });
+                
+                x.AddSagaStateMachine<RentalStateMachine, RentalState>();
             })
             .AddLogging()
-            .AddSingleton(_ => _endpointResolverMock)
             .AddTransient(_ => _rentalServiceMock.Object)
             .BuildServiceProvider(true);
 
@@ -51,16 +52,11 @@ public class RentalStateMachineTests
 
         await _testHarness.Start();
     }
-
-    [TearDown]
-    public async Task TearDown()
-    {
-    }
-
+    
     [Test]
     public async Task Test1()
     {
-        var sagaId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var rental = new RentalDto
         {
             Id = Guid.NewGuid(),
@@ -70,7 +66,7 @@ public class RentalStateMachineTests
 
         await _testHarness.Bus.Publish<IRentalSubmitted>(new
         {
-            CorrelationId = sagaId,
+            CorrelationId = correlationId,
             Rental = rental
         });
 
@@ -82,14 +78,14 @@ public class RentalStateMachineTests
 
         (await sagaHarness.Consumed.Any<IRentalSubmitted>()).Should().BeTrue();
 
-        (await sagaHarness.Created.Any(x => x.CorrelationId == sagaId)).Should().BeTrue();
+        (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
 
         var instance =
-            sagaHarness.Created.ContainsInState(sagaId, sagaHarness.StateMachine, sagaHarness.StateMachine.Validating);
+            sagaHarness.Created.ContainsInState(correlationId, sagaHarness.StateMachine, sagaHarness.StateMachine.Validating);
 
         instance.Should().NotBeNull();
         instance.Rental.Should().BeEquivalentTo(rental);
 
-        (await _testHarness.Published.Any<IValidateBike>()).Should().BeTrue();
+        (await _testHarness.Sent.Any<IValidateBike>()).Should().BeTrue();
     }
 }

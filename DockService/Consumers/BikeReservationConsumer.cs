@@ -57,7 +57,8 @@ namespace DockService.Consumers
         
         private static async Task SendBikeReservationFailed(ConsumeContext<IReserveBike> context)
         {
-            await context.RespondAsync<IRentalFailure>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
+            await endpoint.Send<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
@@ -66,7 +67,8 @@ namespace DockService.Consumers
 
         private static async Task SendBikeReserved(ConsumeContext<IReserveBike> context)
         {
-            await context.RespondAsync<IBikeReserved>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IBikeReserved)}"));
+            await endpoint.Send<IBikeReserved>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

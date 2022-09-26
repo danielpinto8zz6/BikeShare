@@ -9,10 +9,7 @@ namespace PaymentCalculatorService.Services
 
         public double Calculate(PaymentDto paymentDto)
         {
-            if (paymentDto?.Duration == null)
-                return -1;
-
-            return RentalPrice + (paymentDto.Duration.Value * PricePerMinute);
+            return RentalPrice + paymentDto.Duration * PricePerMinute;
         }
     }
 }

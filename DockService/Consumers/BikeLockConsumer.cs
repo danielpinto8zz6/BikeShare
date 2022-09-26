@@ -36,7 +36,8 @@ public class BikeLockConsumer : IConsumer<ILockBike>
             
             UpdateRentalState(context.Message.Rental, RentalStatus.BikeLocked);
 
-            await context.RespondAsync<IBikeLocked>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
+            await endpoint.Send<IBikeLocked>(new
             {
                 context.CorrelationId,
                 context.Message.Rental
@@ -50,7 +51,8 @@ public class BikeLockConsumer : IConsumer<ILockBike>
 
             UpdateRentalState(context.Message.Rental, RentalStatus.RentalFailure);
 
-            await context.RespondAsync<IRentalFailure>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
+            await endpoint.Send<IRentalFailure>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

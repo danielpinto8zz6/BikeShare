@@ -31,7 +31,6 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddScoped<IProducer<NotificationDto>, Producer<NotificationDto>>();
-builder.Services.AddScoped<IProducer<PaymentRequestDto>, Producer<PaymentRequestDto>>();
 
 var app = builder.Build();
 

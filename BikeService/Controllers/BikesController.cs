@@ -35,7 +35,7 @@ public class BikesController : ControllerBase
             var result = await _service.GetByIdAsync(id);
             return Ok(result);
         }
-        catch (NotFoundException ex)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -63,7 +63,7 @@ public class BikesController : ControllerBase
             await _service.UpdateAsync(id, bikeDto);
             return NoContent();
         }
-        catch (NotFoundException ex)
+        catch (NotFoundException)
         {
             return NotFound();
         }

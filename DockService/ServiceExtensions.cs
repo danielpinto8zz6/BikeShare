@@ -1,5 +1,6 @@
 using AutoMapper;
 using Common.Models;
+using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using DockService.Consumers;
 using DockService.Models.Dtos;
@@ -77,6 +78,11 @@ public static class ServiceExtensions
                 });
                 
                 cfg.ConfigureEndpoints(context);
+                
+                cfg.ReceiveEndpoint(nameof(ILockBike),
+                    e => { e.ConfigureConsumer<BikeLockConsumer>(context); });
+                cfg.ReceiveEndpoint(nameof(IReserveBike),
+                    e => { e.ConfigureConsumer<BikeReservationConsumer>(context); });
             });
         });
         

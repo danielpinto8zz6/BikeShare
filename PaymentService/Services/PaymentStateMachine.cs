@@ -19,7 +19,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     private readonly IServiceProvider _serviceProvider;
 
     public PaymentStateMachine(
-        ILogger<PaymentStateMachine> logger, 
+        ILogger<PaymentStateMachine> logger,
         IServiceProvider serviceProvider)
     {
         _logger = logger;
@@ -34,7 +34,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         Initially(SetPaymentRequestedHandler());
         During(Calculating, SetPaymentCalculatedHandler(), SetPaymentCalculationFailedHandler());
         During(Validating, SetPaymentValidatedHandler(), SetPaymentValidationFailedHandler());
-        
+
         SetCompletedWhenFinalized();
     }
 
@@ -50,16 +50,16 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
     private EventActivityBinder<PaymentState, IPaymentRequested> SetPaymentRequestedHandler() =>
         When(Requested)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Requested))
+            .ThenAsync(CreatePayment)
             .Then(c => _logger.LogInformation($"Payment requested to {c.Message.CorrelationId} received"))
-            .Request(CalculatePayment, BuildCommand<ICalculatePayment>)
+            .SendAsync(new Uri($"queue:{nameof(ICalculatePayment)}"), BuildCommand<ICalculatePayment>)
             .TransitionTo(Calculating);
-
+    
     private EventActivityBinder<PaymentState, IPaymentCalculated> SetPaymentCalculatedHandler() =>
         When(Calculated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Calculated))
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
-            .Request(ValidatePayment, BuildCommand<IValidatePayment>)
+            .SendAsync(new Uri($"queue:{nameof(IValidatePayment)}"), BuildCommand<IValidatePayment>)
             .TransitionTo(Validating);
 
     private EventActivityBinder<PaymentState, IPaymentCalculationFailed> SetPaymentCalculationFailedHandler() =>
@@ -67,7 +67,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
             .TransitionTo(Failed);
-    
+
     private EventActivityBinder<PaymentState, IPaymentValidated> SetPaymentValidatedHandler() =>
         When(Validated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
@@ -81,7 +81,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
             .Then(c => _logger.LogInformation($"Payment validation failed to {c.Message.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentFailedNotification(c)))
             .TransitionTo(Failed);
-    
+
     private async Task UpdateSagaState(PaymentState state, PaymentDto payment, PaymentStatus paymentStatus)
     {
         var currentDate = DateTime.UtcNow;
@@ -97,6 +97,18 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
         await paymentService.UpdateAsync(payment.Id, payment);
     }
+    
+    private async Task CreatePayment(BehaviorContext<PaymentState, IPaymentRequested> context)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
+
+        context.Message.Payment.Status = PaymentStatus.Requested;
+        
+        var paymentDto = await paymentService.CreateAsync(context.Message.Payment);
+
+        context.Message.Payment.Id = paymentDto.Id;
+    }
 
     private Task<SendTuple<T>> BuildCommand<T>(BehaviorContext<PaymentState, IPaymentMessage> context) where T : class
     {
@@ -111,14 +123,10 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     public State Validating { get; private set; }
     public State Failed { get; private set; }
     public State Completed { get; private set; }
-    
+
     public Event<IPaymentRequested> Requested { get; private set; }
     public Event<IPaymentCalculated> Calculated { get; private set; }
     public Event<IPaymentCalculationFailed> CalculationFailed { get; private set; }
     public Event<IPaymentValidated> Validated { get; private set; }
     public Event<IPaymentValidationFailed> ValidationFailed { get; private set; }
-    
-    public Request<PaymentState, ICalculatePayment, IPaymentCalculated> CalculatePayment { get; set; }
-    public Request<PaymentState, IValidatePayment, IPaymentValidated> ValidatePayment { get; set; }
-
 }

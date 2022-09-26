@@ -4,7 +4,9 @@ using BikeService.Consumers;
 using BikeService.Models.Entities;
 using BikeService.Services;
 using Common.Models;
+using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
+using Common.Models.Events.Rental;
 using Common.Services;
 using Common.Services.Repositories;
 using MassTransit;
@@ -80,8 +82,11 @@ namespace BikeService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
-
+                    
                     cfg.ConfigureEndpoints(context);
+                    
+                    cfg.ReceiveEndpoint(nameof(IValidateBike),
+                        e => { e.ConfigureConsumer<ValidateBikeConsumer>(context); });
                 });
             });
 

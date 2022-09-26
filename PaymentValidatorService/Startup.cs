@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Models;
+using Common.Models.Commands.Payment;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,6 +59,9 @@ namespace PaymentValidatorService
                     });
                     
                     cfg.ConfigureEndpoints(context);
+
+                    cfg.ReceiveEndpoint(nameof(IValidatePayment),
+                        e => { e.ConfigureConsumer<PaymentValidateConsumer>(context); });
                 });
             });
             

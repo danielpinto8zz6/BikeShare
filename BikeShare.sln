@@ -40,6 +40,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.TravelEvent", "Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalService.Tests", "RentalService.Tests\RentalService.Tests.csproj", "{7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockService.Tests", "DockService.Tests\DockService.Tests.csproj", "{D99D3565-26D5-497A-B3AF-079A66D7053D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockInternalServiceEmulator", "DockInternalServiceEmulator\DockInternalServiceEmulator.csproj", "{73B1930D-DB41-4459-99C4-EAABEEB38F50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,5 +130,13 @@ Global
 		{7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73B1930D-DB41-4459-99C4-EAABEEB38F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B1930D-DB41-4459-99C4-EAABEEB38F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B1930D-DB41-4459-99C4-EAABEEB38F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B1930D-DB41-4459-99C4-EAABEEB38F50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

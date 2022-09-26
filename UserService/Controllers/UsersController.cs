@@ -26,7 +26,7 @@ public class UsersController : ControllerBase
             var user = await _service.GetByUsernameAsync(userId);
             return Ok(user);
         }
-        catch (NotFoundException ex)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
             await _service.UpdateAsync(userId, userDto);
             return NoContent();
         }
-        catch (NotFoundException ex)
+        catch (NotFoundException)
         {
             return NotFound();
         }

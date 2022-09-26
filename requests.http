@@ -109,23 +109,6 @@ Authorization: Bearer {{authToken}}
 
 ### 
 
-POST http://{{host}}/api/rentals
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-  "originDockId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "destinationDockId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "bikeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "bikeKey": "string",
-  "username": "alfredo",
-  "status": 2,
-  "startDate": "2022-05-25T21:08:35.726Z",
-  "endDate": "2022-05-25T21:08:35.726Z"
-}
-
-### 
-
 GET http://{{host}}/api/rentals
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
@@ -133,13 +116,14 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-POST http://{{host}}/api/rentals HTTP/1.1
+POST http://localhost:5050/api/rentals HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+UserId: daniel
 
 {
-    "originDockId": "53ce1a33-2b6a-4a3a-a4d3-95555ab60edf",
-    "bikeId": "da9625ca-a099-41d6-92bc-cdc9a473d49b"
+  "originDockId":"53ce1a33-2b6a-4a3a-a4d3-95555ab60edf",
+  "bikeId": "da9625ca-a099-41d6-92bc-cdc9a473d49b"
 }
 
 ###

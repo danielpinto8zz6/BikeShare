@@ -39,7 +39,8 @@ namespace PaymentValidatorService.Consumers
 
         private static async Task SendPaymentValidated(ConsumeContext<IValidatePayment> context)
         {
-            await context.RespondAsync<IPaymentValidated>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentValidated)}"));
+            await endpoint.Send<IPaymentValidated>(new
             {
                 context.CorrelationId,
                 context.Message.Payment
@@ -48,7 +49,8 @@ namespace PaymentValidatorService.Consumers
 
         private static async Task SendPaymentValidationFailed(ConsumeContext<IValidatePayment> context)
         {
-            await context.RespondAsync<IPaymentValidationFailed>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentValidationFailed)}"));
+            await endpoint.Send<IPaymentValidationFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment

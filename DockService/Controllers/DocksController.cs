@@ -42,7 +42,7 @@ namespace DockService.Controllers
                 var result = await _service.GetByIdAsync(id);
                 return Ok(result);
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -56,7 +56,7 @@ namespace DockService.Controllers
                 var result = await _service.GetByBikeId(bikeId);
                 return Ok(result);
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -84,7 +84,7 @@ namespace DockService.Controllers
                 await _service.UpdateAsync(id, dockDto);
                 return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -98,7 +98,7 @@ namespace DockService.Controllers
                 await _service.DeleteAsync(id);
                 return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }

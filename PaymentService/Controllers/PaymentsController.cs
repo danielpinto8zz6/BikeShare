@@ -26,7 +26,7 @@ namespace PaymentService.Controllers
                 var result = await _service.GetByRentalIdAsync(rentalId);
                 return Ok(result);
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -40,7 +40,7 @@ namespace PaymentService.Controllers
                 var result = await _service.GetByIdAsync(id);
                 return Ok(result);
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -68,7 +68,7 @@ namespace PaymentService.Controllers
                 await _service.UpdateAsync(id, paymentDto);
                 return NoContent();
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
