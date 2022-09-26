@@ -4,6 +4,7 @@ using Common.Models.Enums;
 using Common.Models.Events.Rental;
 using FluentAssertions;
 using MassTransit;
+using MassTransit.Saga;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -54,7 +55,7 @@ public class RentalStateMachineTests
     }
     
     [Test]
-    public async Task Test1()
+    public async Task RentalStateMachine_WhenRentalSubmitted_ShouldValidateBike()
     {
         var correlationId = Guid.NewGuid();
         var rental = new RentalDto
@@ -87,5 +88,49 @@ public class RentalStateMachineTests
         instance.Rental.Should().BeEquivalentTo(rental);
 
         (await _testHarness.Sent.Any<IValidateBike>()).Should().BeTrue();
+    }
+    
+    [Test]
+    public async Task RentalStateMachine_WhenBikeValidated_ShouldUnlockBike()
+    {
+        var correlationId = Guid.NewGuid();
+        var rental = new RentalDto
+        {
+            Id = Guid.NewGuid(),
+            Status = RentalStatus.BikeValidated,
+            Username = "username"
+        };
+
+        await _testHarness.Bus.Publish<IRentalSubmitted>(new
+        {
+            CorrelationId = correlationId,
+            Rental = rental
+        });
+        
+        Thread.Sleep(200);
+
+        await _testHarness.Bus.Publish<IBikeValidated>(new
+        {
+            CorrelationId = correlationId,
+            Rental = rental
+        });
+
+        Thread.Sleep(200);
+
+        (await _testHarness.Consumed.Any<IBikeValidated>()).Should().BeTrue();
+
+        var sagaHarness = _testHarness.GetSagaStateMachineHarness<RentalStateMachine, RentalState>();
+
+        (await sagaHarness.Consumed.Any<IBikeValidated>()).Should().BeTrue();
+
+        (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
+
+        var instance =
+            sagaHarness.Created.ContainsInState(correlationId, sagaHarness.StateMachine, sagaHarness.StateMachine.Unlocking);
+
+        instance.Should().NotBeNull();
+        instance.Rental.Should().BeEquivalentTo(rental);
+
+        (await _testHarness.Sent.Any<IUnlockBike>()).Should().BeTrue();
     }
 }

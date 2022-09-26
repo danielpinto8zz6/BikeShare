@@ -7,6 +7,8 @@ using DockService.Models.Dtos;
 using DockService.Models.Entities;
 using DockService.Repositories;
 using DockService.Services;
+using dotnet_etcd;
+using dotnet_etcd.interfaces;
 using MassTransit;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -63,8 +65,7 @@ public static class ServiceExtensions
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<BikeReservationConsumer>();
-            x.AddConsumer<BikeLockConsumer>();
+            x.AddConsumer<BikeUnlockConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -79,10 +80,8 @@ public static class ServiceExtensions
                 
                 cfg.ConfigureEndpoints(context);
                 
-                cfg.ReceiveEndpoint(nameof(ILockBike),
-                    e => { e.ConfigureConsumer<BikeLockConsumer>(context); });
-                cfg.ReceiveEndpoint(nameof(IReserveBike),
-                    e => { e.ConfigureConsumer<BikeReservationConsumer>(context); });
+                cfg.ReceiveEndpoint(nameof(IUnlockBike),
+                    e => { e.ConfigureConsumer<BikeUnlockConsumer>(context); });
             });
         });
         
@@ -90,5 +89,7 @@ public static class ServiceExtensions
         
         services.AddHealthActuator(configuration);
         services.AddInfoActuator(configuration);
+        
+        services.AddSingleton<IEtcdClient, EtcdClient>(_ => new EtcdClient(configuration.GetConnectionString("Etcd")));
     }
 }

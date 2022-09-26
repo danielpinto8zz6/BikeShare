@@ -13,23 +13,7 @@ public static class NotificationHelper
     private const string Event = "event";
 
     private const string RentalId = "rentalId";
-
-    public static RentalNotificationDto GetBikeReservedNotification(BehaviorContext<RentalState, IRentalMessage> context)
-    {
-        return new RentalNotificationDto
-        {
-            Username = context.Message.Rental.Username,
-            Body = "Bike reserved",
-            Title = "Bike reserved",
-            Data = new Dictionary<string, string>
-            {
-                {Event, "bike-reserved"},
-                {RentalId, context.Message.Rental.Id.ToString()}
-            },
-            RentalId = context.Message.Rental.Id
-        };
-    }
-
+    
     public static RentalNotificationDto GetBikeUnlockedNotification(BehaviorContext<RentalState, IBikeUnlocked> context)
     {
         return new RentalNotificationDto
@@ -46,22 +30,6 @@ public static class NotificationHelper
         };
     }
     
-    public static RentalNotificationDto GetBikeAttachedNotification(BehaviorContext<RentalState, IBikeAttached> context)
-    {
-        return new RentalNotificationDto
-        {
-            Username = context.Message.Rental.Username,
-            Body = "Bike attached",
-            Title = "Bike attached",
-            Data = new Dictionary<string, string>
-            {
-                {Event, "bike-attached"},
-                {RentalId, context.Message.Rental.Id.ToString()}
-            },
-            RentalId = context.Message.Rental.Id
-        };
-    }
-
     public static NotificationDto GetBikeValidatedNotificationAsync(BehaviorContext<RentalState, IBikeValidated> context)
     {
         return new RentalNotificationDto

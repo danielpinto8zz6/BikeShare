@@ -4,9 +4,7 @@ namespace Common.Models.Enums
     {
         Submitted,
         BikeValidated,
-        BikeReserved,
         BikeUnlocked,
-        BikeAttached,
         BikeLocked,
         RentalFailure,
     }

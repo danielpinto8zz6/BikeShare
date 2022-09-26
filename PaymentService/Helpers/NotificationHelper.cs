@@ -18,8 +18,8 @@ public static class NotificationHelper
         return new PaymentNotificationDto
         {
             Username = context.Message.Payment.Username,
-            Body = "Payment completed",
-            Title = $"Payment of {context.Message.Payment.Value} processed successfully",
+            Title = "Payment processed",
+            Body = $"Payment of {context.Message.Payment.Value} processed successfully",
             Data = new Dictionary<string, string>
             {
                 {Event, "payment-completed"},

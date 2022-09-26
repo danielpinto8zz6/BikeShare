@@ -31,10 +31,8 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
         Initially(SetRentalSummitedHandler());
         During(Validating, SetBikeValidatedHandler());
-        During(Reserving, SetBikeReservedHandler());
         During(Unlocking, SetBikeUnlockedHandler());
-        During(InUse, SetBikeAttachedHandler());
-        During(Attaching, SetBikeLockedHandler());
+        During(InUse, SetBikeLockedHandler());
         DuringAny(SetRentalFailureHandler());
 
         SetCompletedWhenFinalized();
@@ -45,10 +43,8 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         Event(() => RentalSubmitted, x => x.CorrelateById(c => c.Message.CorrelationId)
             .SelectId(c => c.Message.CorrelationId));
         Event(() => BikeValidated, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => BikeReserved, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeUnlocked, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => BikeLocked, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => BikeAttached, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => RentalFailure, x => x.CorrelateById(c => c.Message.CorrelationId));
     }
 
@@ -63,33 +59,16 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         When(BikeValidated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeValidated))
             .Then(c => _logger.LogInformation($"Bike validated to {c.CorrelationId} received"))
-            .SendAsync(new Uri($"queue:{nameof(IReserveBike)}"), BuildCommand<IReserveBike>)
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)))
-            .TransitionTo(Reserving);
-
-
-    private EventActivityBinder<RentalState, IBikeReserved> SetBikeReservedHandler() =>
-        When(BikeReserved)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeReserved))
-            .Then(c => _logger.LogInformation($"Bike reserved to {c.CorrelationId} received"))
             .SendAsync(new Uri($"queue:{nameof(IUnlockBike)}"), BuildCommand<IUnlockBike>)
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeReservedNotification(c)))
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)))
             .TransitionTo(Unlocking);
-
+    
     private EventActivityBinder<RentalState, IBikeUnlocked> SetBikeUnlockedHandler() =>
         When(BikeUnlocked)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlocked))
             .Then(c => _logger.LogInformation($"Bike unlock to {c.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeUnlockedNotification(c)))
             .TransitionTo(InUse);
-
-    private EventActivityBinder<RentalState, IBikeAttached> SetBikeAttachedHandler() =>
-        When(BikeAttached)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeAttached))
-            .Then(c => _logger.LogInformation($"Bike attached to {c.CorrelationId} received"))
-            .SendAsync(new Uri($"queue:{nameof(ILockBike)}"), BuildCommand<ILockBike>)
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeAttachedNotification(c)))
-            .TransitionTo(Attaching);
 
     private EventActivityBinder<RentalState, IBikeLocked> SetBikeLockedHandler() =>
         When(BikeLocked)
@@ -160,17 +139,13 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     }
 
     public State Validating { get; private set; }
-    public State Reserving { get; private set; }
     public State Unlocking { get; private set; }
-    public State Attaching { get; private set; }
     public State InUse { get; private set; }
 
 
     public Event<IRentalSubmitted> RentalSubmitted { get; private set; }
-    public Event<IBikeReserved> BikeReserved { get; private set; }
     public Event<IBikeValidated> BikeValidated { get; private set; }
     public Event<IBikeUnlocked> BikeUnlocked { get; private set; }
     public Event<IBikeLocked> BikeLocked { get; private set; }
-    public Event<IBikeAttached> BikeAttached { get; private set; }
     public Event<IRentalFailure> RentalFailure { get; private set; }
 }

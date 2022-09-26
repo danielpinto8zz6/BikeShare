@@ -1,3 +1,4 @@
+using Common.Models.Events.Rental;
 using DockService.Models.Dtos;
 
 namespace DockService.Services

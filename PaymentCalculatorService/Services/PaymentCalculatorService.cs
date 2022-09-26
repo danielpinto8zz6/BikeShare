@@ -1,3 +1,4 @@
+using System;
 using Common.Models.Dtos;
 
 namespace PaymentCalculatorService.Services
@@ -9,7 +10,9 @@ namespace PaymentCalculatorService.Services
 
         public double Calculate(PaymentDto paymentDto)
         {
-            return RentalPrice + paymentDto.Duration * PricePerMinute;
+            var value = RentalPrice + (paymentDto.Duration * PricePerMinute);
+            
+            return Math.Round(value, 2);
         }
     }
 }

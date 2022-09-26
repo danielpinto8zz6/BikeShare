@@ -12,9 +12,12 @@ namespace DockService.Controllers
     {
         private readonly IDockService _service;
 
-        public DocksController(IDockService service)
+        private readonly IDockManagerService _dockManagerService;
+
+        public DocksController(IDockService service, IDockManagerService dockManagerService)
         {
             _service = service;
+            _dockManagerService = dockManagerService;
         }
 
         [HttpGet("nearby")]
@@ -101,6 +104,25 @@ namespace DockService.Controllers
             catch (NotFoundException)
             {
                 return NotFound();
+            }
+        }
+        
+        [HttpPost("lock-bike")]
+        public async Task<ActionResult<BikeDto>> LockBikeAsync(
+            [FromBody] BikeLockRequestDto bikeLockRequestDto)
+        {
+            try
+            {
+                await _dockManagerService.LockBikeAsync(bikeLockRequestDto);
+                return Ok();
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
             }
         }
     }

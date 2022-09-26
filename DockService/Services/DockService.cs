@@ -10,12 +10,13 @@ namespace DockService.Services
     public class DockService : IDockService
     {
         private readonly IDockRepository _repository;
-
         private readonly IMapper _mapper;
-
         private readonly ReverseGeocoder _reverseGeocoder;
 
-        public DockService(IDockRepository repository, IMapper mapper, ReverseGeocoder reverseGeocoder)
+        public DockService(
+            IDockRepository repository,
+            IMapper mapper,
+            ReverseGeocoder reverseGeocoder)
         {
             _repository = repository;
             _mapper = mapper;
@@ -26,14 +27,11 @@ namespace DockService.Services
         {
             var results = await _repository.GetNearByDocksAsync(nearByDocksRequestDto);
 
-            switch (nearByDocksRequestDto.FilterStatus)
+            results = nearByDocksRequestDto.FilterStatus switch
             {
-                case DockStatus.WithBike:
-                    results = results.Where(item => item.BikeId != null);
-                    break;
-                case DockStatus.WithoutBike:
-                    results = results.Where(item => item.BikeId == null);
-                    break;
+                DockStatus.WithBike => results.Where(item => item.BikeId != null),
+                DockStatus.WithoutBike => results.Where(item => item.BikeId == null),
+                _ => results
             };
 
             foreach (var dock in results)

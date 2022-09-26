@@ -8,6 +8,10 @@
     &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.BikeReservationConsumerTests&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02::net6.0::RentalService.Tests.RentalStateMachineTests.Test1&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::7B38E6BD-5EFC-4BEA-BCDD-21981A53EF02::net6.0::RentalService.Tests.RentalStateMachineTests&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.DockManagerServiceTests.UnlockBikeAsync_WithUnlockBikeRequest_ShouldReplyWithBikeUnlocked&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.DockManagerServiceTests.UnlockBikeAsync_WithException_ShouldSendRentalFailure&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.DockManagerServiceTests.LockBikeAsync_WithBikeLockRequest_ShouldSendBikeLocked&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::D99D3565-26D5-497A-B3AF-079A66D7053D::net6.0::DockService.Tests.DockManagerServiceTests.LockBikeAsync_WithBikeLockRequestOnOccupiedDock_ShouldThrowInvalidOperationException&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	

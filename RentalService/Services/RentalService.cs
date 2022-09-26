@@ -54,7 +54,7 @@ public class RentalService : IRentalService
 
         await endpoint.Send<IRentalSubmitted>(new
         {
-            CorrelationId = Guid.NewGuid(),
+            CorrelationId = result.Id,
             Rental = result
         });
 
