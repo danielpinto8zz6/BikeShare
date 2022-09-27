@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using BikeService.Services;
 using Common.Extensions.Exceptions;
@@ -20,7 +19,7 @@ public class BikesController : ControllerBase
     }
 
     [HttpGet]
-    public virtual async Task<ActionResult<IEnumerable<BikeDto>>> GetAllAsync()
+    public async Task<IActionResult> GetAllAsync()
     {
         var result = await _service.GetAllAsync();
 
@@ -28,7 +27,7 @@ public class BikesController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<BikeDto>> GetByIdAsync(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         try
         {
@@ -42,7 +41,7 @@ public class BikesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<BikeDto>> CreateAsync(
+    public async Task<IActionResult> CreateAsync(
         [FromBody] BikeDto bikeDto)
     {
         var result = await _service.CreateAsync(bikeDto);
@@ -54,7 +53,7 @@ public class BikesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(
+    public async Task<IActionResult> UpdateAsync(
         Guid id,
         [FromBody] BikeDto bikeDto)
     {

@@ -11,4 +11,5 @@ public interface IBikeService
     Task<BikeDto> CreateAsync(BikeDto bikeDto);
     Task<BikeDto> UpdateAsync(Guid id, BikeDto bikeDto);
     Task<IEnumerable<BikeDto>> GetAllAsync();
+    Task<bool> ExistAsync(Guid id);
 }

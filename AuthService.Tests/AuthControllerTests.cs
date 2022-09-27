@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-namespace AuthServiceTests;
+namespace AuthService.Tests;
 
 [TestFixture]
 public class AuthControllerTests

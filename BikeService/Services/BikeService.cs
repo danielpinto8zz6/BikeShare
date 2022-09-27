@@ -23,6 +23,19 @@ public class BikeService : IBikeService
         _mapper = mapper;
     }
 
+    public async Task<bool> ExistAsync(Guid id)
+    {
+        try
+        {
+            var bike = await _repository.GetByIdAsync<Guid, Bike>(id);
+            return bike != null;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    
     public async Task<BikeDto> GetByIdAsync(Guid id)
     {
         var bike = await _repository.GetByIdAsync<Guid, Bike>(id);

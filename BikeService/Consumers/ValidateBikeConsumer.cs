@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using BikeService.Services;
-using Common.Extensions.Exceptions;
 using Common.Models.Commands.Rental;
 using Common.Models.Dtos;
 using Common.Models.Enums;
@@ -27,47 +26,41 @@ namespace BikeService.Consumers
         public async Task Consume(ConsumeContext<IValidateBike> context)
         {
             _logger.LogInformation($"Validate bike to {context.CorrelationId} was received");
+            
+            var isBikeValid = await _bikeService.ExistAsync(context.Message.Rental.BikeId);
 
-            bool isBikeValid;
-            try
-            {
-                var bike = await _bikeService.GetByIdAsync(context.Message.Rental.BikeId);
-                isBikeValid = bike != null;
-            }
-            catch (NotFoundException)
-            {
-                _logger.LogError($"Bike {context.Message.Rental.BikeId} not found in database!");
-
-                isBikeValid = false;
-            }
-
-            UpdateRentalState(
-                context.Message.Rental,
-                isBikeValid ? RentalStatus.BikeValidated : RentalStatus.RentalFailure);
+            UpdateRentalState(context.Message.Rental, isBikeValid ? RentalStatus.BikeValidated : RentalStatus.RentalFailure);
 
             if (isBikeValid)
             {
                 _logger.LogInformation($"Bike validated for {context.CorrelationId}!");
-
-                var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IBikeValidated)}"));
-                await endpoint.Send<IBikeValidated>(new
-                {
-                    context.CorrelationId,
-                    context.Message.Rental
-                });
+                await SendBikeValidatedAsync(context);
             }
-
             else
             {
                 _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
-
-                var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
-                await endpoint.Send<IRentalFailure>(new
-                {
-                    context.CorrelationId,
-                    context.Message.Rental
-                });
+                await SendRentalFailureAsync(context);
             }
+        }
+
+        private async Task SendBikeValidatedAsync(ConsumeContext<IValidateBike> context)
+        {
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IBikeValidated)}"));
+            await endpoint.Send<IBikeValidated>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
+        }
+        
+        private async Task SendRentalFailureAsync(ConsumeContext<IValidateBike> context)
+        {
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
+            await endpoint.Send<IRentalFailure>(new
+            {
+                context.CorrelationId,
+                context.Message.Rental
+            });
         }
 
         private static void UpdateRentalState(RentalDto rentalDto, RentalStatus status)

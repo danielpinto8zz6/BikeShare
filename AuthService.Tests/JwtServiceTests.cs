@@ -1,11 +1,10 @@
-using AuthService;
 using AuthService.Services;
 using Common.Models.Dtos;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
-namespace AuthServiceTests;
+namespace AuthService.Tests;
 
 [TestFixture]
 public class JwtServiceTests
