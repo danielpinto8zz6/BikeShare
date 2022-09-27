@@ -142,7 +142,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     public State Unlocking { get; private set; }
     public State InUse { get; private set; }
 
-
     public Event<IRentalSubmitted> RentalSubmitted { get; private set; }
     public Event<IBikeValidated> BikeValidated { get; private set; }
     public Event<IBikeUnlocked> BikeUnlocked { get; private set; }

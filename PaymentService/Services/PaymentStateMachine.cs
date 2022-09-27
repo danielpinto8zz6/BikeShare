@@ -66,21 +66,22 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         When(CalculationFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
-            .TransitionTo(Failed);
+            .Finalize();
 
     private EventActivityBinder<PaymentState, IPaymentValidated> SetPaymentValidatedHandler() =>
         When(Validated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
             .Then(c => _logger.LogInformation($"Payment validated to {c.Message.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentSucceedNotification(c)))
-            .TransitionTo(Completed);
+            .TransitionTo(Completed)
+            .Finalize();
 
     private EventActivityBinder<PaymentState, IPaymentValidationFailed> SetPaymentValidationFailedHandler() =>
         When(ValidationFailed)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.ValidationFailed))
             .Then(c => _logger.LogInformation($"Payment validation failed to {c.Message.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentFailedNotification(c)))
-            .TransitionTo(Failed);
+            .Finalize();
 
     private async Task UpdateSagaState(PaymentState state, PaymentDto payment, PaymentStatus paymentStatus)
     {
@@ -94,7 +95,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
         using var scope = _serviceProvider.CreateScope();
         var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
-
+    
         await paymentService.UpdateAsync(payment.Id, payment);
     }
     
@@ -121,7 +122,6 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
     public State Calculating { get; private set; }
     public State Validating { get; private set; }
-    public State Failed { get; private set; }
     public State Completed { get; private set; }
 
     public Event<IPaymentRequested> Requested { get; private set; }
