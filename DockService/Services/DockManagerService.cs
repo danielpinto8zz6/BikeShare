@@ -15,11 +15,11 @@ public class DockManagerService : IDockManagerService
     private readonly IEtcdClient _etcdClient;
     private readonly IBus _bus;
     private readonly ILogger<DockService> _logger;
-    
+
     public DockManagerService(
-        IDockService dockService, 
+        IDockService dockService,
         IEtcdClient etcdClient,
-        IBus bus, 
+        IBus bus,
         ILogger<DockService> logger)
     {
         _dockService = dockService;
@@ -29,103 +29,108 @@ public class DockManagerService : IDockManagerService
     }
 
     public async Task UnlockBikeAsync(IRentalMessage rentalMessage)
+    {
+        var rental = rentalMessage.Rental;
+
+        try
         {
-            var rental = rentalMessage.Rental;
+            var dockDto = await _dockService.GetByBikeId(rentalMessage.Rental.BikeId);
 
-            try
-            {
-                var dockDto = await _dockService.GetByBikeId(rentalMessage.Rental.BikeId);
-                
-                await DetachBikeFromDock(dockDto);
+            await DetachBikeFromDock(dockDto);
 
-                rental.OriginDockId = dockDto.Id;
-                rental.Status = RentalStatus.BikeUnlocked;
-                rental.StartDate = DateTime.UtcNow;
+            rental.OriginDockId = dockDto.Id;
+            rental.Status = RentalStatus.BikeUnlocked;
+            rental.StartDate = DateTime.UtcNow;
 
-                await SendBikeUnlocked(rentalMessage);
+            await SendBikeUnlocked(rentalMessage);
 
-                var rentalMessageStr = JsonSerializer.Serialize(rentalMessage);
-                await _etcdClient.PutAsync(rental.BikeId.ToString(), rentalMessageStr);
+            var rentalMessageStr = JsonSerializer.Serialize(rentalMessage);
+            await _etcdClient.PutAsync(rental.BikeId.ToString(), rentalMessageStr);
 
-                await SendDockStateChangeRequestAsync(dockDto.Id, DockStateAction.Open);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error updating bike status");
+            await SendDockStateChangeRequestAsync(dockDto.Id, DockStateAction.Open);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating bike status");
 
-                rental.Status = RentalStatus.RentalFailure;
+            rental.Status = RentalStatus.RentalFailure;
 
-                await SendBikeUnlockFailed(rentalMessage);
-            }
+            await SendBikeUnlockFailed(rentalMessage);
+        }
+    }
+
+    public async Task LockBikeAsync(BikeLockRequestDto bikeLockRequestDto)
+    {
+        await AttachBikeToDockAsync(bikeLockRequestDto);
+
+        await SendBikeLockedEventAsync(bikeLockRequestDto);
+
+        await SendDockStateChangeRequestAsync(bikeLockRequestDto.DockId, DockStateAction.Close);
+    }
+
+    private async Task AttachBikeToDockAsync(BikeLockRequestDto bikeLockRequestDto)
+    {
+        var dockDto = await _dockService.GetByIdAsync(bikeLockRequestDto.DockId);
+        if (dockDto.BikeId != null)
+        {
+            throw new InvalidOperationException($"Dock with id: {dockDto.Id} already has a bike attached!");
         }
 
-        public async Task LockBikeAsync(BikeLockRequestDto bikeLockRequestDto)
+        dockDto.BikeId = bikeLockRequestDto.BikeId;
+        await _dockService.UpdateAsync(dockDto.Id, dockDto);
+    }
+
+    private async Task DetachBikeFromDock(DockDto dockDto)
+    {
+        dockDto.BikeId = null;
+
+        await _dockService.UpdateAsync(dockDto.Id, dockDto);
+    }
+
+    private async Task SendBikeLockedEventAsync(BikeLockRequestDto bikeLockRequestDto)
+    {
+        var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequestDto.BikeId.ToString());
+        await _etcdClient.DeleteAsync(bikeLockRequestDto.BikeId.ToString());
+
+        if (string.IsNullOrWhiteSpace(rentalMessageStr))
         {
-            await AttachBikeToDockAsync(bikeLockRequestDto);
-
-            await SendBikeLockedEventAsync(bikeLockRequestDto);
-
-            await SendDockStateChangeRequestAsync(bikeLockRequestDto.DockId, DockStateAction.Close);
+            throw new NotFoundException(
+                $"Rental for bike with identifier {bikeLockRequestDto.BikeId} not found!");
         }
 
-        private async Task AttachBikeToDockAsync(BikeLockRequestDto bikeLockRequestDto)
+        var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
+        if (rentalMessage == null)
         {
-            var dockDto = await _dockService.GetByIdAsync(bikeLockRequestDto.DockId);
-            if (dockDto.BikeId != null)
-            {
-                throw new InvalidOperationException($"Dock with id: {dockDto.Id} already has a bike attached!");
-            }
-
-            dockDto.BikeId = bikeLockRequestDto.BikeId;
-            await _dockService.UpdateAsync(dockDto.Id, dockDto);
+            throw new ArgumentNullException();
         }
 
-        private async Task DetachBikeFromDock(DockDto dockDto)
+        rentalMessage.Rental.Status = RentalStatus.BikeLocked;
+        rentalMessage.Rental.EndDate = DateTime.UtcNow;
+        rentalMessage.Rental.DestinationDockId = bikeLockRequestDto.DockId;
+
+        var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
+        await endpoint.Send<IBikeLocked>(rentalMessage);
+    }
+
+    private async Task SendBikeUnlockFailed(IRentalMessage rentalMessage)
+    {
+        var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
+        await endpoint.Send<IRentalFailure>(rentalMessage);
+    }
+
+    private async Task SendBikeUnlocked(IRentalMessage rentalMessage)
+    {
+        var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeUnlocked)}"));
+        await endpoint.Send<IBikeUnlocked>(rentalMessage);
+    }
+
+    private async Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
+    {
+        var changeDockStateEndpoint = await _bus.GetSendEndpoint(new Uri("queue:dock-state-change"));
+        await changeDockStateEndpoint.Send(new DockStateChangeRequest
         {
-            dockDto.BikeId = null;
-
-            await _dockService.UpdateAsync(dockDto.Id, dockDto);
-        }
-
-        private async Task SendBikeLockedEventAsync(BikeLockRequestDto bikeLockRequestDto)
-        {
-            var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequestDto.BikeId.ToString());
-            await _etcdClient.DeleteAsync(bikeLockRequestDto.BikeId.ToString());
-
-            var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
-            if (rentalMessage == null)
-            {
-                throw new NotFoundException(
-                    $"Rental for bike with identifier {bikeLockRequestDto.BikeId} not found!");
-            }
-
-            rentalMessage.Rental.Status = RentalStatus.BikeLocked;
-            rentalMessage.Rental.EndDate = DateTime.UtcNow;
-            rentalMessage.Rental.DestinationDockId = bikeLockRequestDto.DockId;
-
-            var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
-            await endpoint.Send<IBikeLocked>(rentalMessage);
-        }
-        
-        private async Task SendBikeUnlockFailed(IRentalMessage rentalMessage)
-        {
-            var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
-            await endpoint.Send<IRentalFailure>(rentalMessage);
-        }
-
-        private async Task SendBikeUnlocked(IRentalMessage rentalMessage)
-        {
-            var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeUnlocked)}"));
-            await endpoint.Send<IBikeUnlocked>(rentalMessage);
-        }
-        
-        private async Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
-        {
-            var changeDockStateEndpoint = await _bus.GetSendEndpoint(new Uri("queue:dock-state-change"));
-            await changeDockStateEndpoint.Send(new DockStateChangeRequest
-            {
-                Action = action,
-                DockId = dockId
-            });
-        }
+            Action = action,
+            DockId = dockId
+        });
+    }
 }

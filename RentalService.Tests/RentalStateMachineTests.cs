@@ -14,6 +14,7 @@ using RentalService.Services;
 
 namespace RentalService.Tests;
 
+[NonParallelizable]
 public class RentalStateMachineTests
 {
     private IServiceProvider _provider;
@@ -22,8 +23,8 @@ public class RentalStateMachineTests
 
     private Mock<IRentalService> _rentalServiceMock;
     
-    [SetUp]
-    public async Task Setup()
+    [OneTimeSetUp]
+    public async Task OneTimeSetUp()
     {
         _rentalServiceMock = new Mock<IRentalService>();
         _rentalServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<RentalDto>()))
