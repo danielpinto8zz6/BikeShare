@@ -1,3 +1,13 @@
+"""A module for interacting with the ELEGOO 8 Channel board for the Raspberry Pi."""
+# =========================================================
+# Raspberry Pi Relay Board Library
+#
+# by John M. Wargo (www.johnwargo.com)
+# https://gpiozero.readthedocs.io/en/stable/
+#
+# by G. Shaughnessy
+# =========================================================
+
 from __future__ import print_function
 
 import RPi.GPIO as GPIO
@@ -11,7 +21,7 @@ GPIO.setmode(GPIO.BOARD)
 
 # The number of relay ports on the relay board.
 # This value should never change!
-NUM_RELAY_PORTS = 4
+NUM_RELAY_PORTS = 2
 RELAY_PORTS = ()
 RELAY_STATUS = NUM_RELAY_PORTS * [0]
 
@@ -24,7 +34,6 @@ DELAY_TIME = 0.2
 
 def init_relay(port_list):
     """Initialize the module
-
     Args:
         port_list: A list containing the relay port assignments
     """
@@ -43,9 +52,7 @@ def init_relay(port_list):
 
 def relay_on(relay_num):
     """Turn the specified relay (by relay #) on.
-
     Call this function to turn a single relay on.
-
     Args:
         relay_num (int): The relay number that you want turned on.
     """
@@ -64,9 +71,7 @@ def relay_on(relay_num):
 
 def relay_off(relay_num):
     """Turn the specified relay (by relay #) off.
-
     Call this function to turn a single relay off.
-
     Args:
         relay_num (int): The relay number that you want turned off.
     """
@@ -85,7 +90,6 @@ def relay_off(relay_num):
 
 def relay_all_on(relay_ports=RELAY_PORTS):
     """Turn all of the relays on.
-
      Call this function to turn all of the relays on.
      """
     print('Turning all relays ON')
@@ -97,7 +101,6 @@ def relay_all_on(relay_ports=RELAY_PORTS):
 
 def relay_all_off(relay_ports=RELAY_PORTS):
     """Turn all of the relays on.
-
     Call this function to turn all of the relays on.
     """
     print('Turning all relays OFF')
@@ -111,9 +114,7 @@ def relay_all_off(relay_ports=RELAY_PORTS):
 
 def relay_toggle_port(relay_num):
     """Toggle the specified relay (on to off, or off to on).
-
     Call this function to toggle the status of a specific relay.
-
     Args:
         relay_num (int): The relay number to toggle.
     """
@@ -128,9 +129,7 @@ def relay_toggle_port(relay_num):
 
 def relay_toggle_all_port(relay_num):
     """Toggle the specified relay (on to off, or off to on).
-
     Call this function to toggle the status of a specific relay.
-
     Args:
         relay_num (int): The relay number to toggle.
     """
@@ -144,9 +143,7 @@ def relay_toggle_all_port(relay_num):
 
 def relay_get_port_status(relay_num):
     """Returns the status of the specified relay (True for on, False for off)
-
     Call this function to retrieve the status of a specific relay.
-
     Args:
         relay_num (int): The relay number to query.
     """

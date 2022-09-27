@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 from SimpleMFRC522 import SimpleMFRC522
 from multiprocessing import Process
 from iterable_queue import IterableQueue
+import time
 
 
 reader_one = SimpleMFRC522(bus=0)
@@ -17,12 +18,15 @@ def consume(queue, dock_id):
             reader = reader_one if dock_id == dock_one_id else reader_two
             while True:
                     id, data = reader.read()
+                    print(data)
                     data = {
                         "id": id,
                         "data": data,
                         "dockId": dock_id
                     }
                     queue.put(data)
+                    # Sleep 5 sec to avoid multiple reads
+                    time.sleep(5)
     finally:
             GPIO.cleanup()
 

@@ -6,7 +6,7 @@ using Common.Models.Dtos;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthService.Helpers
+namespace AuthService.Services
 {
     public class JwtService : IJwtService
     {

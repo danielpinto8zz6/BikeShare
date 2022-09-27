@@ -1,6 +1,6 @@
 using Common.Models.Dtos;
 
-namespace AuthService.Helpers
+namespace AuthService.Services
 {
     public interface IJwtService
     {

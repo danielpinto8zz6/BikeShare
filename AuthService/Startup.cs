@@ -2,7 +2,6 @@
 using AuthService.Extensions;
 using AuthService.Gateways;
 using AuthService.Gateways.Clients;
-using AuthService.Helpers;
 using AuthService.Models;
 using AuthService.Services;
 using Common.Services;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Refit;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;

@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using AuthService.Helpers;
 using AuthService.Models.Dtos;
 using Common.Services;
 
@@ -24,10 +23,10 @@ namespace AuthService.Services
         {
             var user = await _userService.GetByUsernameAsync(authRequestDto.Username);
             if (user == null)
-                return default;
+                return null;
 
             if (!_passwordService.Matches(authRequestDto.Password, user.PasswordHash))
-                return default;
+                return null;
 
 
             var token = _jwtService.GenerateToken(user);

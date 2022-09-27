@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalService.Tests", "Rent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockService.Tests", "DockService.Tests\DockService.Tests.csproj", "{D99D3565-26D5-497A-B3AF-079A66D7053D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Tests", "AuthService.Tests\AuthService.Tests.csproj", "{F59615C8-4C09-4B55-999D-0446B2ECAE46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,5 +134,9 @@ Global
 		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D99D3565-26D5-497A-B3AF-079A66D7053D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F59615C8-4C09-4B55-999D-0446B2ECAE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F59615C8-4C09-4B55-999D-0446B2ECAE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F59615C8-4C09-4B55-999D-0446B2ECAE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59615C8-4C09-4B55-999D-0446B2ECAE46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
