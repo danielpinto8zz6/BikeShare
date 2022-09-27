@@ -26,8 +26,8 @@ public class DockManagerServiceTests
     private Mock<IEtcdClient> _etcdClientMock;
     private IDockManagerService _dockManagerService;
 
-    [SetUp]
-    public async Task Setup()
+    [OneTimeSetUp]
+    public async Task OneTimeSetUp()
     {
         _provider = new ServiceCollection()
             .AddMassTransitTestHarness(cfg => { cfg.AddConsumer<BikeUnlockConsumer>(); })

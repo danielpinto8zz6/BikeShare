@@ -33,17 +33,6 @@ public class RentalStateMachineTests
         _provider = new ServiceCollection()
             .AddMassTransitTestHarness(x =>
             {
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host(new Uri("rabbitmq://192.168.1.199"), h =>
-                    {
-                        h.Username("guest");
-                        h.Password("guest");
-                    });
-
-                    cfg.ConfigureEndpoints(context);
-                });
-                
                 x.AddSagaStateMachine<RentalStateMachine, RentalState>();
             })
             .AddLogging()
