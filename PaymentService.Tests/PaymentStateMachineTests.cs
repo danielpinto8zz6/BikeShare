@@ -183,7 +183,7 @@ public class PaymentStateMachineTests
     }
 
     [Test]
-    public async Task PaymentStateMachine_WhenPaymentValidated_ShouldComplete()
+    public async Task PaymentStateMachine_WhenPaymentValidated_ShouldFinalize()
     {
         var correlationId = Guid.NewGuid();
         var payment = new PaymentDto
@@ -234,7 +234,7 @@ public class PaymentStateMachineTests
         (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
 
         var instance =
-            sagaHarness.Created.ContainsInState(correlationId, sagaHarness.StateMachine, sagaHarness.StateMachine.Completed);
+            sagaHarness.Created.ContainsInState(correlationId, sagaHarness.StateMachine, sagaHarness.StateMachine.Final);
 
         instance.Should().NotBeNull();
     }
