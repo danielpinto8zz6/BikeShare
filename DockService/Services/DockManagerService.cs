@@ -89,25 +89,34 @@ public class DockManagerService : IDockManagerService
 
     private async Task SendBikeLockedEventAsync(BikeLockRequest bikeLockRequest)
     {
-        var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequest.BikeId.ToString());
-        await _etcdClient.DeleteAsync(bikeLockRequest.BikeId.ToString());
+        // var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequest.BikeId.ToString());
+        // await _etcdClient.DeleteAsync(bikeLockRequest.BikeId.ToString());
+        //
+        // if (string.IsNullOrWhiteSpace(rentalMessageStr))
+        // {
+        //     throw new NotFoundException(
+        //         $"Rental for bike with identifier {bikeLockRequest.BikeId} not found!");
+        // }
+        //
+        // var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
+        // if (rentalMessage == null)
+        // {
+        //     throw new ArgumentNullException();
+        // }
+        //
+        // rentalMessage.Rental.Status = RentalStatus.BikeLocked;
+        // rentalMessage.Rental.EndDate = DateTime.UtcNow;
+        // rentalMessage.Rental.DestinationDockId = bikeLockRequest.DockId;
 
-        if (string.IsNullOrWhiteSpace(rentalMessageStr))
+        var rentalMessage = new RentalMessage
         {
-            throw new NotFoundException(
-                $"Rental for bike with identifier {bikeLockRequest.BikeId} not found!");
-        }
-
-        var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
-        if (rentalMessage == null)
-        {
-            throw new ArgumentNullException();
-        }
-
-        rentalMessage.Rental.Status = RentalStatus.BikeLocked;
-        rentalMessage.Rental.EndDate = DateTime.UtcNow;
-        rentalMessage.Rental.DestinationDockId = bikeLockRequest.DockId;
-
+            CorrelationId = Guid.NewGuid(),
+            Rental = new RentalDto
+            {
+                Id = Guid.NewGuid()
+            }
+        };
+        
         var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
         await endpoint.Send<IBikeLocked>(rentalMessage);
     }
@@ -126,7 +135,7 @@ public class DockManagerService : IDockManagerService
 
     private async Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
     {
-        var changeDockStateEndpoint = await _bus.GetSendEndpoint(new Uri("queue:dock-state-change"));
+        var changeDockStateEndpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(DockStateChangeRequest)}"));
         await changeDockStateEndpoint.Send(new DockStateChangeRequest
         {
             Action = action,

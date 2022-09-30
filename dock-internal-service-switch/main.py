@@ -1,8 +1,28 @@
 #!/usr/bin/env python
+import re
 import pika
 import json
 import relay_controller
+from masstransitpython import RabbitMQConfiguration
+from masstransitpython import RabbitMQReceiver, RabbitMQSender
+from pika import PlainCredentials
 
+
+RABBITMQ_USERNAME = 'guest'
+RABBITMQ_PASSWORD = 'guest'
+RABBITMQ_HOST = '192.168.1.199'
+RABBITMQ_PORT = 5672
+RABBITMQ_VIRTUAL_HOST = '/'
+
+EXCHANGE_NAME = 'Common.Models.Dtos.DockStateChangeRequest'
+QUEUE_NAME = 'dock-internal-service-switch'
+
+credentials = PlainCredentials(RABBITMQ_USERNAME, RABBITMQ_PASSWORD)
+conf = RabbitMQConfiguration(credentials,
+                             queue=QUEUE_NAME,
+                             host=RABBITMQ_HOST,
+                             port=RABBITMQ_PORT,
+                             virtual_host=RABBITMQ_VIRTUAL_HOST)
 
 DOCK_PORTS = (11, 37)
 
@@ -11,10 +31,12 @@ dock_two_id = '7b28d2e9-8c4b-4b2c-b695-ab5b4215c98c'
 
 relay_controller.init_relay(DOCK_PORTS)
 
+
 def callback(ch, method, properties, body):
     msg = json.loads(body.decode())
-    dock_id = msg['dockId']
-    action = msg['action']
+    print(msg)
+    dock_id = msg['message']['dockId']
+    action = msg['message']['action']
 
     print(' [x] Dock id: %r' % dock_id)
     print(' [x] Action: %r' % action)
@@ -35,20 +57,9 @@ def callback(ch, method, properties, body):
     else:
         print(' [x] Dock id not recognized')
 
+
 if __name__ == '__main__':
-    connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.1.199', 5672, '/', pika.PlainCredentials('guest', 'guest')))
-    channel = connection.channel()
-
-    channel.exchange_declare(exchange='DockStateChangeRequest', exchange_type='fanout')
-
-    result = channel.queue_declare(queue='', exclusive=True)
-    queue_name = result.method.queue
-
-    channel.queue_bind(exchange='DockStateChangeRequest', queue=queue_name)
-
-    print(' [*] Waiting for logs. To exit press CTRL+C')
-
-    channel.basic_consume(
-        queue=queue_name, on_message_callback=callback, auto_ack=True)
-
-    channel.start_consuming()
+    # define receiver
+    receiver = RabbitMQReceiver(conf, EXCHANGE_NAME)
+    receiver.add_on_message_callback(callback)
+    receiver.start_consuming()

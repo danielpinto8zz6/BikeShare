@@ -5,10 +5,7 @@ name = "pypi"
 
 [packages]
 pika = "*"
-tinydb = "*"
-masstransitpython-byq96 = "*"
 gpiozero = "*"
-requests = "*"
 
 [dev-packages]
 autopep8 = "*"

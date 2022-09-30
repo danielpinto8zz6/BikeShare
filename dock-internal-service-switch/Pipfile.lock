@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8d78e3687dd304c0862ea956849b9b73791e266a3e0e7a58bbf4bc099a9ecbd2"
+            "sha256": "f2723a1319e645a749de8e820a992c155fb9080efaccfe467085280c507ba6e9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "masstransitpython-byq96": {
+            "hashes": [
+                "sha256:abe0614579b3ff008ee38eca82200fa3e736c4b8257c5a1954cdfca0595a9a95"
+            ],
+            "index": "pypi",
+            "version": "==0.0.5"
+        },
         "pika": {
             "hashes": [
                 "sha256:15357ddc47a5c28f0b07d80e93d504cbbf7a1ad5e1cd129ecd27afe76472c529",

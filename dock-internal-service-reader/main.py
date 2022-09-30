@@ -1,10 +1,6 @@
-from calendar import c
-from pydoc import cli
 from NFC import NFC
-from multiprocessing import Process
-from SimpleMFRC522 import SimpleMFRC522
 import time
-import RPi.GPIO as gpio
+import RPi.GPIO as GPIO
 from client import Client
 import json
 
@@ -19,6 +15,7 @@ def send_bike_lock_request(client, dock_id, bike_id):
             "urn:message:DockService.Models.Dtos:BikeLockRequest"
         ]
     }
+
 
     client.send_message('BikeLockRequest', dock_id, json.dumps(request))
     print(json.dumps(request))

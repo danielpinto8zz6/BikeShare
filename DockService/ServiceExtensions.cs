@@ -79,21 +79,23 @@ public static class ServiceExtensions
                     h.Username(rabbitMqConfiguration.Username);
                     h.Password(rabbitMqConfiguration.Password);
                 });
-                
+
                 cfg.ConfigureEndpoints(context);
-                
+
                 cfg.ReceiveEndpoint(nameof(IUnlockBike),
                     e => { e.ConfigureConsumer<BikeUnlockConsumer>(context); });
                 cfg.ReceiveEndpoint(nameof(BikeLockRequest),
                     e => { e.ConfigureConsumer<BikeLockConsumer>(context); });
             });
         });
-        
+
         services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
-        
+
         services.AddHealthActuator(configuration);
         services.AddInfoActuator(configuration);
-        
+
         services.AddSingleton<IEtcdClient, EtcdClient>(_ => new EtcdClient(configuration.GetConnectionString("Etcd")));
+        
+        services.AddHostedService<MqttService>();
     }
 }

@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 pika = "*"
+masstransitpython-byq96 = "*"
 
 [dev-packages]
 autopep8 = "*"
