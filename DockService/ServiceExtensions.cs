@@ -67,7 +67,6 @@ public static class ServiceExtensions
         services.AddMassTransit(x =>
         {
             x.AddConsumer<BikeUnlockConsumer>();
-            x.AddConsumer<BikeLockConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -84,8 +83,6 @@ public static class ServiceExtensions
 
                 cfg.ReceiveEndpoint(nameof(IUnlockBike),
                     e => { e.ConfigureConsumer<BikeUnlockConsumer>(context); });
-                cfg.ReceiveEndpoint(nameof(BikeLockRequest),
-                    e => { e.ConfigureConsumer<BikeLockConsumer>(context); });
             });
         });
 

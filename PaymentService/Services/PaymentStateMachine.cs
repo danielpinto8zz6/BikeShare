@@ -27,8 +27,6 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
         InstanceState(x => x.Status);
 
-        State(() => Validating);
-
         ConfigureCorrelationIds();
 
         Initially(SetPaymentRequestedHandler());
@@ -43,8 +41,8 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         Event(() => Requested, x => x.CorrelateById(c => c.Message.CorrelationId)
             .SelectId(c => c.Message.CorrelationId));
         Event(() => Calculated, x => x.CorrelateById(c => c.Message.CorrelationId));
-        Event(() => CalculationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => Validated, x => x.CorrelateById(c => c.Message.CorrelationId));
+        Event(() => CalculationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
         Event(() => ValidationFailed, x => x.CorrelateById(c => c.Message.CorrelationId));
     }
 
@@ -61,19 +59,18 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
             .SendAsync(new Uri($"queue:{nameof(IValidatePayment)}"), BuildCommand<IValidatePayment>)
             .TransitionTo(Validating);
-
-    private EventActivityBinder<PaymentState, IPaymentCalculationFailed> SetPaymentCalculationFailedHandler() =>
-        When(CalculationFailed)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
-            .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
-            .Finalize();
-
+    
     private EventActivityBinder<PaymentState, IPaymentValidated> SetPaymentValidatedHandler() =>
         When(Validated)
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
             .Then(c => _logger.LogInformation($"Payment validated to {c.Message.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentSucceedNotification(c)))
-            .TransitionTo(Completed)
+            .Finalize();
+    
+    private EventActivityBinder<PaymentState, IPaymentCalculationFailed> SetPaymentCalculationFailedHandler() =>
+        When(CalculationFailed)
+            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
+            .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"))
             .Finalize();
 
     private EventActivityBinder<PaymentState, IPaymentValidationFailed> SetPaymentValidationFailedHandler() =>
@@ -107,7 +104,7 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
         context.Message.Payment.Status = PaymentStatus.Requested;
         
         var paymentDto = await paymentService.CreateAsync(context.Message.Payment);
-
+        
         context.Message.Payment.Id = paymentDto.Id;
     }
 
@@ -122,7 +119,6 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
     public State Calculating { get; private set; }
     public State Validating { get; private set; }
-    public State Completed { get; private set; }
 
     public Event<IPaymentRequested> Requested { get; private set; }
     public Event<IPaymentCalculated> Calculated { get; private set; }

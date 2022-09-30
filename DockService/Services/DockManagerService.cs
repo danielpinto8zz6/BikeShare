@@ -50,7 +50,7 @@ public class DockManagerService : IDockManagerService
             var rentalMessageStr = JsonSerializer.Serialize(rentalMessage);
             await _etcdClient.PutAsync(rental.BikeId.ToString(), rentalMessageStr);
 
-            await SendDockStateChangeRequestAsync(dockDto.Id, DockStateAction.Open);
+            await SendDockStateChangeRequestAsync(dockDto.Id, DockState.Open);
         }
         catch (Exception e)
         {
@@ -68,7 +68,7 @@ public class DockManagerService : IDockManagerService
 
         await SendBikeLockedEventAsync(bikeLockRequest);
 
-        await SendDockStateChangeRequestAsync(bikeLockRequest.DockId, DockStateAction.Close);
+        await SendDockStateChangeRequestAsync(bikeLockRequest.DockId, DockState.Closed);
     }
 
     private async Task AttachBikeToDockAsync(BikeLockRequest bikeLockRequest)
@@ -127,16 +127,18 @@ public class DockManagerService : IDockManagerService
         await endpoint.Send<IBikeUnlocked>(rentalMessage);
     }
 
-    private Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
+    private Task SendDockStateChangeRequestAsync(Guid dockId, DockState action)
     {
         const string dockStateChangeTopic = "dock-state-change";
         
         var request =new DockStateChangeRequest
         {
-            Action = action,
+            State = action,
             DockId = dockId
         };
 
+        _logger.LogInformation($"Sending dock state {request.State} for dock {request.DockId}");
+        
         return _mqttPublisher.PublishAsync(dockStateChangeTopic, request);
     }
 }

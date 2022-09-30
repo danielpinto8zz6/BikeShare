@@ -1,5 +1,4 @@
 ﻿using Common.Extensions.Exceptions;
-using Common.Models.Dtos;
 using DockService.Models.Dtos;
 using DockService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +10,10 @@ namespace DockService.Controllers
     public class DocksController : ControllerBase
     {
         private readonly IDockService _service;
-
-        private readonly IDockManagerService _dockManagerService;
-
-        public DocksController(IDockService service, IDockManagerService dockManagerService)
+        
+        public DocksController(IDockService service)
         {
             _service = service;
-            _dockManagerService = dockManagerService;
         }
 
         [HttpGet("nearby")]
@@ -104,25 +100,6 @@ namespace DockService.Controllers
             catch (NotFoundException)
             {
                 return NotFound();
-            }
-        }
-        
-        [HttpPost("lock-bike")]
-        public async Task<ActionResult<BikeDto>> LockBikeAsync(
-            [FromBody] BikeLockRequest bikeLockRequest)
-        {
-            try
-            {
-                await _dockManagerService.LockBikeAsync(bikeLockRequest);
-                return Ok();
-            }
-            catch (NotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                return BadRequest(e.Message);
             }
         }
     }

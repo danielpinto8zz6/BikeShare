@@ -15,8 +15,12 @@ public class MqttSubscriber : BackgroundService
     private const string Topic = "bike-attached";
     private readonly IMqttClient _mqttClient;
     private readonly MqttFactory _mqttFactory = new();
-    
-    public MqttSubscriber(IOptions<MqttConfiguration> mqttOptions, IServiceProvider serviceProvider)
+    private readonly ILogger<MqttSubscriber> _logger;
+
+    public MqttSubscriber(
+        IOptions<MqttConfiguration> mqttOptions, 
+        IServiceProvider serviceProvider, 
+        ILogger<MqttSubscriber> logger)
     {
         var mqttConfiguration = mqttOptions.Value;
         _mqttClientOptions = new MqttClientOptionsBuilder()
@@ -24,6 +28,7 @@ public class MqttSubscriber : BackgroundService
             .WithClientId(mqttConfiguration.ClientId + Guid.NewGuid())
             .Build();
         _serviceProvider = serviceProvider;
+        _logger = logger;
         _mqttClient = _mqttFactory.CreateMqttClient();
     }
     
@@ -37,6 +42,9 @@ public class MqttSubscriber : BackgroundService
             var message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             var bikeAttached = JsonConvert.DeserializeObject<BikeLockRequest>(message);
 
+            _logger.LogInformation(
+                $"Received bike attached event for bike {bikeAttached.BikeId} on dock {bikeAttached.DockId}");
+                
             using var scope = _serviceProvider.CreateScope();
             var dockManagerService = scope.ServiceProvider.GetRequiredService<IDockManagerService>();
             

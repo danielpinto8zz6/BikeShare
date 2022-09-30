@@ -116,7 +116,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-POST http://localhost:5050/api/rentals HTTP/1.1
+POST http://{{host}}/api/rentals HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 UserId: daniel
@@ -124,6 +124,7 @@ UserId: daniel
 {
   "originDockId":"53ce1a33-2b6a-4a3a-a4d3-95555ab60edf",
   "bikeId": "da9625ca-a099-41d6-92bc-cdc9a473d49b"
+  //"bikeId": "f4b18777-2d82-492e-b7e3-de9eb1ed8812"
 }
 
 ###

@@ -267,18 +267,6 @@
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
       }
-    },
-    {
-      "DownstreamPathTemplate": "/api/docks/lock-bike",
-      "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/docks/lock-bike",
-      "ServiceName": "DOCK-SERVICE",
-      "UpstreamHttpMethod": [
-        "Post"
-      ],
-      "FileCacheOptions": {
-        "TtlSeconds": 15
-      }
     }
   ],
   "GlobalConfiguration": {

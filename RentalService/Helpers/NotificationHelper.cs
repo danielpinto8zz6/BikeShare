@@ -14,6 +14,22 @@ public static class NotificationHelper
 
     private const string RentalId = "rentalId";
     
+    public static RentalNotificationDto GetBikeLockedNotification(BehaviorContext<RentalState, IBikeLocked> context)
+    {
+        return new RentalNotificationDto
+        {
+            Username = context.Message.Rental.Username,
+            Body = "Bike locked",
+            Title = "Bike locked",
+            Data = new Dictionary<string, string>
+            {
+                {Event, "bike-locked"},
+                {RentalId, context.Message.Rental.Id.ToString()}
+            },
+            RentalId = context.Message.Rental.Id
+        };
+    }
+    
     public static RentalNotificationDto GetBikeUnlockedNotification(BehaviorContext<RentalState, IBikeUnlocked> context)
     {
         return new RentalNotificationDto

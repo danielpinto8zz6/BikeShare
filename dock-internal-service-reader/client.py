@@ -32,4 +32,7 @@ def connect_mqtt():
     client = mqtt_client.Client(client_id)
     client.on_connect = on_connect
     client.connect(broker, port)
+
+    client.loop_start()
+    
     return client

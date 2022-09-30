@@ -11,32 +11,49 @@ topic = 'dock-state-change'
 
 DOCK_PORTS = (11, 37)
 
-dock_one_id = '53ce1a33-2b6a-4a3a-a4d3-95555ab60edf'
-dock_two_id = '7b28d2e9-8c4b-4b2c-b695-ab5b4215c98c'
+docks = {
+    '53ce1a33-2b6a-4a3a-a4d3-95555ab60edf': 1,
+    '7b28d2e9-8c4b-4b2c-b695-ab5b4215c98c': 2
+}
 
 relay_controller.init_relay(DOCK_PORTS)
 
 
+def set_relay(dock_id, state):
+    if (state == 1):
+        relay_controller.relay_on(docks[dock_id])
+    elif (state == 2):
+        relay_controller.relay_off(docks[dock_id])
+    else:
+        print(' [x] Invalid action')
+
+
+def restore_states():
+    for dock_id in docks.keys():
+        try:
+            f = open(dock_id, "r")
+            state = int(f.read())
+            set_relay(dock_id, state)
+        except IOError:
+            print(f'Dock with id {dock_id} doesnt have a state to restore, ignoring...')
+
+def save_state(dock_id, state):
+    file = open(dock_id, 'w')
+    file.write(str(state))
+    file.close()
+
+
 def handle_dock_state_change_request(msg):
     dock_id = msg['DockId']
-    action = msg['Action']
+    state = msg['State']
 
     print(' [x] Dock id: %r' % dock_id)
-    print(' [x] Action: %r' % action)
+    print(' [x] State: %r' % state)
 
     global relay_controller
-    if (dock_id == dock_one_id):
-        if (action == 1):
-            relay_controller.relay_on(1)
-        elif (action == 2):
-            relay_controller.relay_off(1)
-        else:
-            print(' [x] Invalid action')
-    elif (dock_id == dock_two_id):
-        if (action == 1):
-            relay_controller.relay_on(2)
-        elif (action == 2):
-            relay_controller.relay_off(2)
+    if (dock_id in docks.keys()):
+        set_relay(dock_id, state)
+        save_state(dock_id, state)
     else:
         print(' [x] Dock id not recognized')
 
@@ -60,15 +77,17 @@ def subscribe(client: mqtt_client):
 
         print(f"Received `{message}` from `{msg.topic}` topic")
         handle_dock_state_change_request(message)
-        
+
     client.subscribe(topic)
     client.on_message = on_message
 
 
 def run():
+    restore_states()
     client = connect_mqtt()
     subscribe(client)
     client.loop_forever()
+
 
 if __name__ == '__main__':
     run()

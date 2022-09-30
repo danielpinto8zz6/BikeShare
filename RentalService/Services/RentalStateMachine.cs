@@ -75,6 +75,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
             .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"))
             .SendAsync(new Uri($"queue:{nameof(IPaymentRequested)}"), BuildPaymentRequestCommand)
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeLockedNotification(c)))
             .Finalize();
 
     private EventActivityBinder<RentalState, IRentalFailure> SetRentalFailureHandler() =>

@@ -2,14 +2,14 @@ namespace Common.Models.Dtos;
 
 public class DockStateChangeRequest
 {
-    public DockStateAction Action { get; set; }
+    public DockState State { get; set; }
 
     public Guid DockId { get; set; }
 }
 
-public enum DockStateAction
+public enum DockState
 {
     Unknown = 0,
     Open, 
-    Close
+    Closed
 }

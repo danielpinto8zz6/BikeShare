@@ -9,7 +9,7 @@ public class MqttPublisher : IMqttPublisher
 {
     private readonly MqttFactory _mqttFactory = new();
     private readonly MqttClientOptions _mqttClientOptions;
-
+    
     public MqttPublisher(IOptions<MqttConfiguration> mqttOptions)
     {
         var mqttConfiguration = mqttOptions.Value;
