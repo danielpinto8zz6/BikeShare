@@ -25,6 +25,7 @@ public class DockManagerServiceTests
     private Mock<IDockService> _dockServiceMock;
     private Mock<IEtcdClient> _etcdClientMock;
     private IDockManagerService _dockManagerService;
+    private Mock<IMqttPublisher> _mqttPublisherMock;
 
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
@@ -41,13 +42,18 @@ public class DockManagerServiceTests
         _etcdClientMock = new Mock<IEtcdClient>();
         var loggerMock = new Mock<ILogger<Services.DockService>>();
 
+        _mqttPublisherMock = new Mock<IMqttPublisher>();
+        _mqttPublisherMock.Setup(i => i.PublishAsync(It.IsAny<string>(), It.IsAny<DockStateChangeRequest>()))
+            .Returns(Task.CompletedTask);
+        
         _dockServiceMock = new Mock<IDockService>();
 
         _dockManagerService = new DockManagerService(
             _dockServiceMock.Object,
             _etcdClientMock.Object,
             _testHarness.Bus,
-            loggerMock.Object);
+            loggerMock.Object,
+            _mqttPublisherMock.Object);
     }
 
     [Test]
@@ -55,7 +61,7 @@ public class DockManagerServiceTests
     {
         var rentalDto = new AutoFaker<RentalDto>().Generate();
         var dockDto = new AutoFaker<DockDto>().Generate();
-        
+
         _dockServiceMock.Setup(i => i.GetByBikeId(It.IsAny<Guid>()))
             .ReturnsAsync(dockDto);
         _dockServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<DockDto>()))
@@ -68,19 +74,18 @@ public class DockManagerServiceTests
             Rental = rentalDto,
             CorrelationId = Guid.NewGuid()
         };
-        
+
         await _dockManagerService.UnlockBikeAsync(rentalMessage);
-        
+
         (await _testHarness.Sent.Any<IBikeUnlocked>()).Should().BeTrue();
-        (await _testHarness.Sent.Any<DockStateChangeRequest>()).Should().BeTrue();
     }
-    
+
     [Test]
     public async Task UnlockBikeAsync_WithException_ShouldSendRentalFailure()
     {
         var rentalDto = new AutoFaker<RentalDto>().Generate();
         var dockDto = new AutoFaker<DockDto>().Generate();
-        
+
         _dockServiceMock.Setup(i => i.GetByBikeId(It.IsAny<Guid>()))
             .ReturnsAsync(dockDto);
         _dockServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<DockDto>()))
@@ -93,12 +98,12 @@ public class DockManagerServiceTests
             Rental = rentalDto,
             CorrelationId = Guid.NewGuid()
         };
-        
+
         await _dockManagerService.UnlockBikeAsync(rentalMessage);
-        
+
         (await _testHarness.Sent.Any<IRentalFailure>()).Should().BeTrue();
     }
-    
+
     [Test]
     public async Task LockBikeAsync_WithBikeLockRequest_ShouldSendBikeLocked()
     {
@@ -115,7 +120,7 @@ public class DockManagerServiceTests
             Rental = rentalDto,
             CorrelationId = Guid.NewGuid()
         };
-        
+
         _dockServiceMock.Setup(i => i.GetByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(dockDto);
         _dockServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<DockDto>()))
@@ -126,11 +131,10 @@ public class DockManagerServiceTests
             .ReturnsAsync(new DeleteRangeResponse());
 
         await _dockManagerService.LockBikeAsync(bikeLockRequestDto);
-        
+
         (await _testHarness.Sent.Any<IBikeLocked>()).Should().BeTrue();
-        (await _testHarness.Sent.Any<DockStateChangeRequest>()).Should().BeTrue();
     }
-    
+
     [Test]
     public async Task LockBikeAsync_WithBikeLockRequestOnOccupiedDock_ShouldThrowInvalidOperationException()
     {
@@ -147,7 +151,7 @@ public class DockManagerServiceTests
             Rental = rentalDto,
             CorrelationId = Guid.NewGuid()
         };
-        
+
         _dockServiceMock.Setup(i => i.GetByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(dockDto);
         _dockServiceMock.Setup(i => i.UpdateAsync(It.IsAny<Guid>(), It.IsAny<DockDto>()))
@@ -156,10 +160,10 @@ public class DockManagerServiceTests
             .ReturnsAsync(JsonSerializer.Serialize(rentalMessage));
         _etcdClientMock.Setup(i => i.DeleteAsync(It.IsAny<string>(), null, null, default))
             .ReturnsAsync(new DeleteRangeResponse());
-        
+
         Func<Task> f = async () => { await _dockManagerService.LockBikeAsync(bikeLockRequestDto); };
         await f.Should()
             .ThrowAsync<InvalidOperationException>()
-            .WithMessage($"Dock with id: {dockDto.Id} already has a bike attached!");  
+            .WithMessage($"Dock with id: {dockDto.Id} already has a bike attached!");
     }
 }

@@ -15,17 +15,20 @@ public class DockManagerService : IDockManagerService
     private readonly IEtcdClient _etcdClient;
     private readonly IBus _bus;
     private readonly ILogger<DockService> _logger;
+    private readonly IMqttPublisher _mqttPublisher;
 
     public DockManagerService(
         IDockService dockService,
         IEtcdClient etcdClient,
         IBus bus,
-        ILogger<DockService> logger)
+        ILogger<DockService> logger, 
+        IMqttPublisher mqttPublisher)
     {
         _dockService = dockService;
         _etcdClient = etcdClient;
         _bus = bus;
         _logger = logger;
+        _mqttPublisher = mqttPublisher;
     }
 
     public async Task UnlockBikeAsync(IRentalMessage rentalMessage)
@@ -89,34 +92,25 @@ public class DockManagerService : IDockManagerService
 
     private async Task SendBikeLockedEventAsync(BikeLockRequest bikeLockRequest)
     {
-        // var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequest.BikeId.ToString());
-        // await _etcdClient.DeleteAsync(bikeLockRequest.BikeId.ToString());
-        //
-        // if (string.IsNullOrWhiteSpace(rentalMessageStr))
-        // {
-        //     throw new NotFoundException(
-        //         $"Rental for bike with identifier {bikeLockRequest.BikeId} not found!");
-        // }
-        //
-        // var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
-        // if (rentalMessage == null)
-        // {
-        //     throw new ArgumentNullException();
-        // }
-        //
-        // rentalMessage.Rental.Status = RentalStatus.BikeLocked;
-        // rentalMessage.Rental.EndDate = DateTime.UtcNow;
-        // rentalMessage.Rental.DestinationDockId = bikeLockRequest.DockId;
-
-        var rentalMessage = new RentalMessage
-        {
-            CorrelationId = Guid.NewGuid(),
-            Rental = new RentalDto
-            {
-                Id = Guid.NewGuid()
-            }
-        };
+        var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequest.BikeId.ToString());
+        await _etcdClient.DeleteAsync(bikeLockRequest.BikeId.ToString());
         
+        if (string.IsNullOrWhiteSpace(rentalMessageStr))
+        {
+            throw new NotFoundException(
+                $"Rental for bike with identifier {bikeLockRequest.BikeId} not found!");
+        }
+        
+        var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
+        if (rentalMessage == null)
+        {
+            throw new ArgumentNullException();
+        }
+        
+        rentalMessage.Rental.Status = RentalStatus.BikeLocked;
+        rentalMessage.Rental.EndDate = DateTime.UtcNow;
+        rentalMessage.Rental.DestinationDockId = bikeLockRequest.DockId;
+
         var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
         await endpoint.Send<IBikeLocked>(rentalMessage);
     }
@@ -133,13 +127,16 @@ public class DockManagerService : IDockManagerService
         await endpoint.Send<IBikeUnlocked>(rentalMessage);
     }
 
-    private async Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
+    private Task SendDockStateChangeRequestAsync(Guid dockId, DockStateAction action)
     {
-        var changeDockStateEndpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(DockStateChangeRequest)}"));
-        await changeDockStateEndpoint.Send(new DockStateChangeRequest
+        const string dockStateChangeTopic = "dock-state-change";
+        
+        var request =new DockStateChangeRequest
         {
             Action = action,
             DockId = dockId
-        });
+        };
+
+        return _mqttPublisher.PublishAsync(dockStateChangeTopic, request);
     }
 }

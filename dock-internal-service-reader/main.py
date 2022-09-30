@@ -6,19 +6,12 @@ import json
 
 
 def send_bike_lock_request(client, dock_id, bike_id):
-    request = {
-        'message': {
-            'dockId': dock_id,
-            'bikeId': bike_id,
-        },
-        'messageType': [
-            "urn:message:DockService.Models.Dtos:BikeLockRequest"
-        ]
+    message = {
+        'dockId': dock_id,
+        'bikeId': bike_id,
     }
 
-
-    client.send_message('BikeLockRequest', dock_id, json.dumps(request))
-    print(json.dumps(request))
+    client.send_message('bike-attached', json.dumps(message))
 
 
 if __name__ == '__main__':

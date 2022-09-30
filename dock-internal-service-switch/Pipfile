@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pika = "*"
-masstransitpython-byq96 = "*"
+paho-mqtt = "*"
+gpiozero = "*"
 
 [dev-packages]
 autopep8 = "*"
