@@ -18,8 +18,8 @@ relay_controller.init_relay(DOCK_PORTS)
 
 
 def handle_dock_state_change_request(msg):
-    dock_id = msg['dockId']
-    action = msg['action']
+    dock_id = msg['DockId']
+    action = msg['Action']
 
     print(' [x] Dock id: %r' % dock_id)
     print(' [x] Action: %r' % action)

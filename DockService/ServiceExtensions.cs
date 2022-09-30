@@ -25,9 +25,6 @@ public static class ServiceExtensions
     public static void SetupServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<MqttConfiguration>(configuration.GetSection("Mqtt"));
-        services.AddScoped<IMqttPublisher, MqttPublisher>();
-        
         services.AddControllers();
         services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"}); });
 
@@ -99,6 +96,8 @@ public static class ServiceExtensions
 
         services.AddSingleton<IEtcdClient, EtcdClient>(_ => new EtcdClient(configuration.GetConnectionString("Etcd")));
         
+        services.Configure<MqttConfiguration>(configuration.GetSection("Mqtt"));
+        services.AddScoped<IMqttPublisher, MqttPublisher>();
         services.AddHostedService<MqttSubscriber>();
     }
 }

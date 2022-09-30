@@ -13,41 +13,48 @@ public class MqttSubscriber : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private readonly MqttClientOptions _mqttClientOptions;
     private const string Topic = "bike-attached";
+    private readonly IMqttClient _mqttClient;
+    private readonly MqttFactory _mqttFactory = new();
     
     public MqttSubscriber(IOptions<MqttConfiguration> mqttOptions, IServiceProvider serviceProvider)
     {
         var mqttConfiguration = mqttOptions.Value;
         _mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(mqttConfiguration.Server, mqttConfiguration.Port)
-            .WithClientId(mqttConfiguration.ClientId)
+            .WithClientId(mqttConfiguration.ClientId + Guid.NewGuid())
             .Build();
         _serviceProvider = serviceProvider;
+        _mqttClient = _mqttFactory.CreateMqttClient();
     }
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var mqttFactory = new MqttFactory();
-        using var mqttClient = mqttFactory.CreateMqttClient();
-
         // Setup message handling before connecting so that queued messages
         // are also handled properly. When there is no event handler attached all
         // received messages get lost.
-        mqttClient.ApplicationMessageReceivedAsync += async e =>
+        _mqttClient.ApplicationMessageReceivedAsync += e =>
         {
             var message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             var bikeAttached = JsonConvert.DeserializeObject<BikeLockRequest>(message);
 
             using var scope = _serviceProvider.CreateScope();
             var dockManagerService = scope.ServiceProvider.GetRequiredService<IDockManagerService>();
-            await dockManagerService.LockBikeAsync(bikeAttached);
+            
+            return dockManagerService.LockBikeAsync(bikeAttached);
         };
 
-        await mqttClient.ConnectAsync(_mqttClientOptions, stoppingToken);
+        await _mqttClient.ConnectAsync(_mqttClientOptions, stoppingToken);
 
-        var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => { f.WithTopic("bike-attached"); })
+        var mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
+            .WithTopicFilter(f => { f.WithTopic(Topic); })
             .Build();
 
-        await mqttClient.SubscribeAsync(mqttSubscribeOptions, stoppingToken);
+        await _mqttClient.SubscribeAsync(mqttSubscribeOptions, stoppingToken);
+    }
+
+    public override void Dispose()
+    {
+        _mqttClient.DisconnectAsync();
+        _mqttClient.Dispose();
     }
 }
