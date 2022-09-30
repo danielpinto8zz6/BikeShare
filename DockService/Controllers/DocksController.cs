@@ -109,11 +109,11 @@ namespace DockService.Controllers
         
         [HttpPost("lock-bike")]
         public async Task<ActionResult<BikeDto>> LockBikeAsync(
-            [FromBody] BikeLockRequestDto bikeLockRequestDto)
+            [FromBody] BikeLockRequest bikeLockRequest)
         {
             try
             {
-                await _dockManagerService.LockBikeAsync(bikeLockRequestDto);
+                await _dockManagerService.LockBikeAsync(bikeLockRequest);
                 return Ok();
             }
             catch (NotFoundException e)

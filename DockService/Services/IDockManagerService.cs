@@ -5,6 +5,6 @@ namespace DockService.Services;
 
 public interface IDockManagerService
 {
-    Task LockBikeAsync(BikeLockRequestDto bikeLockRequestDto);
+    Task LockBikeAsync(BikeLockRequest bikeLockRequest);
     Task UnlockBikeAsync(IRentalMessage rentalMessage);
 }

@@ -59,24 +59,24 @@ public class DockManagerService : IDockManagerService
         }
     }
 
-    public async Task LockBikeAsync(BikeLockRequestDto bikeLockRequestDto)
+    public async Task LockBikeAsync(BikeLockRequest bikeLockRequest)
     {
-        await AttachBikeToDockAsync(bikeLockRequestDto);
+        await AttachBikeToDockAsync(bikeLockRequest);
 
-        await SendBikeLockedEventAsync(bikeLockRequestDto);
+        await SendBikeLockedEventAsync(bikeLockRequest);
 
-        await SendDockStateChangeRequestAsync(bikeLockRequestDto.DockId, DockStateAction.Close);
+        await SendDockStateChangeRequestAsync(bikeLockRequest.DockId, DockStateAction.Close);
     }
 
-    private async Task AttachBikeToDockAsync(BikeLockRequestDto bikeLockRequestDto)
+    private async Task AttachBikeToDockAsync(BikeLockRequest bikeLockRequest)
     {
-        var dockDto = await _dockService.GetByIdAsync(bikeLockRequestDto.DockId);
+        var dockDto = await _dockService.GetByIdAsync(bikeLockRequest.DockId);
         if (dockDto.BikeId != null)
         {
             throw new InvalidOperationException($"Dock with id: {dockDto.Id} already has a bike attached!");
         }
 
-        dockDto.BikeId = bikeLockRequestDto.BikeId;
+        dockDto.BikeId = bikeLockRequest.BikeId;
         await _dockService.UpdateAsync(dockDto.Id, dockDto);
     }
 
@@ -87,15 +87,15 @@ public class DockManagerService : IDockManagerService
         await _dockService.UpdateAsync(dockDto.Id, dockDto);
     }
 
-    private async Task SendBikeLockedEventAsync(BikeLockRequestDto bikeLockRequestDto)
+    private async Task SendBikeLockedEventAsync(BikeLockRequest bikeLockRequest)
     {
-        var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequestDto.BikeId.ToString());
-        await _etcdClient.DeleteAsync(bikeLockRequestDto.BikeId.ToString());
+        var rentalMessageStr = await _etcdClient.GetValAsync(bikeLockRequest.BikeId.ToString());
+        await _etcdClient.DeleteAsync(bikeLockRequest.BikeId.ToString());
 
         if (string.IsNullOrWhiteSpace(rentalMessageStr))
         {
             throw new NotFoundException(
-                $"Rental for bike with identifier {bikeLockRequestDto.BikeId} not found!");
+                $"Rental for bike with identifier {bikeLockRequest.BikeId} not found!");
         }
 
         var rentalMessage = JsonSerializer.Deserialize<RentalMessage>(rentalMessageStr);
@@ -106,7 +106,7 @@ public class DockManagerService : IDockManagerService
 
         rentalMessage.Rental.Status = RentalStatus.BikeLocked;
         rentalMessage.Rental.EndDate = DateTime.UtcNow;
-        rentalMessage.Rental.DestinationDockId = bikeLockRequestDto.DockId;
+        rentalMessage.Rental.DestinationDockId = bikeLockRequest.DockId;
 
         var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IBikeLocked)}"));
         await endpoint.Send<IBikeLocked>(rentalMessage);

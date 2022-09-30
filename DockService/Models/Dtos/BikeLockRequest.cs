@@ -1,6 +1,6 @@
 namespace DockService.Models.Dtos;
 
-public class BikeLockRequestDto
+public class BikeLockRequest
 {
     public Guid BikeId { get; set; }
 

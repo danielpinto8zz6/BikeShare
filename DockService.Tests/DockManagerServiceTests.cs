@@ -105,7 +105,7 @@ public class DockManagerServiceTests
         var rentalDto = new AutoFaker<RentalDto>().Generate();
         var dockDto = new AutoFaker<DockDto>().Generate();
         dockDto.BikeId = null;
-        var bikeLockRequestDto = new BikeLockRequestDto
+        var bikeLockRequestDto = new BikeLockRequest
         {
             BikeId = Guid.NewGuid(),
             DockId = Guid.NewGuid()
@@ -137,7 +137,7 @@ public class DockManagerServiceTests
         var rentalDto = new AutoFaker<RentalDto>().Generate();
         var dockDto = new AutoFaker<DockDto>().Generate();
 
-        var bikeLockRequestDto = new BikeLockRequestDto
+        var bikeLockRequestDto = new BikeLockRequest
         {
             BikeId = Guid.NewGuid(),
             DockId = Guid.NewGuid()
