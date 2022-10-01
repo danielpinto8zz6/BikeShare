@@ -30,6 +30,9 @@ spec:
       containers:
       - name:  bike-service-container
         image:  bike-service:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80

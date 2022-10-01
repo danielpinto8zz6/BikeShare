@@ -30,6 +30,9 @@ spec:
       containers:
       - name:  notification-container
         image:  notification-service:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80

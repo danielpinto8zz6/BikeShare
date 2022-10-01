@@ -30,6 +30,9 @@ spec:
       containers:
         - name: dock-service-container
           image: dock-service:latest
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production  
           imagePullPolicy: Never
           ports:
             - containerPort: 80

@@ -30,6 +30,9 @@ spec:
       containers:
       - name:  feedback-service-container
         image:  feedback-service:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80

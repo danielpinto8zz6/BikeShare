@@ -30,6 +30,9 @@ spec:
       containers:
       - name:  rental-service-container
         image:  rental-service:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80

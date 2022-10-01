@@ -30,6 +30,9 @@ spec:
       containers:
       - name: token-container
         image: token-service:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80

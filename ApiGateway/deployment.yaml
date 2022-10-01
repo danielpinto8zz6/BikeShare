@@ -30,6 +30,9 @@ spec:
       containers:
       - name:  api-gateway-container
         image:  api-gateway:latest
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Production
         imagePullPolicy: Never
         ports:
         - containerPort: 80
