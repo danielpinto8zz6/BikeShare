@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>4761b4d0-7f3f-4a3a-b774-89de95b85112</UserSecretsId>
-    <RootNamespace>AgentPortalApiGateway</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
