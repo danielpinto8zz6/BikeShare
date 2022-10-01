@@ -75,6 +75,13 @@ namespace RentalService
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
                     });
+                    
+                    cfg.ReceiveEndpoint(nameof(IRentalSubmitted), e => { e.ConfigureSaga<RentalState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IBikeValidated), e => { e.ConfigureSaga<RentalState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IBikeUnlocked), e => { e.ConfigureSaga<RentalState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IBikeLocked), e => { e.ConfigureSaga<RentalState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IRentalFailure), e => { e.ConfigureSaga<RentalState>(context); });
+
                     cfg.ConfigureEndpoints(context);
                 });
 
