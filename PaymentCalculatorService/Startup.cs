@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PaymentCalculatorService.Consumers;
 using PaymentCalculatorService.Services;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
@@ -29,6 +30,8 @@ namespace PaymentCalculatorService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddServiceDiscovery(opt => opt.UseEureka());
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
