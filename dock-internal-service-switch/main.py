@@ -5,7 +5,7 @@ from paho.mqtt import client as mqtt_client
 import uuid
 
 port = 31883
-broker = "192.168.1.199"
+broker = "192.168.1.196"
 client_id = f'dock-internal-service-switch-{uuid.uuid4()}'
 topic = 'dock-state-change'
 
