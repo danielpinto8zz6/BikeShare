@@ -1,12 +1,12 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/users/me",
+      "DownstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/users/me",
+      "UpstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
       "ServiceName": "USER-SERVICE",
       "UpstreamHttpMethod": [
-        "Get", "Put"
+        "Delete"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15
@@ -20,6 +20,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -42,16 +45,18 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
-
     {
-      "DownstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
+      "DownstreamPathTemplate": "/api/users/me",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
+      "UpstreamPathTemplate": "/api/users/me",
       "ServiceName": "USER-SERVICE",
       "UpstreamHttpMethod": [
-        "Delete"
+        "Get", "Put"
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15
@@ -65,6 +70,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -77,6 +85,9 @@
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -89,6 +100,9 @@
       ],
       "FileCacheOptions": {
         "TtlSeconds": 15
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -111,6 +125,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -133,6 +150,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -155,6 +175,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -177,6 +200,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -199,6 +225,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -222,6 +251,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -244,6 +276,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -266,6 +301,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     },
     {
@@ -288,6 +326,9 @@
       },
       "AddHeadersToRequest": {
         "UserId": "Claims[id] > value > |"
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
       }
     }
   ],
