@@ -24,6 +24,8 @@ namespace PaymentValidatorService.Consumers
         {
             try
             {
+                _logger.LogInformation($"Validate payment to {context.CorrelationId} was received");
+
                 UpdatePaymentState(context.Message.Payment, PaymentStatus.Validated);
 
                 // Sleep 3 sec to emulate payment validation

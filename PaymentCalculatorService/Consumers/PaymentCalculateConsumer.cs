@@ -28,6 +28,8 @@ namespace PaymentCalculatorService.Consumers
         {
             try
             {
+                _logger.LogInformation($"Calculate payment to {context.CorrelationId} was received");
+
                 var paymentValue = _paymentCalculatorService.Calculate(context.Message.Payment);
 
                 context.Message.Payment.Value = paymentValue;
