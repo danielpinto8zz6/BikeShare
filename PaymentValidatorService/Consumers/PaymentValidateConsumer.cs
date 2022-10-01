@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Common.Models.Commands.Payment;
 using Common.Models.Dtos;
@@ -19,13 +20,16 @@ namespace PaymentValidatorService.Consumers
             _logger = logger;
         }
 
-        public Task Consume(ConsumeContext<IValidatePayment> context)
+        public async Task Consume(ConsumeContext<IValidatePayment> context)
         {
             try
             {
                 UpdatePaymentState(context.Message.Payment, PaymentStatus.Validated);
 
-                return SendPaymentValidated(context);
+                // Sleep 3 sec to emulate payment validation
+                await Task.Delay(3000);
+                
+                await SendPaymentValidated(context);
             }
             catch (Exception e)
             {
@@ -33,7 +37,7 @@ namespace PaymentValidatorService.Consumers
 
                 UpdatePaymentState(context.Message.Payment, PaymentStatus.ValidationFailed);
 
-                return SendPaymentValidationFailed(context);
+                await SendPaymentValidationFailed(context);
             }
         }
 
