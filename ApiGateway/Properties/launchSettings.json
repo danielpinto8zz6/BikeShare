@@ -14,7 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "api",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        
       }
     },
     "ApiGateway": {
@@ -22,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "api",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        
       },
       "applicationUrl": "http://localhost:8099"
     }

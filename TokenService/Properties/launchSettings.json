@@ -14,7 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        
       }
     },
     "TokenService": {
@@ -24,7 +24,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5090",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        
       }
     }
   }

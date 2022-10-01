@@ -44,8 +44,9 @@ namespace RentalService
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "RentalService", Version = "v1"});
             });
 
+            var mongoDbConnectionString = Configuration.GetConnectionString("MongoDb");
             services.AddScoped<IMongoClient, MongoClient>(_ =>
-                new MongoClient(Configuration.GetConnectionString("MongoDb")));
+                new MongoClient(mongoDbConnectionString));
 
             services.AddScoped<IRentalService, Services.RentalService>();
             services.AddScoped<IMongoDbRepository, MongoDbRepository>(provider =>
@@ -87,7 +88,7 @@ namespace RentalService
                 x.AddSagaStateMachine<RentalStateMachine, RentalState>()
                     .MongoDbRepository(r =>
                     {
-                        r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
+                        r.Connection = mongoDbConnectionString;
                         r.DatabaseName = "sagas";
                         r.CollectionName = "sagas";
                     });

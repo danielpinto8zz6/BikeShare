@@ -47,8 +47,10 @@ namespace PaymentService
                 });
             });
 
+            var mongoDbConnectionString = Configuration.GetConnectionString("MongoDb");
+            Console.WriteLine(mongoDbConnectionString);
             services.AddScoped<IMongoClient, MongoClient>(_ =>
-                new MongoClient(Configuration.GetConnectionString("MongoDb")));
+                new MongoClient(mongoDbConnectionString));
 
             services.AddScoped<IPaymentService, Services.PaymentService>();
             services.AddScoped<IPaymentRepository, PaymentRepository>(provider =>
@@ -91,7 +93,7 @@ namespace PaymentService
                 x.AddSagaStateMachine<PaymentStateMachine, PaymentState>()
                     .MongoDbRepository(r =>
                     {
-                        r.Connection = "mongodb://adminuser:password123@192.168.1.199:31000";
+                        r.Connection = mongoDbConnectionString;
                         r.DatabaseName = "sagas";
                         r.CollectionName = "sagas";
                     });

@@ -19,13 +19,13 @@ namespace PaymentValidatorService.Consumers
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<IValidatePayment> context)
+        public Task Consume(ConsumeContext<IValidatePayment> context)
         {
             try
             {
                 UpdatePaymentState(context.Message.Payment, PaymentStatus.Validated);
 
-                await SendPaymentValidated(context);
+                return SendPaymentValidated(context);
             }
             catch (Exception e)
             {
@@ -33,7 +33,7 @@ namespace PaymentValidatorService.Consumers
 
                 UpdatePaymentState(context.Message.Payment, PaymentStatus.ValidationFailed);
 
-                await SendPaymentValidationFailed(context);
+                return SendPaymentValidationFailed(context);
             }
         }
 

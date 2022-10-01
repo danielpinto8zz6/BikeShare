@@ -24,7 +24,7 @@ namespace AgentPortalApiGateway
 
         private static IWebHost BuildWebHost(string[] args)
         {
-            var key = Encoding.ASCII.GetBytes("THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459");
+            var key = Encoding.ASCII.GetBytes("2e7a1e80-16ee-4e52-b5c6-5e8892453459");
 
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>

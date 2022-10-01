@@ -14,7 +14,6 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "PaymentService": {
@@ -24,7 +23,6 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:6030",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

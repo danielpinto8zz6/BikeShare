@@ -1,0 +1,282 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/users/me",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/users/me",
+      "ServiceName": "USER-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get", "Put"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/me/credit-cards",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/users/me/credit-cards",
+      "ServiceName": "USER-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post","Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/users/me/credit-cards/{creditCardNumber}",
+      "ServiceName": "USER-SERVICE",
+      "UpstreamHttpMethod": [
+        "Delete"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/users",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/users",
+      "ServiceName": "USER-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/auth",
+      "ServiceName": "AUTH-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/tokens",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/tokens",
+      "ServiceName": "TOKEN-SERVICE",
+      "UpstreamHttpMethod": [
+        "Put"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/docks/nearby",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/docks/nearby",
+      "ServiceName": "DOCK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/docks/bike/{bikeId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/docks/bike/{bikeId}",
+      "ServiceName": "DOCK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payments/rental/{rentalId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/Payments/rental/{rentalId}",
+      "ServiceName": "PAYMENT-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/rentals",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/rentals",
+      "ServiceName": "RENTAL-SERVICE",
+      "UpstreamHttpMethod": [
+        "POST",
+        "GET"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/travel",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/travel",
+      "ServiceName": "TRAVEL-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/travel/rental/{rentalId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/travel/rental/{rentalId}",
+      "ServiceName": "TRAVEL-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/feedbacks",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/feedbacks",
+      "ServiceName": "FEEDBACK-SERVICE",
+      "UpstreamHttpMethod": [
+        "Post", "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration",
+    "UseServiceDiscovery": true,
+    "ServiceDiscoveryProvider": {
+      "Type": "Eureka",
+      "Host": "192.168.1.196",
+      "Port": "8761"
+    }
+  }
+}
