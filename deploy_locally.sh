@@ -59,9 +59,9 @@ case $1 in
     deploy_service "payment-validator-service" "PaymentValidatorService"
     ;;
   "all")
-    #deploy_service "eureka-server" "eureka-server"
-    #deploy_service "api-gateway" "ApiGateway"
-    #deploy_service "auth-service" "AuthService"
+    deploy_service "eureka-server" "eureka-server"
+    deploy_service "api-gateway" "ApiGateway"
+    deploy_service "auth-service" "AuthService"
     deploy_service "bike-service" "BikeService"
     deploy_service "feedback-service" "FeedbackService"
     deploy_service "user-service" "UserService"
