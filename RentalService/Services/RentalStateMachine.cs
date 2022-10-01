@@ -50,40 +50,45 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
 
     private EventActivityBinder<RentalState, IRentalSubmitted> SetRentalSummitedHandler() =>
         When(RentalSubmitted)
-            .TransitionTo(Validating)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
+            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .SendAsync(new Uri($"queue:{nameof(IValidateBike)}"), BuildCommand<IValidateBike>)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
+            .TransitionTo(Validating)
             .Then(c => _logger.LogInformation($"Rental submitted to {c.CorrelationId} received"));
 
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
         When(BikeValidated)
-            .TransitionTo(Unlocking)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeValidated))
+            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .SendAsync(new Uri($"queue:{nameof(IUnlockBike)}"), BuildCommand<IUnlockBike>)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeValidated))
-            .Then(c => _logger.LogInformation($"Bike validated to {c.CorrelationId} received"))
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)));
+            .TransitionTo(Unlocking)
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)))
+            .Then(c => _logger.LogInformation($"Bike validated to {c.CorrelationId} received"));
 
     private EventActivityBinder<RentalState, IBikeUnlocked> SetBikeUnlockedHandler() =>
         When(BikeUnlocked)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlocked))
+            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .TransitionTo(InUse)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlocked))
-            .Then(c => _logger.LogInformation($"Bike unlock to {c.CorrelationId} received"))
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeUnlockedNotification(c)));
-
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeUnlockedNotification(c)))
+            .Then(c => _logger.LogInformation($"Bike unlock to {c.CorrelationId} received"));
+    
     private EventActivityBinder<RentalState, IBikeLocked> SetBikeLockedHandler() =>
         When(BikeLocked)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
+            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
+            .SendAsync(new Uri($"queue:{nameof(IPaymentRequested)}"), BuildPaymentRequestCommand)
             .Finalize()
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeLocked))
-            .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeLockedNotification(c)))
-            .SendAsync(new Uri($"queue:{nameof(IPaymentRequested)}"), BuildPaymentRequestCommand);
+            .Then(c => _logger.LogInformation($"Bike locked to {c.CorrelationId} received"));
 
     private EventActivityBinder<RentalState, IRentalFailure> SetRentalFailureHandler() =>
         When(RentalFailure)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.RentalFailure))
+            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .Finalize()
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.RentalFailure))
-            .Then(c => _logger.LogInformation($"Rental failure to {c.CorrelationId} received"))
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetRentalFailureNotification(c)));
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetRentalFailureNotification(c)))
+            .Then(c => _logger.LogInformation($"Rental failure to {c.CorrelationId} received"));
 
     private Task<SendTuple<T>> BuildCommand<T>(BehaviorContext<RentalState, IRentalMessage> context) where T : class
     {
@@ -118,17 +123,18 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
         });
     }
 
-    private async Task UpdateSagaState(RentalState state, RentalDto rental, RentalStatus rentalStatus)
+    private void UpdateSagaState(RentalState state, RentalDto rental, RentalStatus rentalStatus)
     {
         var currentDate = DateTime.UtcNow;
 
         rental.Status = rentalStatus;
-        state.Created = currentDate;
         state.Updated = currentDate;
         state.Status = (int) rentalStatus;
+        if (rentalStatus == RentalStatus.Submitted)
+        {
+            state.Created = currentDate;
+        }
         state.Rental = rental;
-
-        await UpdateRentalAsync(rental);
     }
 
     private Task<RentalDto> UpdateRentalAsync(RentalDto rental)

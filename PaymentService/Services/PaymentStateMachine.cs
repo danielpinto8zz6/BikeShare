@@ -48,55 +48,65 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
 
     private EventActivityBinder<PaymentState, IPaymentRequested> SetPaymentRequestedHandler() =>
         When(Requested)
-            .ThenAsync(CreatePayment)
-            .Then(c => _logger.LogInformation($"Payment requested to {c.Message.CorrelationId} received"))
+            .ThenAsync(CreatePaymentAsync)
             .SendAsync(new Uri($"queue:{nameof(ICalculatePayment)}"), BuildCommand<ICalculatePayment>)
-            .TransitionTo(Calculating);
+            .TransitionTo(Calculating)
+            .Then(c => _logger.LogInformation($"Payment requested to {c.Message.CorrelationId} received"));
 
     private EventActivityBinder<PaymentState, IPaymentCalculated> SetPaymentCalculatedHandler() =>
         When(Calculated)
-            .TransitionTo(Validating)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Calculated))
+            .ThenAsync(c => UpdatePaymentAsync(c.Message.Payment))
             .SendAsync(new Uri($"queue:{nameof(IValidatePayment)}"), BuildCommand<IValidatePayment>)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Calculated))
+            .TransitionTo(Validating)
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"));
 
     private EventActivityBinder<PaymentState, IPaymentValidated> SetPaymentValidatedHandler() =>
         When(Validated)
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
-            .Then(c => _logger.LogInformation($"Payment validated to {c.Message.CorrelationId} received"))
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Validated))
+            .ThenAsync(c => UpdatePaymentAsync(c.Message.Payment))
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentSucceedNotification(c)))
-            .Finalize();
+            .Finalize()
+            .Then(c => _logger.LogInformation($"Payment validated to {c.Message.CorrelationId} received"));
 
     private EventActivityBinder<PaymentState, IPaymentCalculationFailed> SetPaymentCalculationFailedHandler() =>
         When(CalculationFailed)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
+            .ThenAsync(c => UpdatePaymentAsync(c.Message.Payment))
             .Finalize()
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.CalculationFailed))
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"));
 
     private EventActivityBinder<PaymentState, IPaymentValidationFailed> SetPaymentValidationFailedHandler() =>
         When(ValidationFailed)
+            .Then(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.ValidationFailed))
+            .ThenAsync(c => UpdatePaymentAsync(c.Message.Payment))
             .Finalize()
-            .ThenAsync(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.ValidationFailed))
-            .Then(c => _logger.LogInformation($"Payment validation failed to {c.Message.CorrelationId} received"))
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentFailedNotification(c)));
+            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetPaymentFailedNotification(c)))
+            .Then(c => _logger.LogInformation($"Payment validation failed to {c.Message.CorrelationId} received"));
 
-    private async Task UpdateSagaState(PaymentState state, PaymentDto payment, PaymentStatus paymentStatus)
+    private void UpdateSagaState(PaymentState state, PaymentDto payment, PaymentStatus paymentStatus)
     {
         var currentDate = DateTime.UtcNow;
 
         payment.Status = paymentStatus;
-        state.Created = currentDate;
         state.Updated = currentDate;
         state.Status = (int) paymentStatus;
         state.Payment = payment;
-
+        if (paymentStatus == PaymentStatus.Requested)
+        {
+            state.Created = currentDate;
+        }
+    }
+    
+    private Task<PaymentDto> UpdatePaymentAsync(PaymentDto payment)
+    {
         using var scope = _serviceProvider.CreateScope();
         var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
 
-        await paymentService.UpdateAsync(payment.Id, payment);
+        return paymentService.UpdateAsync(payment.Id, payment);
     }
 
-    private async Task CreatePayment(BehaviorContext<PaymentState, IPaymentRequested> context)
+    private async Task CreatePaymentAsync(BehaviorContext<PaymentState, IPaymentRequested> context)
     {
         using var scope = _serviceProvider.CreateScope();
         var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
