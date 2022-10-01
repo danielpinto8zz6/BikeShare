@@ -158,6 +158,28 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/bikes/{bikeId}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/bikes/{bikeId}",
+      "ServiceName": "BIKE-SERVICE",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 15
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "ApiSecurity",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "userType": "USER"
+      },
+      "AddHeadersToRequest": {
+        "UserId": "Claims[id] > value > |"
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/Payments/rental/{rentalId}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/api/Payments/rental/{rentalId}",
