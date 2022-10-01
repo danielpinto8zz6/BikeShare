@@ -51,7 +51,6 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     private EventActivityBinder<RentalState, IRentalSubmitted> SetRentalSummitedHandler() =>
         When(RentalSubmitted)
             .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
-            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .SendAsync(new Uri($"queue:{nameof(IValidateBike)}"), BuildCommand<IValidateBike>)
             .TransitionTo(Validating)
             .Then(c => _logger.LogInformation($"Rental submitted to {c.CorrelationId} received"));
@@ -59,16 +58,14 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
         When(BikeValidated)
             .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeValidated))
-            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .SendAsync(new Uri($"queue:{nameof(IUnlockBike)}"), BuildCommand<IUnlockBike>)
             .TransitionTo(Unlocking)
-            .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)))
+            //.PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeValidatedNotificationAsync(c)))
             .Then(c => _logger.LogInformation($"Bike validated to {c.CorrelationId} received"));
 
     private EventActivityBinder<RentalState, IBikeUnlocked> SetBikeUnlockedHandler() =>
         When(BikeUnlocked)
             .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.BikeUnlocked))
-            .ThenAsync(c => UpdateRentalAsync(c.Message.Rental))
             .TransitionTo(InUse)
             .PublishAsync(c => c.Init<NotificationDto>(NotificationHelper.GetBikeUnlockedNotification(c)))
             .Then(c => _logger.LogInformation($"Bike unlock to {c.CorrelationId} received"));

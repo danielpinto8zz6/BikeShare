@@ -56,7 +56,6 @@ public sealed class PaymentStateMachine : MassTransitStateMachine<PaymentState>
     private EventActivityBinder<PaymentState, IPaymentCalculated> SetPaymentCalculatedHandler() =>
         When(Calculated)
             .Then(c => UpdateSagaState(c.Saga, c.Message.Payment, PaymentStatus.Calculated))
-            .ThenAsync(c => UpdatePaymentAsync(c.Message.Payment))
             .SendAsync(new Uri($"queue:{nameof(IValidatePayment)}"), BuildCommand<IValidatePayment>)
             .TransitionTo(Validating)
             .Then(c => _logger.LogInformation($"Payment calculated to {c.Message.CorrelationId} received"));
