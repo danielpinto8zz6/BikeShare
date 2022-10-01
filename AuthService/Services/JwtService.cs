@@ -32,7 +32,7 @@ namespace AuthService.Services
                     new Claim("userType", "USER"), 
                     new Claim(ClaimTypes.Role, "USER"),
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMonths(12),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
