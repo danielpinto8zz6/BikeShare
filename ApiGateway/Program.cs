@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -30,12 +31,12 @@ namespace AgentPortalApiGateway
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config
+                            
                         .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
-                        .AddJsonFile("appsettings.json", true, false)
-                        .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true,
-                            false)
-                        .AddJsonFile("ocelot.json", false, false)
-                        .AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, false)
+                        .AddJsonFile("appsettings.json", true, true)
+                        .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
+                        .AddJsonFile("ocelot.json")
+                        .AddJsonFile($"configuration.{hostingContext.HostingEnvironment.EnvironmentName}.json")
                         .AddEnvironmentVariables();
                 })
                 .ConfigureServices(services =>
