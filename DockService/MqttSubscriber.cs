@@ -26,7 +26,7 @@ public class MqttSubscriber : BackgroundService
         _mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(mqttConfiguration.Server, mqttConfiguration.Port)
             .WithClientId(mqttConfiguration.ClientId + Guid.NewGuid())
-            .WithCredentials(mqttConfiguration.Username, mqttConfiguration.Password)
+            //.WithCredentials(mqttConfiguration.Username, mqttConfiguration.Password)
             .Build();
         _serviceProvider = serviceProvider;
         _logger = logger;
