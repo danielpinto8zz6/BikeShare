@@ -53,7 +53,7 @@ public sealed class RentalStateMachine : MassTransitStateMachine<RentalState>
             .Then(c => UpdateSagaState(c.Saga, c.Message.Rental, RentalStatus.Submitted))
             .SendAsync(new Uri($"queue:{nameof(IValidateBike)}"), BuildCommand<IValidateBike>)
             .TransitionTo(Validating)
-            .ThenAsync(c => Task.Run(()=>_logger.LogInformation($"Rental submitted to {c.CorrelationId} received")));
+            .Then(c => _logger.LogInformation($"Rental submitted to {c.CorrelationId} received"));
 
     private EventActivityBinder<RentalState, IBikeValidated> SetBikeValidatedHandler() =>
         When(BikeValidated)
