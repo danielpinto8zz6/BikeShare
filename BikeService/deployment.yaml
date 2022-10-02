@@ -39,7 +39,7 @@ spec:
         resources:
           limits:
             memory: "256Mi"
-            cpu: "500m"
+            
 ---
 
 kind: HorizontalPodAutoscaler 
@@ -60,10 +60,5 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
-  - type: Resource 
-    resource: 
-      name: cpu 
-      target:
-        type: Utilization
-        averageUtilization: 50
+
     
