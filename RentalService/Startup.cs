@@ -90,7 +90,7 @@ namespace RentalService
                     {
                         r.Connection = mongoDbConnectionString;
                         r.DatabaseName = "sagas";
-                        r.CollectionName = "sagas";
+                        r.CollectionName = "RentalSaga";
                     });
             });
 

@@ -95,7 +95,7 @@ namespace PaymentService
                     {
                         r.Connection = mongoDbConnectionString;
                         r.DatabaseName = "sagas";
-                        r.CollectionName = "sagas";
+                        r.CollectionName = "PaymentSaga";
                     });
             });
 
