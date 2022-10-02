@@ -47,7 +47,7 @@ apiVersion: autoscaling/v2
 metadata: 
   name: feedback-service
 spec: 
-  maxReplicas: 3 
+  maxReplicas: 2 
   minReplicas: 1 
   scaleTargetRef:
     apiVersion: apps/v1
