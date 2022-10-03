@@ -15,7 +15,8 @@ public class MqttPublisher : IMqttPublisher
         var mqttConfiguration = mqttOptions.Value;
         _mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(mqttConfiguration.Server, mqttConfiguration.Port)
-            .WithClientId(mqttConfiguration.ClientId)
+            .WithClientId(mqttConfiguration.ClientId + "-pub")
+            .WithCleanSession(false)
             //.WithCredentials(mqttConfiguration.Username, mqttConfiguration.Password)
             .Build();
     }

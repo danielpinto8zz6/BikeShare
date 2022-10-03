@@ -1,9 +1,8 @@
 from paho.mqtt import client as mqtt_client
-import uuid
 
 port = 31883
-broker = "192.168.1.196"
-client_id = f'dock-internal-service-reader-{uuid.uuid4()}'
+broker = "192.168.1.199"
+client_id = 'dock-internal-service-reader'
 
 
 class Client():
@@ -29,7 +28,7 @@ def connect_mqtt():
         else:
             print("Failed to connect, return code %d\n", rc)
 
-    client = mqtt_client.Client(client_id)
+    client = mqtt_client.Client(client_id, clean_session=False)
     client.on_connect = on_connect
     client.connect(broker, port)
 
