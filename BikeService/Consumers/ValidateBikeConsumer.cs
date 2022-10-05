@@ -29,7 +29,7 @@ namespace BikeService.Consumers
             
             var isBikeValid = await _bikeService.ExistAsync(context.Message.Rental.BikeId);
 
-            UpdateRentalState(context.Message.Rental, isBikeValid ? RentalStatus.BikeValidated : RentalStatus.RentalFailure);
+            UpdateRentalState(context.Message.Rental, isBikeValid ? RentalStatus.BikeValidated : RentalStatus.RentalFailed);
 
             if (isBikeValid)
             {
@@ -39,7 +39,7 @@ namespace BikeService.Consumers
             else
             {
                 _logger.LogInformation($"Bike invalid for {context.CorrelationId}!");
-                await SendRentalFailureAsync(context);
+                await SendRentalFailedAsync(context);
             }
         }
 
@@ -53,10 +53,10 @@ namespace BikeService.Consumers
             });
         }
         
-        private async Task SendRentalFailureAsync(ConsumeContext<IValidateBike> context)
+        private async Task SendRentalFailedAsync(ConsumeContext<IValidateBike> context)
         {
-            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
-            await endpoint.Send<IRentalFailure>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailed)}"));
+            await endpoint.Send<IRentalFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Rental

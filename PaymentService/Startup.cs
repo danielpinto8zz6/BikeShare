@@ -84,7 +84,7 @@ namespace PaymentService
                     cfg.ReceiveEndpoint(nameof(IPaymentRequested), e => { e.ConfigureSaga<PaymentState>(context); });
                     cfg.ReceiveEndpoint(nameof(IPaymentCalculated), e => { e.ConfigureSaga<PaymentState>(context); });
                     cfg.ReceiveEndpoint(nameof(IPaymentValidated), e => { e.ConfigureSaga<PaymentState>(context); });
-                    cfg.ReceiveEndpoint(nameof(IPaymentValidationFailed),
+                    cfg.ReceiveEndpoint(nameof(IPaymentFailed),
                         e => { e.ConfigureSaga<PaymentState>(context); });
 
                     cfg.ConfigureEndpoints(context);

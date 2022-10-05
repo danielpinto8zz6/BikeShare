@@ -37,7 +37,7 @@ namespace PaymentValidatorService.Consumers
             {
                 _logger.LogError(e, "Error updating payment status");
 
-                UpdatePaymentState(context.Message.Payment, PaymentStatus.ValidationFailed);
+                UpdatePaymentState(context.Message.Payment, PaymentStatus.Failed);
 
                 await SendPaymentValidationFailed(context);
             }
@@ -55,8 +55,8 @@ namespace PaymentValidatorService.Consumers
 
         private static async Task SendPaymentValidationFailed(ConsumeContext<IValidatePayment> context)
         {
-            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentValidationFailed)}"));
-            await endpoint.Send<IPaymentValidationFailed>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentFailed)}"));
+            await endpoint.Send<IPaymentFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment

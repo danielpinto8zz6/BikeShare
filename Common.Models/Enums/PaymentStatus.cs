@@ -5,8 +5,7 @@ namespace Common.Models.Enums
         Unknown = 0,
         Requested,
         Calculated,
-        CalculationFailed,
         Validated,
-        ValidationFailed
+        Failed
     }
 }

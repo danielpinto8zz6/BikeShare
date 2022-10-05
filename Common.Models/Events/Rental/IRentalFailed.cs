@@ -1,6 +1,6 @@
 namespace Common.Models.Events.Rental
 {
-    public interface IRentalFailure : IRentalMessage
+    public interface IRentalFailed : IRentalMessage
     {
         public string ErrorMessage { get; set; }
     }

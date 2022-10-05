@@ -80,7 +80,7 @@ namespace RentalService
                     cfg.ReceiveEndpoint(nameof(IBikeValidated), e => { e.ConfigureSaga<RentalState>(context); });
                     cfg.ReceiveEndpoint(nameof(IBikeUnlocked), e => { e.ConfigureSaga<RentalState>(context); });
                     cfg.ReceiveEndpoint(nameof(IBikeLocked), e => { e.ConfigureSaga<RentalState>(context); });
-                    cfg.ReceiveEndpoint(nameof(IRentalFailure), e => { e.ConfigureSaga<RentalState>(context); });
+                    cfg.ReceiveEndpoint(nameof(IRentalFailed), e => { e.ConfigureSaga<RentalState>(context); });
 
                     cfg.ConfigureEndpoints(context);
                 });

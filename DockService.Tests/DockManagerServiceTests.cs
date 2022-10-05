@@ -81,7 +81,7 @@ public class DockManagerServiceTests
     }
 
     [Test]
-    public async Task UnlockBikeAsync_WithException_ShouldSendRentalFailure()
+    public async Task UnlockBikeAsync_WithException_ShouldSendRentalFailed()
     {
         var rentalDto = new AutoFaker<RentalDto>().Generate();
         var dockDto = new AutoFaker<DockDto>().Generate();
@@ -101,7 +101,7 @@ public class DockManagerServiceTests
 
         await _dockManagerService.UnlockBikeAsync(rentalMessage);
 
-        (await _testHarness.Sent.Any<IRentalFailure>()).Should().BeTrue();
+        (await _testHarness.Sent.Any<IRentalFailed>()).Should().BeTrue();
     }
 
     [Test]

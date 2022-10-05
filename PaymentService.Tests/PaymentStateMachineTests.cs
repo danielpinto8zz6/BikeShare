@@ -160,7 +160,7 @@ public class PaymentStateMachineTests
         
         Thread.Sleep(200);
 
-        await _testHarness.Bus.Publish<IPaymentCalculationFailed>(new
+        await _testHarness.Bus.Publish<IPaymentFailed>(new
         {
             CorrelationId = correlationId,
             Payment = payment
@@ -168,11 +168,11 @@ public class PaymentStateMachineTests
 
         Thread.Sleep(200);
 
-        (await _testHarness.Consumed.Any<IPaymentCalculationFailed>()).Should().BeTrue();
+        (await _testHarness.Consumed.Any<IPaymentFailed>()).Should().BeTrue();
 
         var sagaHarness = _testHarness.GetSagaStateMachineHarness<PaymentStateMachine, PaymentState>();
 
-        (await sagaHarness.Consumed.Any<IPaymentCalculationFailed>()).Should().BeTrue();
+        (await sagaHarness.Consumed.Any<IPaymentFailed>()).Should().BeTrue();
 
         (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
 
@@ -240,7 +240,7 @@ public class PaymentStateMachineTests
     }
     
     [Test]
-    public async Task PaymentStateMachine_WhenPaymentValidationFailed_ShouldFailed()
+    public async Task PaymentStateMachine_WhenPaymentValidationFailed_ShouldFinalize()
     {
         var correlationId = Guid.NewGuid();
         var payment = new PaymentDto
@@ -274,7 +274,7 @@ public class PaymentStateMachineTests
 
         Thread.Sleep(200);
         
-        await _testHarness.Bus.Publish<IPaymentValidationFailed>(new
+        await _testHarness.Bus.Publish<IPaymentFailed>(new
         {
             CorrelationId = correlationId,
             Payment = payment
@@ -282,11 +282,11 @@ public class PaymentStateMachineTests
 
         Thread.Sleep(200);
 
-        (await _testHarness.Consumed.Any<IPaymentValidationFailed>()).Should().BeTrue();
+        (await _testHarness.Consumed.Any<IPaymentFailed>()).Should().BeTrue();
 
         var sagaHarness = _testHarness.GetSagaStateMachineHarness<PaymentStateMachine, PaymentState>();
 
-        (await sagaHarness.Consumed.Any<IPaymentValidationFailed>()).Should().BeTrue();
+        (await sagaHarness.Consumed.Any<IPaymentFailed>()).Should().BeTrue();
 
         (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
 

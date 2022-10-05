@@ -62,8 +62,8 @@ public static class NotificationHelper
         };
     }
 
-    public static RentalNotificationDto GetRentalFailureNotification(
-        BehaviorContext<RentalState, IRentalFailure> context)
+    public static RentalNotificationDto GetRentalFailedNotification(
+        BehaviorContext<RentalState, IRentalFailed> context)
     {
         return new RentalNotificationDto
         {

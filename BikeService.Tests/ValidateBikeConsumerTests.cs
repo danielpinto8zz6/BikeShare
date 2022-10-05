@@ -64,7 +64,7 @@ public class ValidateBikeConsumerTests
     }
     
     [Test]
-    public async Task Consume_WithInvalidBike_ShouldSendRentalFailure()
+    public async Task Consume_WithInvalidBike_ShouldSendRentalFailed()
     {
         _bikeService.Setup(i => i.ExistAsync(It.IsAny<Guid>()))
             .ReturnsAsync(false);
@@ -83,6 +83,6 @@ public class ValidateBikeConsumerTests
         var consumerHarness = _testHarness.GetConsumerHarness<ValidateBikeConsumer>();
         (await consumerHarness.Consumed.Any<IValidateBike>()).Should().BeTrue();
 
-        (await _testHarness.Sent.Any<IRentalFailure>()).Should().BeTrue();
+        (await _testHarness.Sent.Any<IRentalFailed>()).Should().BeTrue();
     }
 }

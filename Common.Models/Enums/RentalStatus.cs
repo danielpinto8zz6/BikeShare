@@ -6,6 +6,6 @@ namespace Common.Models.Enums
         BikeValidated,
         BikeUnlocked,
         BikeLocked,
-        RentalFailure,
+        RentalFailed,
     }
 }

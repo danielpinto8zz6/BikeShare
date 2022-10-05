@@ -232,13 +232,13 @@ public class RentalStateMachineTests
     }
     
     [Test]
-    public async Task RentalStateMachine_WhenRentalFailure_ShouldFinalize()
+    public async Task RentalStateMachine_WhenRentalFailed_ShouldFinalize()
     {
         var correlationId = Guid.NewGuid();
         var rental = new RentalDto
         {
             Id = Guid.NewGuid(),
-            Status = RentalStatus.RentalFailure,
+            Status = RentalStatus.RentalFailed,
             Username = "username"
         };
         
@@ -250,7 +250,7 @@ public class RentalStateMachineTests
         
         Thread.Sleep(200);
 
-        await _testHarness.Bus.Publish<IRentalFailure>(new
+        await _testHarness.Bus.Publish<IRentalFailed>(new
         {
             CorrelationId = correlationId,
             Rental = rental
@@ -258,11 +258,11 @@ public class RentalStateMachineTests
         
         Thread.Sleep(200);
 
-        (await _testHarness.Consumed.Any<IRentalFailure>()).Should().BeTrue();
+        (await _testHarness.Consumed.Any<IRentalFailed>()).Should().BeTrue();
 
         var sagaHarness = _testHarness.GetSagaStateMachineHarness<RentalStateMachine, RentalState>();
 
-        (await sagaHarness.Consumed.Any<IRentalFailure>()).Should().BeTrue();
+        (await sagaHarness.Consumed.Any<IRentalFailed>()).Should().BeTrue();
 
         (await sagaHarness.Created.Any(x => x.CorrelationId == correlationId)).Should().BeTrue();
 

@@ -56,7 +56,7 @@ public class DockManagerService : IDockManagerService
         {
             _logger.LogError(e, "Error updating bike status");
 
-            rental.Status = RentalStatus.RentalFailure;
+            rental.Status = RentalStatus.RentalFailed;
 
             await SendBikeUnlockFailed(rentalMessage);
         }
@@ -117,8 +117,8 @@ public class DockManagerService : IDockManagerService
 
     private async Task SendBikeUnlockFailed(IRentalMessage rentalMessage)
     {
-        var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailure)}"));
-        await endpoint.Send<IRentalFailure>(rentalMessage);
+        var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{nameof(IRentalFailed)}"));
+        await endpoint.Send<IRentalFailed>(rentalMessage);
     }
 
     private async Task SendBikeUnlocked(IRentalMessage rentalMessage)

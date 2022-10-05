@@ -40,7 +40,7 @@ namespace PaymentCalculatorService.Consumers
             {
                 _logger.LogError(e, "Error updating payment status");
 
-                UpdatePaymentState(context.Message.Payment, PaymentStatus.CalculationFailed);
+                UpdatePaymentState(context.Message.Payment, PaymentStatus.Failed);
 
                 await SendPaymentCalculationFailed(context);
             }
@@ -48,8 +48,8 @@ namespace PaymentCalculatorService.Consumers
 
         private static async Task SendPaymentCalculationFailed(ConsumeContext<ICalculatePayment> context)
         {
-            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentCalculationFailed)}"));
-            await endpoint.Send<IPaymentCalculationFailed>(new
+            var endpoint = await context.GetSendEndpoint(new Uri($"queue:{nameof(IPaymentFailed)}"));
+            await endpoint.Send<IPaymentFailed>(new
             {
                 context.CorrelationId,
                 context.Message.Payment
