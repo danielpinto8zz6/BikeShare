@@ -40,7 +40,7 @@ namespace DockService
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BikeService v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DockService v1"));
 
             app.UseAuthentication();
             app.UseAuthorization();

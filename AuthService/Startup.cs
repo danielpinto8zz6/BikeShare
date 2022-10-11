@@ -42,7 +42,7 @@ namespace AuthService
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "AuthService", Version = "v1"});
             });
 
             services.AddJwtAuthentication(appSettings);
@@ -84,7 +84,7 @@ namespace AuthService
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BikeService v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService v1"));
 
             app.UseAuthentication();
             app.UseAuthorization();
