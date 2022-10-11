@@ -30,15 +30,13 @@ spec:
       containers:
       - name: payment-calculator-container
         image: payment-calculator-service:latest
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: Production 
         imagePullPolicy: Never
         ports:
         - containerPort: 80
         resources:
           limits:
             memory: "256Mi"
+            cpu: "500m"
             
 ---
 
