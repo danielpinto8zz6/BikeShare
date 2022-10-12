@@ -1,17 +1,13 @@
-using System;
 using AutoMapper;
 using Common.Models;
 using Common.Models.Dtos;
+using Common.Models.Events.Rental;
 using Common.Services;
+using Common.Services.Repositories;
 using Common.TravelEvent.Entities;
 using Common.TravelEvent.Repositories;
 using Common.TravelEvent.Services;
 using MassTransit;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Steeltoe.Discovery.Client;
@@ -20,8 +16,8 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace TravelService
-{
+namespace TravelService;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -35,33 +31,15 @@ namespace TravelService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddServiceDiscovery(opt => opt.UseEureka());
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "TravelService", Version = "v1"});
             });
 
-            services.AddMassTransit(x =>
-            {
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    var rabbitMqConfiguration =
-                        Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
-
-                    cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
-                    {
-                        h.Username(rabbitMqConfiguration.Username);
-                        h.Password(rabbitMqConfiguration.Password);
-                    });
-
-                    cfg.ConfigureEndpoints(context);
-                });
-            });
-
-            services.AddScoped<IProducer<TravelEventDto>, Producer<TravelEventDto>>();
-            
-            services.AddScoped<IMongoClient, MongoClient>(_ =>
-                new MongoClient(Configuration.GetConnectionString("MongoDb")));
+            var mongoDbConnectionString = Configuration.GetConnectionString("MongoDb");
+            services.AddScoped<IMongoClient, MongoClient>(_ => new MongoClient(mongoDbConnectionString));
 
             services.AddScoped<ITravelEventService, TravelEventService>();
             services.AddScoped<ITravelEventRepository, TravelEventRepository>(provider =>
@@ -70,7 +48,7 @@ namespace TravelService
 
                 return new TravelEventRepository(mongoClient, "travel-event");
             });
-
+            
             var automapperConfiguration = new MapperConfiguration(conf =>
             {
                 conf.CreateMap<TravelEventDto, TravelEvent>();
@@ -78,6 +56,24 @@ namespace TravelService
             });
 
             services.AddSingleton(automapperConfiguration.CreateMapper());
+
+            var rabbitMqConfiguration = Configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfiguration>();
+            
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(new Uri(rabbitMqConfiguration.Host), h =>
+                    {
+                        h.Username(rabbitMqConfiguration.Username);
+                        h.Password(rabbitMqConfiguration.Password);
+                    });
+                    
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
             
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
             
@@ -96,8 +92,6 @@ namespace TravelService
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TravelService v1"));
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseAuthorization();
@@ -110,4 +104,3 @@ namespace TravelService
             });
         }
     }
-}

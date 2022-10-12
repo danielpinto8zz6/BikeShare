@@ -13,7 +13,7 @@ namespace Common.Services
 
         public Task ProduceAsync(T value)
         {
-            return value != null ? _publishEndpoint.Publish(value) : Task.CompletedTask;
+            return _publishEndpoint.Publish(value);
         }
     }
 }

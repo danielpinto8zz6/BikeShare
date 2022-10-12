@@ -7,7 +7,7 @@
 | feedback-service | 5030 |
 | user-service | 5040 |
 | rental-service | 5050 |
-| travel-service | 5060 |
+| travel-service | 6060 |
 | notification-service | 5080 |
 | token-service | 5090 |
 | dummy-dock-service | 6000 |

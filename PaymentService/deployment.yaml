@@ -4,31 +4,31 @@ metadata:
   name: payment-service
 spec:
   selector:
-    app: payment
+    app: payment-service
   type: LoadBalancer
   ports:
-    - name: payment-port
+    - name: payment-service-port
       port: 6030
       targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-deployment
+  name: payment-service-deployment
 spec:
   selector:
     matchLabels:
-      app: payment
+      app: payment-service
       version: v1
   replicas: 1
   template:
     metadata:
       labels:
-        app: payment
+        app: payment-service
         version: v1
     spec:
       containers:
-      - name: payment-container
+      - name: payment-service-container
         image: payment-service:latest
         imagePullPolicy: Never
         ports:

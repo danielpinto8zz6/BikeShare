@@ -14,7 +14,7 @@
         <PackageReference Include="Steeltoe.Discovery.ClientBase" Version="3.1.3" />
         <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.1.3" />
         <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.2.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
     </ItemGroup>
 

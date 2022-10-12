@@ -26,7 +26,7 @@ public static class ServiceExtensions
         IConfiguration configuration)
     {
         services.AddControllers();
-        services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "BikeService", Version = "v1"}); });
+        services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "DockService", Version = "v1"}); });
 
         services.AddScoped<IMongoClient, MongoClient>(_ =>
             new MongoClient(configuration.GetConnectionString("MongoDb")));

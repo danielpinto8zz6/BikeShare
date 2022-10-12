@@ -4,31 +4,31 @@ metadata:
   name: payment-calculator-service
 spec:
   selector:
-    app: payment-calculator
+    app: payment-calculator-service
   type: LoadBalancer
   ports:
-    - name: payment-calculator-port
+    - name: payment-calculator-service-port
       port: 6040
       targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-calculator-deployment
+  name: payment-calculator-service-deployment
 spec:
   selector:
     matchLabels:
-      app: payment-calculator
+      app: payment-calculator-service
       version: v1
   replicas: 1
   template:
     metadata:
       labels:
-        app: payment-calculator
+        app: payment-calculator-service
         version: v1
     spec:
       containers:
-      - name: payment-calculator-container
+      - name: payment-calculator-service-container
         image: payment-calculator-service:latest
         imagePullPolicy: Never
         ports:

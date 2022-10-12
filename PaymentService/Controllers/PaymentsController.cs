@@ -45,33 +45,5 @@ namespace PaymentService.Controllers
                 return NotFound();
             }
         }
-        
-        [HttpPost]
-        public async Task<ActionResult<PaymentDto>> CreateAsync(
-            [FromBody] PaymentDto paymentDto)
-        {
-            var result = await _service.CreateAsync(paymentDto);
-
-            return CreatedAtAction("GetById", new
-            {
-                id = result.Id
-            }, result);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(
-            Guid id,
-            [FromBody] PaymentDto paymentDto)
-        {
-            try
-            {
-                await _service.UpdateAsync(id, paymentDto);
-                return NoContent();
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
-        }
     }
 }

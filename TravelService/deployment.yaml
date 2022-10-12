@@ -8,7 +8,7 @@ spec:
   type: LoadBalancer
   ports:
     - name:  travel-service-port
-      port: 5060
+      port: 6060
       targetPort: 80
 ---
 apiVersion: apps/v1

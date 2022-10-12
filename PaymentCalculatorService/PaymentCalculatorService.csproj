@@ -9,7 +9,7 @@
         <PackageReference Include="MassTransit" Version="8.0.0" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.0" />
         <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.2.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.2.0" />
     </ItemGroup>
 

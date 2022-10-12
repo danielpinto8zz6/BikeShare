@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common.Models.Dtos;
+﻿using Common.Models.Dtos;
 using Common.Services;
 using Common.TravelEvent.Services;
 using Microsoft.AspNetCore.Mvc;
