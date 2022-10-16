@@ -1,0 +1,55 @@
+[{
+  "_id": {
+    "$binary": {
+      "base64": "MxrOU2orOkqk05VVWrYO3w==",
+      "subType": "03"
+    }
+  },
+  "BikeId": {
+    "$binary": {
+      "base64": "yiWW2pmg1kGSvM3JpHPUmw==",
+      "subType": "03"
+    }
+  },
+  "Coordinates": [
+    -8.1393977981644,
+    41.23815980127081
+  ],
+  "Address": "Belmonte, Vila Caiz, Amarante, Porto, 4635-534, Portugal",
+  "CreatedDate": {
+    "$date": {
+      "$numberLong": "-62135596800000"
+    }
+  },
+  "ModifiedDate": {
+    "$date": "2022-09-30T22:44:09.214Z"
+  },
+  "DeletedDate": null
+},{
+  "_id": {
+    "$binary": {
+      "base64": "6dIoe0uMLEu2latbQhXJjA==",
+      "subType": "03"
+    }
+  },
+  "BikeId": {
+    "$binary": {
+      "base64": "d4ex9IItLkm3496ese2IEg==",
+      "subType": "03"
+    }
+  },
+  "Coordinates": [
+    -8.1393977981644,
+    41.23815980127081
+  ],
+  "Address": "Belmonte, Vila Caiz, Amarante, Porto, 4635-534, Portugal",
+  "CreatedDate": {
+    "$date": {
+      "$numberLong": "-62135596800000"
+    }
+  },
+  "ModifiedDate": {
+    "$date": "2022-10-01T02:07:10.714Z"
+  },
+  "DeletedDate": null
+}]

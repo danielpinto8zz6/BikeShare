@@ -1,0 +1,39 @@
+[{
+  "_id": {
+    "$binary": {
+      "base64": "yiWW2pmg1kGSvM3JpHPUmw==",
+      "subType": "03"
+    }
+  },
+  "Brand": "Coluer",
+  "Model": "Ascent 296",
+  "Type": 1,
+  "Stats": {
+    "ChargeLevel": null,
+    "ServiceMinutes": 0
+  },
+  "CreatedDate": {
+    "$date": "2022-06-27T14:14:28.908Z"
+  },
+  "ModifiedDate": null,
+  "DeletedDate": null
+},{
+  "_id": {
+    "$binary": {
+      "base64": "d4ex9IItLkm3496ese2IEg==",
+      "subType": "03"
+    }
+  },
+  "Brand": "Xiaomi",
+  "Model": "Eletric scooter",
+  "Type": 2,
+  "Stats": {
+    "ChargeLevel": 100,
+    "ServiceMinutes": 0
+  },
+  "CreatedDate": {
+    "$date": "2022-06-27T14:15:10.238Z"
+  },
+  "ModifiedDate": null,
+  "DeletedDate": null
+}]

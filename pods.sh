@@ -1,0 +1,1 @@
+kubectl get pods | grep -i 'Terminating' | awk '{print $1 }' | xargs -I{} kubectl delete pod --grace-period=0 --force {} 
