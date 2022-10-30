@@ -90,9 +90,7 @@ public class Startup
                     r.CollectionName = "RentalSaga";
                 });
         });
-
-        services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
-
+        
         services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
 
         services.AddHealthActuator(Configuration);

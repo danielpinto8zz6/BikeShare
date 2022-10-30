@@ -1,6 +1,7 @@
 ﻿using Common.Models.Dtos;
 using Common.Services;
 using Common.TravelEvent.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TravelService.Controllers;
@@ -9,16 +10,16 @@ namespace TravelService.Controllers;
 [Route("api/[controller]")]
 public class TravelController : ControllerBase
 {
-    private readonly IProducer<TravelEventDto> _producer;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     private readonly ITravelEventService _service;
 
     public TravelController(
-        IProducer<TravelEventDto> producer, 
-        ITravelEventService service)
+        ITravelEventService service, 
+        IPublishEndpoint publishEndpoint)
     {
-        _producer = producer;
         _service = service;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpPost]
@@ -28,7 +29,7 @@ public class TravelController : ControllerBase
     {
         travelEvent.Username = userId;
         
-        await _producer.ProduceAsync(travelEvent);
+        await _publishEndpoint.Publish(travelEvent);
         
         return Accepted();
     }

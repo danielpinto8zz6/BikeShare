@@ -72,8 +72,6 @@ namespace TravelService;
                     cfg.ConfigureEndpoints(context);
                 });
             });
-
-            services.AddTransient<IProducer<IRentalSubmitted>, Producer<IRentalSubmitted>>();
             
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
             

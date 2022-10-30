@@ -1,5 +1,6 @@
 using Common.Models.Dtos;
 using Common.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TestingService.Controllers;
@@ -8,18 +9,18 @@ namespace TestingService.Controllers;
 [Route("[controller]")]
 public class TestingController : ControllerBase
 {
-    private readonly IProducer<NotificationDto> _notificationProducer;
+    private readonly IPublishEndpoint _publishEndpoint;
     
     public TestingController(
-        IProducer<NotificationDto> notificationProducer)
+        IPublishEndpoint publishEndpoint)
     {
-        _notificationProducer = notificationProducer;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpPost("notification")]
     public IActionResult AddNotificationAsync([FromBody] NotificationDto notificationDto)
     {
-        _notificationProducer.ProduceAsync(notificationDto);
+        _publishEndpoint.Publish(notificationDto);
 
         return Accepted();
     }

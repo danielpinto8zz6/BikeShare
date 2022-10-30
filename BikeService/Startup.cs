@@ -90,9 +90,6 @@ namespace BikeService
                 });
             });
 
-            services.AddScoped<IProducer<NotificationDto>, Producer<NotificationDto>>();
-            services.AddScoped<IProducer<BikeUnlockDto>, Producer<BikeUnlockDto>>();
-            
             services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
             
             services.AddHealthActuator(Configuration);

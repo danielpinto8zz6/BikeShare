@@ -30,8 +30,6 @@ builder.Services.AddMassTransit(x =>
 
 });
 
-builder.Services.AddScoped<IProducer<NotificationDto>, Producer<NotificationDto>>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
