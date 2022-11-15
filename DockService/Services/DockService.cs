@@ -49,8 +49,10 @@ namespace DockService.Services
             var result = await _repository.GetByBikeId(bikeId);
 
             if (result.Coordinates != null)
+            {
                 result.Address = await GetAddressFromCoordinatesAsync(
-                    result.Coordinates.Latitude, result.Coordinates.Longitude);
+                    result.Coordinates.Latitude, result.Coordinates.Longitude);   
+            }
 
             return _mapper.Map<DockDto>(result);
         }

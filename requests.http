@@ -216,3 +216,9 @@ Authorization: Bearer {{authToken}}
 GET http://{{host}}/api/feedbacks?rentalId=471dc2b0-1172-46ef-b264-ffbfd8af49ec HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+###
+
+GET http://localhost:6010/api/docks/bike/da9625ca-a099-41d6-92bc-cdc9a473d49b
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

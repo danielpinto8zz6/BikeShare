@@ -1,13 +1,10 @@
 #!/bin/bash
 
 deploy_service(){
-    echo -e "Push $1 container to remote server... \n"
-    scp docker-images/"$1".tar root@192.168.1.198:/root/docker
-    echo -e "Importing $1 container into k3s \n"
-    ssh root@192.168.1.198 "k3s ctr images import docker/$1.tar"
-    scp docker-images/"$1".tar root@192.168.1.199:/root/docker
-    echo -e "Importing $1 container into k3s \n"
-    ssh root@192.168.1.199 "k3s ctr images import docker/$1.tar"
+    echo -e "Building $1 docker image... \n"
+    docker build -t "$1" -f "$2"/Dockerfile .
+    echo -e "Saving $1 container as tar... \n"
+    docker save --output docker-images/"$1".tar "$1":latest
 }
 
 case $1 in
